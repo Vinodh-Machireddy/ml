@@ -1,6 +1,6 @@
-                                                                 # CI/CD
-
-##### To start ci/cd we need few source files like. 
+# CI/CD Pipeline Using GitHub Actions
+---
+### To start ci/cd we need few source files like. 
 - train.py which has main training script.
 - api.py
 - Dataset
@@ -9,7 +9,7 @@
 - .gitignore File: To avoid pushing unnecessary, temporary, or sensitive files into the repo. 
 NOTE:- This files we get from DS and ML teams.
 
-##### What we do?(Manual work)
+### What we do?(Manual work)
 1. Initial Setup
 2. DVC Setup (Data Version Control)
 3. Push Model to S3
@@ -17,11 +17,11 @@ NOTE:- This files we get from DS and ML teams.
 5. KServe Setup
 6. Test KServe Inference
 
-##### To Automate Test, Build, And Deploy we use ci/cd pipelines using GitHub actions.
+To Automate Test, Build, And Deploy we use ci/cd pipelines using GitHub actions.
 
-[GitHub Actions Repo Structure]<img width="281" height="442" alt="Screenshot 2026-02-11 at 3 11 23 PM" src="https://github.com/user-attachments/assets/97f4d798-7b12-43a0-9f4e-655594f48a66" />
+[GitHub Actions Repo Structure](<img width="281" height="442" alt="Screenshot 2026-02-11 at 3 11 23 PM" src="https://github.com/user-attachments/assets/97f4d798-7b12-43a0-9f4e-655594f48a66"/>)
 
-##### Ci/cd Pipeline Flow:
+### Ci/cd Pipeline Flow:
 1. Checkout code
 2. Setup Python
 3. Install Dependencies
@@ -42,17 +42,18 @@ NOTE:- This files we get from DS and ML teams.
 18. KServe Deploys Model pod
 19. Monitoring + Alerts
 
+
 `Note:- Trigger Kubeflow Training pipeline (optional). Big companies go instead of running training in GitHub runner it runes in cluster, it is heavy lift.`
 
-#### Continuous Integration (CI)
+### Continuous Integration (CI)
 This job is triggered on every push, PR, workflow_dispatch to the main branch.
 
-#### Continuous Deployment (CD)
+### Continuous Deployment (CD)
  -  ArgoCD
  -  KServe
 
-#### name: MLOps ci/cd Pipeline
-
+### name: MLOps ci/cd Pipeline
+```
 on:
   push:
     branches: [cicd]
@@ -111,7 +112,6 @@ jobs:
         scan-type: 'fs'
         scan-ref: '.'
 
-  ```  
     # ==================================================
     # ✅ ML TRAINING
     # ==================================================
@@ -220,29 +220,25 @@ Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run a
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
 14.  ArgoCD
 15.  KServe
 16. Monitoring + alerting
 ```
-#### Continuous Training(CT):
+### Continuous Training(CT)
+---
 CT means automatically retraining the model when new data or drift is detected.
 
-##### CT Triggered When
+#### CT Triggered When
  1. Scheduled retraining time 
- 2. and New Data Uploaded
-
-Night 2 AM → New production data pulled
-↓
-Data validation
-↓
-Train Model
-↓
-Evaluate Model
-If accuracy > threshold → register model
-↓
-Push Model to DVC/S3
-↓
-Trigger CD → Deploy new model
+ 2. and New Data Uploaded 
+#### CT Steps Flow
+1. Night 2 AM → New production data pulled
+2. Data validation
+3. Train Model
+4. Evaluate Model (If accuracy > threshold → register model)
+5. Push Model to DVC/S3
+6. Trigger CD → Deploy new model
 
 #### Ex:-
 ```on:
@@ -250,10 +246,8 @@ Trigger CD → Deploy new model
     - cron: "0 2 * * *"    # Runs daily at 2 AM
   workflow_dispatch:       # Manual trigger also allowed
 ```
-
 #### Ex:-
 ```on:
   repository_dispatch:
     types: [new-data-arrived]
 ```
-
