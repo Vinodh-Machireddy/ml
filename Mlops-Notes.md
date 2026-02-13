@@ -1,5 +1,13 @@
+# INTERVIEW TARGET
+1. Deployment and serving : Kserve
+2. Ml Pipelines : Kubeflow
+3. Ci/cd Pipelines : GitHub Actions
+4. Monitoring and alerting : Prometheus & Grafana
+5. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization
+6. Security : AWS Secrets Manager
+7. Experiment Tracking + Model Registry: Mlflow
+
 # CI/CD Pipeline Using GitHub Actions
----
 ### To start ci/cd we need few source files like. 
 - train.py which has main training script.
 - api.py
@@ -226,7 +234,6 @@ Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run a
 16. Monitoring + alerting
 ```
 ### Continuous Training(CT)
----
 CT means automatically retraining the model when new data or drift is detected.
 
 #### CT Triggered When
@@ -251,3 +258,5 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
+
+
