@@ -1,11 +1,14 @@
 # INTERVIEW TARGET
-1. Deployment and serving : Kserve
-2. Ml Pipelines : Kubeflow
-3. Ci/cd Pipelines : GitHub Actions
+1. Ml Pipelines : Kubeflow Pipelines
+2. Experiment Tracking + Model Registry: Mlflow
+3. Deployment and serving : ArgoCD + Kserve
 4. Monitoring and alerting : Prometheus & Grafana
-5. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization
-6. Security : AWS Secrets Manager
-7. Experiment Tracking + Model Registry: Mlflow
+5. Ci/cd Pipelines : GitHub Actions
+6. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization
+7. Security : AWS Secrets Manager
+
+# Tech Stack: 
+```Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.```
 
 # CI/CD Pipeline Using GitHub Actions
 ### To start ci/cd we need few source files like. 
