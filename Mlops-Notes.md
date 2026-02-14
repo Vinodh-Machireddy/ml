@@ -4,10 +4,9 @@
 3. Deployment and serving : ArgoCD + Kserve
 4. Monitoring and alerting : Prometheus & Grafana
 5. Ci/cd Pipelines : GitHub Actions
-6. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization
-7. Security : AWS Secrets Manager
+6. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization, Security (AWS Secrets Manager)
 
-# Tech Stack: 
+# Production Ready Tech Stack: 
 ```Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.```
 
 # CI/CD Pipeline Using GitHub Actions
@@ -261,5 +260,34 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
+# MONITORING
+
+Kubernetes Monitoring:
+- kube-state-metrics
+- node-exporter
+
+ MLOps Monitoring:
+- Model latency
+- Error rate
+- Drift monitoring
 
 
+### Monitoring starts when ALL 3 are present:
+1. Prometheus running
+2. ServiceMonitor created
+3. Application exposes /metrics endpoint
+
+### How to confirm monitoring is started (100% proof)
+Go to Prometheus UI:  http://localhost:9090/targets
+If you see:
+```model-service      UP
+mlflow-service     UP
+kubeflow-service   UP
+```
+
+How do you design ML monitoring architecture?
+How do you monitor model performance in production?
+How do you implement alerting strategy?
+How do you monitor KServe serving metrics?
+Differentiating "System" vs. "Model" Metrics
+  
