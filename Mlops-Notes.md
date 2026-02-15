@@ -273,7 +273,7 @@ Kubernetes Monitoring:
 
 
 ### Monitoring starts when ALL 3 are present:
-1. Prometheus running
+1. Prometheus (kube-prometheus-stack) is installed and running
 2. ServiceMonitor created
 3. Application exposes /metrics endpoint
 
@@ -284,6 +284,10 @@ If you see:
 mlflow-service     UP
 kubeflow-service   UP
 ```
+
+Monitoring starts automatically as soon as:  
+
+KServe pod is running and /metrics endpoint is available , KServe internally uses Knative and Istio. Prometheus detects it → starts scraping metrics → monitoring starts. we no need to manually start monitoring.
 
 How do you design ML monitoring architecture?
 How do you monitor model performance in production?
