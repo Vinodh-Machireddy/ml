@@ -262,14 +262,74 @@ CT means automatically retraining the model when new data or drift is detected.
 ```
 # MONITORING
 
-Kubernetes Monitoring:
-- kube-state-metrics
-- node-exporter
+<img width="490" height="320" alt="image" src="https://github.com/user-attachments/assets/5e67dc93-67bb-42c7-b713-91598ca68f1e" />
+## Prometheus Components:
+### Prometheus Server:  
+It collects and stores metrics data.
+- Retrieval: Pulls metrics from different targets (like servers or apps).
+- TSDB (Time-Series Database): Stores the metrics in a format that makes it easy to query over time. It stores key and value pair format. Eg: 12:00:45 = HB 69
+- HTTP Server: Allows you to run queries and interact with Prometheus through a web interface.  
 
- MLOps Monitoring:
-- Model latency
-- Error rate
-- Drift monitoring
+#### Prometheus Targets: (pull metrics)
+These are the systems (like applications, pods, nodes, databases, or servers) that expose metrics. They often use exporters to provide the metrics in a format Prometheus understands.  
+
+### Pushgateway: (push metrics)
+ Normally Prometheus pulls metrics from targets.  But in some cases Applications push metrics to Pushgateway → Prometheus then scrapes Push-gateway.
+
+Used for short-lived jobs like scripts, Run for very short time (batch jobs / cron jobs) which Do not expose /metrics endpoint continuously,  these jobs "push" their metrics to the Push-gateway which stores temporarily and Prometheus scraps it from Push-gateway.
+Example:
+Data pipeline job
+ML training batch job
+Nightly backup job
+
+### Service Discovery  
+Service Discovery means automatic target detection.  
+It automatically finds the targets (applications, pods, nodes, services) that Prometheus needs to monitor.  
+It eliminates the need to hard-code IP addresses and ports inside the prometheus.yml file.  
+
+#### Why Service Discovery is Important in Kubernetes  
+In Kubernetes:  
+- Pods are created and deleted dynamically.
+- IP addresses change frequently.
+- Auto-scaling happens automatically.
+- Deployments roll out new versions continuously.
+
+Because of this dynamic nature, we cannot hardcode targets. Prometheus uses Kubernetes Service Discovery to handle this automatically.
+Prometheus uses Kubernetes API to discover Pods, Services, Nodes, Endpoints, Ingress. When a new pod comes → Prometheus automatically starts scraping it. When pod deletes → Prometheus stops scraping.
+
+#### Types: 
+- Kubernetes Service Discovery
+- Static Service Discovery
+- EC2 service discovery
+- DNS-based discovery
+- File-Based Service Discovery
+
+#### How Service Discovery Works
+Prometheus uses configured service discovery mechanisms to:
+ - Detect running services (targets).
+ - Fetch endpoint details (IP address and port).
+ - Dynamically update the scrape target list.
+ - Automatically start or stop scraping based on target availability.  
+This ensures monitoring stays accurate even when infrastructure changes.
+
+#### Exporters
+collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.  
+1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics  
+
+
+### Alertmanager:
+Sends alerts when something is wrong. For example, if your server’s CPU is too high, Prometheus triggers an alert. Alerts can be sent to email, Slack, PagerDuty, or other notification systems.
+
+### Visualization Tools:
+Prometheus has its own web interface to show metrics. It also integrates with tools like Grafana to create beautiful dashboards for better analysis.
+
+### How Prometheus Works:
+Prometheus finds targets using Service Discovery or a configuration file.
+It pulls metrics from these targets at regular intervals.
+The metrics are stored in the Time-Series Database (TSDB).
+You can query these metrics using PromQL, a query language.
+If something goes wrong, Alertmanager sends out notifications.
+You can view metrics and create dashboards using the Prometheus Web UI or Grafana.
 
 
 ### Monitoring starts when ALL 3 are present:
@@ -294,4 +354,84 @@ How do you monitor model performance in production?
 How do you implement alerting strategy?
 How do you monitor KServe serving metrics?
 Differentiating "System" vs. "Model" Metrics
+
+## 3 strong ML monitoring architectures
+1️⃣ Prometheus-Based Native Kubernetes Monitoring Architecture (Best for production-ready systems, This is the most traditional and stable approach.)
+
+```Tools Used: Prometheus, Grafana, KServe, kube-state-metrics, node-exporter, Alertmanager```
+
+2️⃣ Observability Stack with Logging + Tracing + Metrics (Full Observability Architecture, This goes beyond metrics.)
+```Tools Used: Prometheus, Grafana, Loki, Jaeger, KServe```
+```
+Metrics → Prometheus
+Logs → Loki
+Traces → Jaeger
+        ↓
+Grafana (Unified View)
+```
+3️⃣ ML-Specific Monitoring Architecture (Drift + Quality Focused, This focuses more on model behaviour.)
+```Tools Used: Prometheus, Evidently, Grafana, KServe```
+
+
+## 1️⃣ Prometheus-Based Native Kubernetes Monitoring Architecture
   
+1️⃣ Infrastructure Layer
+Monitor cluster stability.  
+
+Metrics:  
+Node CPU  
+Node Memory
+Disk usage
+Network traffic
+Node availability  
+
+Collected by:
+node-exporter
+kube-state-metrics  
+
+Reason:
+If infrastructure fails → ML serving fails.
+
+2️⃣ Kubernetes Platform Layer
+Monitor workloads.  
+
+Metrics:
+Pod status
+Restart count
+Deployment health
+HPA scaling
+Resource limits vs usage  
+
+Alerts:
+Pod CrashLoopBackOff
+HPA max replicas reached
+Pod not ready > 5 mins
+This ensures deployment reliability.  
+
+3️⃣ Model Serving Layer (KServe)
+When model is deployed using KServe, monitor:
+
+Core metrics:
+revision_request_count
+revision_request_latencies
+Response codes
+Autoscaling events  
+
+Important:
+Use p95 and p99 latency, not average.  
+
+Example logic:
+If p95 latency > 500ms for 5 mins → Warning
+If error rate > 5% → Critical  
+
+4️⃣ ML-Specific Layer
+This differentiates MLOps from DevOps.  
+
+Monitor:
+- Feature distribution
+- Prediction distribution
+- Drift detection
+- Confidence score
+Accuracy drop (if feedback loop available)  
+
+Expose these as custom Prometheus metrics from model code.  
