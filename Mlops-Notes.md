@@ -260,17 +260,19 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
-# MONITORING
+# MONITORING (PROMETHEUS & GRAFANA)
 
 <img width="490" height="320" alt="image" src="https://github.com/user-attachments/assets/5e67dc93-67bb-42c7-b713-91598ca68f1e" />
-## Prometheus Components:
+
+## Prometheus Components
+
 ### Prometheus Server:  
 It collects and stores metrics data.
 - Retrieval: Pulls metrics from different targets (like servers or apps).
 - TSDB (Time-Series Database): Stores the metrics in a format that makes it easy to query over time. It stores key and value pair format. Eg: 12:00:45 = HB 69
 - HTTP Server: Allows you to run queries and interact with Prometheus through a web interface.  
 
-#### Prometheus Targets: (pull metrics)
+### Prometheus Targets: (pull metrics)
 These are the systems (like applications, pods, nodes, databases, or servers) that expose metrics. They often use exporters to provide the metrics in a format Prometheus understands.  
 
 ### Pushgateway: (push metrics)
@@ -312,10 +314,22 @@ Prometheus uses configured service discovery mechanisms to:
  - Automatically start or stop scraping based on target availability.  
 This ensures monitoring stays accurate even when infrastructure changes.
 
-#### Exporters
+### Exporters:
 collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.  
-1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics  
+For Kubernetes cluster monitoring: 1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics 
+For Web Servers: nginx_exporter, apache_exporter  
+For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
 
+#### 1. Node Exporter: (system-level metrics from the OS)
+Node Exporter collects hardware and operating system metrics from a server (node) and exposes them for Prometheus to scrape.
+It Collects: CPU usage, Memory usage, Disk space & disk I/O, Network traffic, File system usage, Load average, System uptime
+
+#### 2. Kube State Metrics (Kubernetes object-level metrics to Prometheus.)  
+It tells the current state of Kubernetes objects, not resource usage.  
+It collects:Pods (Running, Pending, Failed), Deployments (Desired vs Available replicas), ReplicaSets, StatefulSets, DaemonSets, Jobs & CronJobs, HPA (min/max replicas, current replicas), Nodes (Ready/NotReady status), PersistentVolumeClaims.  
+
+#### 3. cAdvisor (container-level resource usage metrics)  
+cAdvisor monitors how much CPU, memory, and disk each container is using.
 
 ### Alertmanager:
 Sends alerts when something is wrong. For example, if your server’s CPU is too high, Prometheus triggers an alert. Alerts can be sent to email, Slack, PagerDuty, or other notification systems.
@@ -324,38 +338,36 @@ Sends alerts when something is wrong. For example, if your server’s CPU is too
 Prometheus has its own web interface to show metrics. It also integrates with tools like Grafana to create beautiful dashboards for better analysis.
 
 ### How Prometheus Works:
-Prometheus finds targets using Service Discovery or a configuration file.
-It pulls metrics from these targets at regular intervals.
-The metrics are stored in the Time-Series Database (TSDB).
-You can query these metrics using PromQL, a query language.
-If something goes wrong, Alertmanager sends out notifications.
-You can view metrics and create dashboards using the Prometheus Web UI or Grafana.
+Prometheus finds targets using Service Discovery or a configuration file.  
+It pulls metrics from these targets at regular intervals.  
+The metrics are stored in the Time-Series Database (TSDB).  
+You can query these metrics using PromQL, a query language.  
+If something goes wrong, Alertmanager sends out notifications.  
+You can view metrics and create dashboards using the Prometheus Web UI or Grafana.  
 
 
-### Monitoring starts when ALL 3 are present:
+## Monitoring starts when ALL 3 are present:  
+KServe internally uses Knative and Istio. Prometheus detects it → starts scraping metrics → monitoring starts. we no need to manually start monitoring.  
 1. Prometheus (kube-prometheus-stack) is installed and running
 2. ServiceMonitor created
 3. Application exposes /metrics endpoint
+4. Model pod running
 
-### How to confirm monitoring is started (100% proof)
+## How to confirm monitoring is started (100% proof)
 Go to Prometheus UI:  http://localhost:9090/targets
 If you see:
 ```model-service      UP
 mlflow-service     UP
 kubeflow-service   UP
 ```
+## Interview Questions
+How do you design ML monitoring architecture?  
+How do you monitor model performance in production?  
+How do you implement alerting strategy?  
+How do you monitor KServe serving metrics?  
+Differentiating "System" vs. "Model" Metrics  
 
-Monitoring starts automatically as soon as:  
-
-KServe pod is running and /metrics endpoint is available , KServe internally uses Knative and Istio. Prometheus detects it → starts scraping metrics → monitoring starts. we no need to manually start monitoring.
-
-How do you design ML monitoring architecture?
-How do you monitor model performance in production?
-How do you implement alerting strategy?
-How do you monitor KServe serving metrics?
-Differentiating "System" vs. "Model" Metrics
-
-## 3 strong ML monitoring architectures
+## ML monitoring architectures
 1️⃣ Prometheus-Based Native Kubernetes Monitoring Architecture (Best for production-ready systems, This is the most traditional and stable approach.)
 
 ```Tools Used: Prometheus, Grafana, KServe, kube-state-metrics, node-exporter, Alertmanager```
