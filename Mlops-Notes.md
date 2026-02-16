@@ -315,9 +315,9 @@ Prometheus uses configured service discovery mechanisms to:
 This ensures monitoring stays accurate even when infrastructure changes.
 
 ### Exporters:
-collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.  
+- collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.  
 For Kubernetes cluster monitoring: 1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics 
-For Web Servers: nginx_exporter, apache_exporter  
+For Web Servers: nginx_exporter, apache_exporter   
 For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
 
 #### 1. Node Exporter: (system-level metrics from the OS)
@@ -401,8 +401,29 @@ Collected by:
 node-exporter
 kube-state-metrics  
 
-Reason:
-If infrastructure fails → ML serving fails.
+Standard Process for Any Infra Metric
+For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always same:
+
+Step 1
+Mtric must exist (via node-exporter or kube-state-metrics)
+Step 2
+Prometheus scrapes metric
+Step 3
+Write PromQL query
+Step 4
+Create Grafana dashboard panel
+Step 5
+Create PrometheusRule alert
+
+
+
+
+
+
+
+
+
+
 
 2️⃣ Kubernetes Platform Layer
 Monitor workloads.  
@@ -447,3 +468,5 @@ Monitor:
 Accuracy drop (if feedback loop available)  
 
 Expose these as custom Prometheus metrics from model code.  
+
+
