@@ -558,6 +558,7 @@ Tools Used: ```Prometheus, Grafana, kube-state-metrics(kube-state-metrics gives 
 ##### 1. Pod Availability
 Check Running pods: ```kube_pod_status_phase{phase="Running"}```  
 If pod not running → issue.  
+
 Alert: Pod Not Running
 ```
 - alert: PodNotRunning
@@ -571,6 +572,7 @@ Alert: Pod Not Running
 ##### 2. Pod Restart Monitoring (Important for ML workloads.)
 PromQL: ```increase(kube_pod_container_status_restarts_total[5m]) > 3```  
 If restart count > 3 in 5 minutes → alert. Frequent restarts = memory leak or crash.  
+
 Alert YAML:  
 ```
 - alert: FrequentPodRestarts
@@ -582,11 +584,11 @@ Alert YAML:
     summary: "Pod restarting frequently"
     description: "Container restarted more than 3 times in 5 minutes"
 ```
-
 ###### 3. Deployment Availability
 Check if available replicas < desired replicas:  
-PromQL:  ```kube_deployment_status_replicas_available < kube_deployment_spec_replicas```
+PromQL:  ```kube_deployment_status_replicas_available < kube_deployment_spec_replicas```  
 Alert if mismatch > 5 minutes. This ensures rolling deployments succeed.  
+
 Alert YAML:  
 ```
 - alert: DeploymentReplicasMismatch
@@ -600,12 +602,12 @@ Alert YAML:
     summary: "Deployment replicas mismatch"
     description: "Available replicas are less than desired replicas"
 ```
-
 ##### 4. Horizontal Pod Autoscaler (HPA)  
 Very important for ML serving.  
-If current replicas = max replicas continuously → scaling issue.
-PromQL:  ```kube_hpa_status_current_replicas == kube_hpa_spec_max_replicas```
-If true for 10 minutes → cluster under-provisioned.
+If current replicas = max replicas continuously → scaling issue.  
+PromQL:  ```kube_hpa_status_current_replicas == kube_hpa_spec_max_replicas```  
+If true for 10 minutes → cluster under-provisioned.  
+
 Alert YAML:  
 ```
 - alert: HPAMaxedOut
@@ -618,13 +620,13 @@ Alert YAML:
   annotations:
     summary: "HPA reached maximum replicas"
     description: "Autoscaler is at max replicas for more than 10 minutes"
-```
+```  
 Why 10m?  
 Because short spikes are normal.  
 
 ##### 5. Resource Requests vs Limits
-Check if pods close to limit:
-CPU: ```container_cpu_usage_seconds_total / kube_pod_container_resource_limits_cpu_cores```
+Check if pods close to limit:  
+CPU: ```container_cpu_usage_seconds_total / kube_pod_container_resource_limits_cpu_cores```  
 Memory: ```container_memory_usage_bytes / kube_pod_container_resource_limits_memory_bytes```  
 If usage > 90% of limit → alert.  
 Prevents OOMKilled issues.  
@@ -636,10 +638,10 @@ Critical:
 - HPA maxed out
 
 Warning:  
-+Restart count high
-+Replica mismatch
-+Resource usage near limit  
-```lways use for: duration.```
+- Restart count high
+- Replica mismatch
+- Resource usage near limit  
+```Always use for: duration```
 
 
 #### 3. Model Serving Layer (KServe)
