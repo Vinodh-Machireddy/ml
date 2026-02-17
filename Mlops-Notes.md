@@ -643,9 +643,8 @@ Warning:
 - Resource usage near limit  
 ```Always use for: duration```
 
-
 #### 3. Model Serving Layer (KServe)
-When model is deployed using KServe, monitor:
+most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.
 
 Core metrics:
 revision_request_count
@@ -660,16 +659,59 @@ Example logic:
 If p95 latency > 500ms for 5 mins → Warning
 If error rate > 5% → Critical  
 
+##### revision_request_count
+Shows incoming traffic rate.  
+PromQL: ```sum(rate(revision_request_count[5m]))```  
+If traffic suddenly drops to 0 for 5 mins → possible outage.
+
+##### revision_request_latencies
+PromQL: ```histogram_quantile(0.95, sum(rate(revision_request_latencies_bucket[5m])) by (le))```  
+This gives 95th percentile latency.
+
+Alert:  
+If p95 > 500ms for 5 minutes → Warning  
+If p95 > 1s → Critical  
+This ensures SLA protection.  
+
+##### Error Rate Monitoring
+Error rate query:```sum(rate(revision_request_count{response_code!~"2.."}[5m]))
+                  /
+                  sum(rate(revision_request_count[5m]))
+                 ```  
+If error rate > 5% → Critical alert.
+
 #### 4. ML-Specific Layer
-This differentiates MLOps from DevOps.  
+This layer monitors model behavior, not infrastructure or pods.  
+
+Infra tells you system health.  
+Platform tells you workload health.  
+Serving tells you request health.  
+ML layer tells you model quality health.  
 
 Monitor:
 - Feature distribution
 - Prediction distribution
 - Drift detection
-- Confidence score
-Accuracy drop (if feedback loop available)  
+- Model Confidence score
+- Accuracy drop/degradation
 
-Expose these as custom Prometheus metrics from model code.  
+It is a shared responsibility. But implementation ownership is usually MLOps.
+ Model quality in production = MLOps + Data Science collaboration.
+
+Data Scientist:
+
+Defines evaluation metrics
+
+Provides baseline thresholds
+
+MLOps Engineer:
+
+Implements logging
+
+Builds dashboards
+
+Creates alert rules
+
+Monitors degradation
 
 
