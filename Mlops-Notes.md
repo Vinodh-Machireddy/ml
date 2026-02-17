@@ -406,6 +406,7 @@ For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always sa
 
 Step 1 : Install Monitoring Stack 
 we use kube-prometheus-stack it is a pre-packaged Helm chart that automatically installs a complete Kubernetes monitoring setup like Prometheus, Alertmanager, Grafana, NodeExporter, kube-state-metrics. It provides ready-made dashboards, alert rules, and Kubernetes service discovery.  
+
 Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
 kubectl get pods -n monitoring
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus -n monitoring 9090  and http://localhost:9090
@@ -422,7 +423,8 @@ Step 4 : Add CPU Panel in Grafana
   4. Select Prometheus as data source
   5. Paste above quer
   6. Set Unit → Percent (0–100)  
-     Now you will see live node CPU usage. 
+     Now you will see live node CPU usage.
+     
 Step 5 : Create Alert rule and apply for High CPU
 Create file  node-cpu-alert.yaml
 ```
@@ -448,11 +450,8 @@ spec:
 ```
 ```Apply: kubectl apply -f node-cpu-alert.yaml```
 
-
 Step 6 : Configure Alertmanager  
-Alertmanager already installed via kube-prometheus-stack.
-You configure Slack or Email receiver.
-When CPU > 85% for 5 mins → alert triggers.  
+Alertmanager already installed via kube-prometheus-stack. configure Slack or Email receiver. When CPU > 85% for 5 mins → alert triggers.  
 
 1. Verify Alertmanager is Running  
    i/p: kubectl get pods -n monitoring
@@ -494,27 +493,31 @@ receivers:
     auth_password: "your-app-password"
     require_tls: true
     send_resolved: true
-``` 
-4. Create Kubernetes Secret
+```
+
+4. Create Kubernetes Secret  
    Alertmanager config must be stored as secret.
+   
    ```kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
   --from-file=alertmanager.yaml=alertmanager-config.yaml \
   -n monitoring \
   --dry-run=client -o yaml | kubectl apply -f -
-```
-5. Restart Alertmanager
-```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```
-6. Verify Configuration
+   ```  
+
+5. Restart Alertmanager  
+```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```  
+
+6. Verify Configuration  
 ```Port forward:  kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
    open:  http://localhost:9093
    Check:
    Status → Config
    Make sure Slack and email receivers are visible.
-```
+```  
 7. Test Alert  
-   You can temporarily create a test alert:
+   You can temporarily create a test alert:   
    ```
-   - alert: TestAlert
+  - alert: TestAlert
   expr: vector(1)
   for: 1m
   labels:
@@ -522,12 +525,10 @@ receivers:
   annotations:
     summary: "Test Alert"
     description: "This is a test alert"
-  ```
-  After 1 minute → Slack & Email should receive notification.
+  ```  
+  After 1 minute → Slack & Email should receive notification.  
 
-
-   
-Step 7 : When Does Alert Trigger?  
+Step 7 : When Does Alert Trigger?
 ```
 If:
 Node CPU > 85%
@@ -536,9 +537,6 @@ Condition lasts for 5 minutes
 Then alert becomes ACTIVE.
 You can check in: Prometheus → Alerts tab  or   Grafana → Alert panel
 ```
-
-
-
 
 
 2️⃣ Kubernetes Platform Layer
