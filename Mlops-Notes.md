@@ -399,27 +399,143 @@ Node availability
 
 Collected by:
 node-exporter
-kube-state-metrics  
+kube-state-metrics    
 
-Standard Process for Any Infra Metric
-For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always same:
+Standard Process for Any Infra Metric  
+For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always same:   
 
-Step 1
-Mtric must exist (via node-exporter or kube-state-metrics)
-Step 2
-Prometheus scrapes metric
-Step 3
-Write PromQL query
-Step 4
-Create Grafana dashboard panel
-Step 5
-Create PrometheusRule alert
+Step 1 : Install Monitoring Stack 
+we use kube-prometheus-stack it is a pre-packaged Helm chart that automatically installs a complete Kubernetes monitoring setup like Prometheus, Alertmanager, Grafana, NodeExporter, kube-state-metrics. It provides ready-made dashboards, alert rules, and Kubernetes service discovery.  
+Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
+kubectl get pods -n monitoring
+kubectl port-forward svc/monitoring-kube-prometheus-prometheus -n monitoring 9090  and http://localhost:9090
+ 
+Step 3 : Create CPU Usage Query (PromQL)
+```100 - (avg by(instance)(
+  rate(node_cpu_seconds_total{mode="idle"}[5m])
+) * 100)
+``` 
+Step 4 : Add CPU Panel in Grafana
+  1. Open Grafana
+  2. Create Dashboard
+  3. Add Panel
+  4. Select Prometheus as data source
+  5. Paste above quer
+  6. Set Unit → Percent (0–100)  
+     Now you will see live node CPU usage. 
+Step 5 : Create Alert rule and apply for High CPU
+Create file  node-cpu-alert.yaml
+```
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-cpu-alert
+  namespace: monitoring
+spec:
+  groups:
+  - name: node.rules
+    rules:
+    - alert: HighNodeCPUUsage
+      expr: 100 - (avg by(instance)(
+              rate(node_cpu_seconds_total{mode="idle"}[5m])
+            ) * 100) > 85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage on node"
+        description: "Node CPU usage is above 85% for 5 minutes"
+```
+```Apply: kubectl apply -f node-cpu-alert.yaml```
 
 
+Step 6 : Configure Alertmanager  
+Alertmanager already installed via kube-prometheus-stack.
+You configure Slack or Email receiver.
+When CPU > 85% for 5 mins → alert triggers.  
+
+1. Verify Alertmanager is Running  
+   i/p: kubectl get pods -n monitoring
+   o/p: alertmanager-monitoring-kube-prometheus-alertmanager-0   Running  (If running → ready to configure.)  
+ 
+2. Create Slack Webhook  
+   Go to Slack → Settings  
+   Create Incoming Webhook  
+   Select channel  
+   Copy webhook URL
+   ```Example:  https://hooks.slack.com/services/T000/B000/XXXX```
+
+3. Create Alertmanager Config File
+   Create file: alertmanager-config.yaml
+```global:
+  resolve_timeout: 5m
+
+route:
+  receiver: "slack-email"
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+- name: "slack-email"
+
+  slack_configs:
+  - api_url: "https://hooks.slack.com/services/T000/B000/XXXX"
+    channel: "#alerts"
+    send_resolved: true
+    title: "{{ .CommonAnnotations.summary }}"
+    text: "{{ .CommonAnnotations.description }}"
+
+  email_configs:
+  - to: "your-email@gmail.com"
+    from: "your-email@gmail.com"
+    smarthost: "smtp.gmail.com:587"
+    auth_username: "your-email@gmail.com"
+    auth_password: "your-app-password"
+    require_tls: true
+    send_resolved: true
+``` 
+4. Create Kubernetes Secret
+   Alertmanager config must be stored as secret.
+   ```kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
+  --from-file=alertmanager.yaml=alertmanager-config.yaml \
+  -n monitoring \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+5. Restart Alertmanager
+```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```
+6. Verify Configuration
+```Port forward:  kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
+   open:  http://localhost:9093
+   Check:
+   Status → Config
+   Make sure Slack and email receivers are visible.
+```
+7. Test Alert  
+   You can temporarily create a test alert:
+   ```
+   - alert: TestAlert
+  expr: vector(1)
+  for: 1m
+  labels:
+    severity: critical
+  annotations:
+    summary: "Test Alert"
+    description: "This is a test alert"
+  ```
+  After 1 minute → Slack & Email should receive notification.
 
 
-
-
+   
+Step 7 : When Does Alert Trigger?  
+```
+If:
+Node CPU > 85%
+AND
+Condition lasts for 5 minutes
+Then alert becomes ACTIVE.
+You can check in: Prometheus → Alerts tab  or   Grafana → Alert panel
+```
 
 
 
