@@ -698,20 +698,14 @@ Monitor:
 It is a shared responsibility. But implementation ownership is usually MLOps.
  Model quality in production = MLOps + Data Science collaboration.
 
-Data Scientist:
-
-Defines evaluation metrics
-
-Provides baseline thresholds
+Data Scientist:  
+Defines evaluation metrics  
+Provides baseline thresholds  
 
 MLOps Engineer:
-
 Implements logging
-
 Builds dashboards
-
 Creates alert rules
-
 Monitors degradation
 
 
