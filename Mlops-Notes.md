@@ -321,7 +321,7 @@ For Web Servers: nginx_exporter, apache_exporter
 For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
 
 #### 1. Node Exporter: (system-level metrics from the OS)
-Node Exporter collects hardware and operating system metrics from a server (node) and exposes them for Prometheus to scrape.
+Node Exporter collects hardware and operating system metrics from a server (node) and exposes them for Prometheus to scrape.  
 It Collects: CPU usage, Memory usage, Disk space & disk I/O, Network traffic, File system usage, Load average, System uptime
 
 #### 2. Kube State Metrics (Kubernetes object-level metrics to Prometheus.)  
@@ -368,11 +368,10 @@ How do you monitor KServe serving metrics?
 Differentiating "System" vs. "Model" Metrics  
 
 ## ML monitoring architectures
-1️⃣ Prometheus-Based Native Kubernetes Monitoring Architecture (Best for production-ready systems, This is the most traditional and stable approach.)
-
+1️⃣ Prometheus-Based Native Kubernetes Monitoring Architecture (Best for production-ready systems, This is the most traditional and stable approach.)  
 ```Tools Used: Prometheus, Grafana, KServe, kube-state-metrics, node-exporter, Alertmanager```
 
-2️⃣ Observability Stack with Logging + Tracing + Metrics (Full Observability Architecture, This goes beyond metrics.)
+2️⃣ Observability Stack with Logging + Tracing + Metrics (Full Observability Architecture, This goes beyond metrics.)  
 ```Tools Used: Prometheus, Grafana, Loki, Jaeger, KServe```
 ```
 Metrics → Prometheus
@@ -384,39 +383,34 @@ Grafana (Unified View)
 3️⃣ ML-Specific Monitoring Architecture (Drift + Quality Focused, This focuses more on model behaviour.)
 ```Tools Used: Prometheus, Evidently, Grafana, KServe```
 
-
-## 1️⃣ Prometheus-Based Native Kubernetes Monitoring Architecture
+### 1. Prometheus-Based Native Kubernetes Monitoring Architecture
   
-1️⃣ Infrastructure Layer
+#### 1. Infrastructure Layer  
 Monitor cluster stability.  
+Infrastructure = node level   
 
 Metrics:  
-Node CPU  
-Node Memory
-Disk usage
-Network traffic
-Node availability  
+-  Node CPU  
+-  Node Memory
+-  Disk usage
+-  Network traffic
+-  Node availability  
 
-Collected by:
-node-exporter
-kube-state-metrics    
+Collected by: node-exporter, kube-state-metrics  
 
-Standard Process for Any Infra Metric  
-For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always same:   
-
-Step 1 : Install Monitoring Stack 
+##### Step 1: Install Monitoring Stack 
 we use kube-prometheus-stack it is a pre-packaged Helm chart that automatically installs a complete Kubernetes monitoring setup like Prometheus, Alertmanager, Grafana, NodeExporter, kube-state-metrics. It provides ready-made dashboards, alert rules, and Kubernetes service discovery.  
 
-Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
+##### Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
 kubectl get pods -n monitoring
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus -n monitoring 9090  and http://localhost:9090
  
-Step 3 : Create CPU Usage Query (PromQL)
+##### Step 3 : Create CPU Usage Query (PromQL)
 ```100 - (avg by(instance)(
   rate(node_cpu_seconds_total{mode="idle"}[5m])
 ) * 100)
 ``` 
-Step 4 : Add CPU Panel in Grafana
+##### Step 4 : Add CPU Panel in Grafana
   1. Open Grafana
   2. Create Dashboard
   3. Add Panel
@@ -425,7 +419,7 @@ Step 4 : Add CPU Panel in Grafana
   6. Set Unit → Percent (0–100)  
      Now you will see live node CPU usage.
      
-Step 5 : Create Alert rule and apply for High CPU
+##### Step 5 : Create Alert rule and apply for High CPU
 Create file  node-cpu-alert.yaml
 ```
 apiVersion: monitoring.coreos.com/v1
@@ -450,7 +444,7 @@ spec:
 ```
 ```Apply: kubectl apply -f node-cpu-alert.yaml```
 
-Step 6 : Configure Alertmanager  
+##### Step 6 : Configure Alertmanager  
 Alertmanager already installed via kube-prometheus-stack. configure Slack or Email receiver. When CPU > 85% for 5 mins → alert triggers.  
 
 1. Verify Alertmanager is Running  
@@ -494,30 +488,30 @@ receivers:
     require_tls: true
     send_resolved: true
 ```
+4. Create Kubernetes Secret   
+   - Alertmanager config must be stored as secret.
+     ```
+     kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
+     --from-file=alertmanager.yaml=alertmanager-config.yaml \
+     -n monitoring \
+     --dry-run=client -o yaml | kubectl apply -f -
+     ```
+5. Restart Alertmanager
+   ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```  
 
-4. Create Kubernetes Secret  
-   Alertmanager config must be stored as secret.
-   
-   ```kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
-  --from-file=alertmanager.yaml=alertmanager-config.yaml \
-  -n monitoring \
-  --dry-run=client -o yaml | kubectl apply -f -
-   ```  
-
-5. Restart Alertmanager  
-```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```  
-
-6. Verify Configuration  
-```Port forward:  kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
-   open:  http://localhost:9093
-   Check:
-   Status → Config
-   Make sure Slack and email receivers are visible.
-```  
-7. Test Alert  
-   You can temporarily create a test alert:   
+6. Verify Configuration
    ```
-  - alert: TestAlert
+   Port forward:  kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
+   open:  http://localhost:9093
+   ```
+   Check:  
+   Status → Config  
+   Make sure Slack and email receivers are visible.  
+   
+7. Test Alert  
+   You can temporarily create a test alert:
+```
+- alert: TestAlert
   expr: vector(1)
   for: 1m
   labels:
@@ -525,29 +519,33 @@ receivers:
   annotations:
     summary: "Test Alert"
     description: "This is a test alert"
-  ```  
+```  
   After 1 minute → Slack & Email should receive notification.  
 
-Step 7 : When Does Alert Trigger?
-```
-If:
-Node CPU > 85%
-AND
-Condition lasts for 5 minutes
-Then alert becomes ACTIVE.
-You can check in: Prometheus → Alerts tab  or   Grafana → Alert panel
-```
+##### Step 7 : When Does Alert Trigger?
+   ```
+   If:
+   Node CPU > 85%
+   AND
+   Condition lasts for 5 minutes
+   Then alert becomes ACTIVE.
+   You can check in: Prometheus → Alerts tab  or   Grafana → Alert panel
+   ```
+NOTE: Standard Process for Any Infra Metric,  For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always same  
 
+#### 2. Platform Layer (Monitor Workloads)
+This layer is above infrastructure.  
+Infrastructure = node level  
+Platform layer = workload level (pods, deployments, HPA)  
+this layer ensures your ML workloads are stable.  
 
-2️⃣ Kubernetes Platform Layer
-Monitor workloads.  
-
-Metrics:
-Pod status
-Restart count
-Deployment health
-HPA scaling
-Resource limits vs usage  
+Metrics:  
+-  Pod status
+-  Restart count
+-  Deployment health
+-  HPA scaling
+-  Autoscaling behaviour
+-  Resource limits 
 
 Alerts:
 Pod CrashLoopBackOff
@@ -555,7 +553,96 @@ HPA max replicas reached
 Pod not ready > 5 mins
 This ensures deployment reliability.  
 
-3️⃣ Model Serving Layer (KServe)
+Tools Used: ```Prometheus, Grafana, kube-state-metrics(kube-state-metrics gives Kubernetes object metrics)```  
+
+##### 1. Pod Availability
+Check Running pods: ```kube_pod_status_phase{phase="Running"}```  
+If pod not running → issue.  
+Alert: Pod Not Running
+```
+- alert: PodNotRunning
+  expr: kube_pod_status_phase{phase!="Running"} > 0
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "Pod not running"
+```
+##### 2. Pod Restart Monitoring (Important for ML workloads.)
+PromQL: ```increase(kube_pod_container_status_restarts_total[5m]) > 3```  
+If restart count > 3 in 5 minutes → alert. Frequent restarts = memory leak or crash.  
+Alert YAML:  
+```
+- alert: FrequentPodRestarts
+  expr: increase(kube_pod_container_status_restarts_total[5m]) > 3
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "Pod restarting frequently"
+    description: "Container restarted more than 3 times in 5 minutes"
+```
+
+###### 3. Deployment Availability
+Check if available replicas < desired replicas:  
+PromQL:  ```kube_deployment_status_replicas_available < kube_deployment_spec_replicas```
+Alert if mismatch > 5 minutes. This ensures rolling deployments succeed.  
+Alert YAML:  
+```
+- alert: DeploymentReplicasMismatch
+  expr: kube_deployment_status_replicas_available
+        <
+        kube_deployment_spec_replicas
+  for: 5m
+  labels:
+    severity: critical
+  annotations:
+    summary: "Deployment replicas mismatch"
+    description: "Available replicas are less than desired replicas"
+```
+
+##### 4. Horizontal Pod Autoscaler (HPA)  
+Very important for ML serving.  
+If current replicas = max replicas continuously → scaling issue.
+PromQL:  ```kube_hpa_status_current_replicas == kube_hpa_spec_max_replicas```
+If true for 10 minutes → cluster under-provisioned.
+Alert YAML:  
+```
+- alert: HPAMaxedOut
+  expr: kube_hpa_status_current_replicas
+        ==
+        kube_hpa_spec_max_replicas
+  for: 10m
+  labels:
+    severity: warning
+  annotations:
+    summary: "HPA reached maximum replicas"
+    description: "Autoscaler is at max replicas for more than 10 minutes"
+```
+Why 10m?  
+Because short spikes are normal.  
+
+##### 5. Resource Requests vs Limits
+Check if pods close to limit:
+CPU: ```container_cpu_usage_seconds_total / kube_pod_container_resource_limits_cpu_cores```
+Memory: ```container_memory_usage_bytes / kube_pod_container_resource_limits_memory_bytes```  
+If usage > 90% of limit → alert.  
+Prevents OOMKilled issues.  
+
+##### Platform Alert Strategy
+Critical:  
+- Deployment unavailable
+- Pod crash loop
+- HPA maxed out
+
+Warning:  
++Restart count high
++Replica mismatch
++Resource usage near limit  
+```lways use for: duration.```
+
+
+#### 3. Model Serving Layer (KServe)
 When model is deployed using KServe, monitor:
 
 Core metrics:
@@ -571,7 +658,7 @@ Example logic:
 If p95 latency > 500ms for 5 mins → Warning
 If error rate > 5% → Critical  
 
-4️⃣ ML-Specific Layer
+#### 4. ML-Specific Layer
 This differentiates MLOps from DevOps.  
 
 Monitor:
