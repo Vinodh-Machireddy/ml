@@ -399,7 +399,7 @@ Metrics:
 Collected by: node-exporter, kube-state-metrics  
 
 ##### Step 1: Install Monitoring Stack 
-we use kube-prometheus-stack it is a pre-packaged Helm chart that automatically installs a complete Kubernetes monitoring setup like Prometheus, Alertmanager, Grafana, NodeExporter, kube-state-metrics. It provides ready-made dashboards, alert rules, and Kubernetes service discovery.  
+we use kube-prometheus-stack it is a pre-packaged Helm chart that automatically installs a complete Kubernetes monitoring setup like Prometheus, Alertmanager, Grafana, Creates ServiceMonitor, NodeExporter, kube-state-metrics. It provides ready-made dashboards, alert rules, and Kubernetes service discovery.  
 
 ##### Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
 kubectl get pods -n monitoring
