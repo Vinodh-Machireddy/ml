@@ -862,14 +862,103 @@ It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kub
    http://localhost:9093
 ```
 
-#### Drift Detection
-a change/shift in data patterns of production data and training data.  
-1️⃣ Data Drift (Input changes)
-2️⃣ Concept Drift (Relationship changes)
-3️⃣ Prediction Drift (Output distribution changes)
+#### Drift Detection. 
+a change/shift in data patterns of production data and training data.   
+1️⃣ Data Drift (Input changes). 
+2️⃣ Concept Drift (Relationship changes). 
+3️⃣ Prediction Drift (Output distribution changes). 
+Do NOT compute drift inside predict(). Drift must run as batch/Cron job.  
+##### Store Production inference data
+the input data coming from users for prediction. we must compare: Training data vs Production data, So we store production inputs in:  
+Database (Postgres, MySQL). 
+Object storage (S3). 
+Data warehouse. 
+Feature store ...etc   
+##### Create drift_job.py
+Drift detection is:  
+- Heavy statistical computation. 
+- Needs historical data. 
+- Not real-time per request. 
+So we create a separate Python script whose only job is:  
+Read production data (from DB/S3). 
+Load baseline training stats. 
+Compute drift score. 
+Export drift score as Prometheus metric.  
+MLOps implements that logic in drift_job.py
+Data Scientist tells:```“Use PSI threshold 0.3”``
+It contains:  
+1. Data loading logic. 
+2. Drift calculation. 
+3. Prometheus metric export. 
+Example simplified structure:
+```
+# drift_job.py
 
+from prometheus_client import Gauge
+import pandas as pd
 
-Do NOT compute drift inside predict(). Drift must run as batch job.  
+drift_score = Gauge("model_drift_score", "Drift score")
+
+def compute_drift():
+
+    # 1. Load baseline stats
+    baseline_mean = 35
+
+    # 2. Load production data
+    production_data = pd.read_csv("prod_data.csv")
+
+    # 3. Compute drift
+    production_mean = production_data["age"].mean()
+
+    score = abs(production_mean - baseline_mean) / baseline_mean
+
+    drift_score.set(score)
+
+if __name__ == "__main__":
+    compute_drift()
+```  
+It is just a separate batch script.  
+##### Deploy as Kubernetes CronJob
+Why CronJob?  
+Because we want drift to run:  
+Every 5 minutes  
+Every 1 hour  
+Every day.  So we schedule it.  
+CronJob simply means:```“Kubernetes, please run this container periodically.”```  
+MLOps creates this YAML.  
+```
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: drift-job
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: drift-container
+            image: your-drift-image
+            ports:
+            - containerPort: 8001
+          restartPolicy: OnFailure
+```
+##### Create ServiceMonitor
+Drift job exports metric:```model_drift_score```. 
+Prometheus must scrape it.  
+So we create Service + ServiceMonitor.  
+👉 MLOps Engineer creates this.  
+Because this is Kubernetes + monitoring integration.  
+Why Drift Is Separate From predictor.py?  
+Because:  
+If 1000 users request per second,  
+you cannot calculate statistical tests inside predict().  
+It will:  
+Increase latency. 
+Increase CPU. 
+Break SLA. 
+So we separate serving path and monitoring path. 
 
 
 
