@@ -708,4 +708,289 @@ Builds dashboards
 Creates alert rules
 Monitors degradation
 
+predictor.py
+Model loading
+Model logic (predict)
+Monitoring logic (metrics)
+Response formatting
+
+##### Prediction distribution
+Prediction distribution represents how model outputs are distributed across classes or value ranges in production over a given time window.  
+Example (Classification):   
+If a fraud model predicts :  Fraud  Not Fraud  
+And in last 10 minutes:
+Fraud → 15%
+Not Fraud → 85%
+That percentage split is the prediction distribution.
+
+Example (Regression):  
+If a price model predicts house prices:  
+Average predicted price = ₹12L  
+70% predictions between ₹10L–₹15L  
+That spread of predicted values is the prediction distribution.  
+
+Prediction Distribution Count = How many times model predicted a specific output.   
+
+##### Step-1: Add Counter in Serving File
+```
+from prometheus_client import Counter
+
+prediction_counter = Counter(
+    "model_predictions_total",
+    "Total predictions by class",
+    ["class"]
+)
+```
+This creates a Prometheus metric with label class.  
+Metric will look like:
+```
+model_predictions_total{class="approved"}  1523
+model_predictions_total{class="rejected"}  412
+```  
+##### Step-2: Update Metric Inside predict()
+```
+def predict(self, request: dict):
+
+    data = request["instances"]
+
+    predictions = self.model.predict(data)
+
+    for pred in predictions:
+        prediction_counter.labels(class=str(pred)).inc()
+
+    return {"predictions": predictions.tolist()}
+```  
+Now every prediction increases counter.  
+##### Step-3: Convert to Percentage Using PromQL
+We do NOT alert on raw counter like 1523  or 412  
+We use rate().  
+PromQL: 
+```
+sum(rate(model_predictions_total{class="approved"}[5m]))
+/
+sum(rate(model_predictions_total[5m]))
+```  
+This gives percentage of "approved" predictions in last 5 minutes.  
+##### Step-4: Create Grafana Panel  
+Add two panels:  
+Approved %  
+Rejected %  
+
+###### Step-5: Create Alert rule for Sudden Shift
+Example:  
+Training baseline:  
+Approved = 80%  
+Alert if:  
+Approved < 50% for 10 minutes  
+Alert YAML:  
+```prediction-shift-alert.yaml```  
+```
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prediction-distribution-alert
+  namespace: monitoring
+spec:
+  groups:
+  - name: ml.rules
+    rules:
+    - alert: PredictionDistributionShift
+      expr: (
+              sum(rate(model_predictions_total{class="approved"}[5m]))
+              /
+              sum(rate(model_predictions_total[5m]))
+            ) < 0.5
+      for: 10m
+      labels:
+        severity: warning
+        service: ml-model
+      annotations:
+        summary: "Prediction distribution shifted"
+        description: "Approved class ratio dropped below 50% for 10 minutes"
+```
+Apply it: ```kubectl apply -f prediction-shift-alert.yaml```  Now Prometheus can fire alert.  
+
+##### Step-6: Configure Alertmanager routing
+Create:  ```alertmanager-config.yaml```  
+```
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: "ml-alerts"
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+  - match:
+      severity: warning
+    receiver: "ml-alerts"
+
+receivers:
+- name: "ml-alerts"
+
+  slack_configs:
+  - api_url: "https://hooks.slack.com/services/T000/B000/XXXX"
+    channel: "#ml-alerts"
+    send_resolved: true
+    title: "{{ .CommonAnnotations.summary }}"
+    text: "{{ .CommonAnnotations.description }}"
+
+  email_configs:
+  - to: "ml-team@company.com"
+    from: "alerts@company.com"
+    smarthost: "smtp.gmail.com:587"
+    auth_username: "alerts@company.com"
+    auth_password: "APP_PASSWORD"
+    require_tls: true
+    send_resolved: true
+```  
+##### Step-7: Create Kubernetes Secret  
+Alertmanager config must be stored as secret:  
+```
+kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
+  --from-file=alertmanager.yaml=alertmanager-config.yaml \
+  -n monitoring \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+##### Step-8: Restart Alertmanager  
+It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```  
+
+##### Step-9: Verify
+```kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
+   http://localhost:9093
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+###### predictor.py/app.py (Serving file)
+```
+import os
+import logging
+import numpy as np
+import joblib
+
+from kserve import Model
+from prometheus_client import start_http_server, Counter, Gauge
+
+# -------------------------------
+# Logging Configuration
+# -------------------------------
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# -------------------------------
+# Start Prometheus Metrics Server
+# -------------------------------
+METRICS_PORT = 8000
+start_http_server(METRICS_PORT)
+logger.info(f"Metrics server started on port {METRICS_PORT}")
+
+# -------------------------------
+# Monitoring Metrics
+# -------------------------------
+
+# Prediction count per class
+prediction_counter = Counter(
+    "model_predictions_total",
+    "Total predictions by class",
+    ["class"]
+)
+
+# Average confidence score
+confidence_avg = Gauge(
+    "model_confidence_avg",
+    "Average prediction confidence"
+)
+
+# Feature distribution example (mean of first feature)
+feature_mean = Gauge(
+    "feature_0_mean",
+    "Mean value of first input feature"
+)
+
+# -------------------------------
+# Custom KServe Model
+# -------------------------------
+class CustomModel(Model):
+
+    def __init__(self, name: str):
+        super().__init__(name)
+
+        model_path = os.getenv("MODEL_PATH", "model.pkl")
+
+        logger.info(f"Loading model from {model_path}")
+        self.model = joblib.load(model_path)
+
+        self.ready = True
+        logger.info("Model loaded successfully")
+
+    # -------------------------------
+    # Prediction Logic
+    # -------------------------------
+
+    def predict(self, request: dict):
+
+        try:
+            # -------------------------------
+            # Input Validation
+            # -------------------------------
+            if "instances" not in request:
+                raise ValueError("Invalid request format: 'instances' key missing")
+
+            data = np.array(request["instances"])
+
+            if data.ndim == 1:
+                data = data.reshape(1, -1)
+
+            # -------------------------------
+            # Feature Distribution Monitoring
+            # -------------------------------
+            feature_mean.set(np.mean(data[:, 0]))
+
+            # -------------------------------
+            # Model Prediction
+            # -------------------------------
+            predictions = self.model.predict(data)
+
+            # If model supports probability
+            if hasattr(self.model, "predict_proba"):
+                probabilities = self.model.predict_proba(data)
+                confidence_avg.set(np.mean(np.max(probabilities, axis=1)))
+            else:
+                confidence_avg.set(1.0)  # fallback
+
+            # -------------------------------
+            # Prediction Distribution Monitoring
+            # -------------------------------
+            for pred in predictions:
+                prediction_counter.labels(class=str(pred)).inc()
+
+            # -------------------------------
+            # Response Formatting
+            # -------------------------------
+            response = {
+                "model_name": self.name,
+                "predictions": predictions.tolist()
+            }
+
+            return response
+
+        except Exception as e:
+            logger.error(f"Prediction error: {str(e)}")
+            raise e
+```
+
+
+
 
