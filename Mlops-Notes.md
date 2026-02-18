@@ -693,35 +693,35 @@ Monitor:
 - Prediction distribution
 - Drift detection
 - Model Confidence score
-- Accuracy drop/degradation
+- Accuracy drop/degradation  
 
-It is a shared responsibility. But implementation ownership is usually MLOps.
- Model quality in production = MLOps + Data Science collaboration.
+It is a shared responsibility. But implementation ownership is usually MLOps.  
+ Model quality in production = MLOps + Data Science collaboration.  
 
 Data Scientist:  
 Defines evaluation metrics  
 Provides baseline thresholds  
 
-MLOps Engineer:
-Implements logging
-Builds dashboards
-Creates alert rules
-Monitors degradation
+MLOps Engineer:  
+Implements logging  
+Builds dashboards  
+Creates alert rules  
+Monitors degradation  
 
-predictor.py
-Model loading
-Model logic (predict)
-Monitoring logic (metrics)
-Response formatting
+predictor.py  
+Model loading  
+Model logic (predict)  
+Monitoring logic (metrics)  
+Response formatting  
 
 ##### Prediction distribution
-Prediction distribution represents how model outputs are distributed across classes or value ranges in production over a given time window.  
-Example (Classification):   
-If a fraud model predicts :  Fraud  Not Fraud  
-And in last 10 minutes:
-Fraud → 15%
-Not Fraud → 85%
-That percentage split is the prediction distribution.
+Prediction distribution represents how model outputs are distributed across classes or value ranges in production over a given time window.   
+Example (Classification):    
+If a fraud model predicts :  Fraud,  Not Fraud  
+And in last 10 minutes:  
+Fraud → 15%  
+Not Fraud → 85%  
+That percentage split is the prediction distribution.  
 
 Example (Regression):  
 If a price model predicts house prices:  
@@ -854,17 +854,22 @@ kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanag
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 ##### Step-8: Restart Alertmanager  
-It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```  
+It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```   
 
 ##### Step-9: Verify
-```kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
+```
+   kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
    http://localhost:9093
 ```
 
+#### Drift Detection
+a change/shift in data patterns of production data and training data.  
+1️⃣ Data Drift (Input changes)
+2️⃣ Concept Drift (Relationship changes)
+3️⃣ Prediction Drift (Output distribution changes)
 
 
-
-
+Do NOT compute drift inside predict(). Drift must run as batch job.  
 
 
 
