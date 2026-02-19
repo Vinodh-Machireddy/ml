@@ -50,9 +50,7 @@ To Automate Test, Build, And Deploy we use ci/cd pipelines using GitHub actions.
 16. Git Commit Deployment Config
 17. ArgoCD Syncs Deployment
 18. KServe Deploys Model pod
-19. Monitoring + Alerts
-
-
+19. Monitoring + Alerts  
 `Note:- Trigger Kubeflow Training pipeline (optional). Big companies go instead of running training in GitHub runner it runes in cluster, it is heavy lift.`
 
 ### Continuous Integration (CI)
@@ -64,28 +62,29 @@ This job is triggered on every push, PR, workflow_dispatch to the main branch.
 
 <details>
   <summary><b>Click to expand: MLOps ci/cd Pipeline Stages</b></summary>
- ```
-  ### MLOps ci/cd Pipeline  
-on:
-  push:
-    branches: [cicd]
-  workflow_dispatch:
-  repository_dispatch:
 
-env:
-  AWS_REGION: us-east-1
-  S3_BUCKET: churn-model-bucket-cicd-abhi
-  ECR_REPOSITORY: churn-model-repo
-  IMAGE_TAG: ${{ github.sha }}
+  ### MLOps ci/cd Pipeline
+```  
+on:  
+  push:  
+    branches: [cicd]  
+  workflow_dispatch:  
+  repository_dispatch:  
 
-jobs:
-  train-and-deploy:
-    runs-on: ubuntu-latest
+env:  
+  AWS_REGION: us-east-1  
+  S3_BUCKET: churn-model-bucket-cicd-abhi  
+  ECR_REPOSITORY: churn-model-repo  
+  IMAGE_TAG: ${{ github.sha }}  
 
-    permissions:
-      contents: write
+jobs:  
+  train-and-deploy:  
+    runs-on: ubuntu-latest  
 
-    steps:
+    permissions:  
+      contents: write  
+
+    steps:  
 
     # ✅ 1. Checkout Code
     - name: Checkout code
@@ -202,7 +201,7 @@ jobs:
 
     - name: Deployment Notification
       run: echo "Deployment committed. ArgoCD + KServe will take over.”
-Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run after commit)
+    Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run after commit)
 
     # ------------------------------------------------
     # ✅ Wait for ArgoCD Sync
@@ -232,14 +231,11 @@ Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run a
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-14.  ArgoCD
-15.  KServe
-16. Monitoring + alerting
+   14.  ArgoCD
+   15.  KServe
+   16. Monitoring + alerting
 ```
-  <details>
-    <summary><i>Deep Dive: train.py configuration</i></summary>
-  </details>
-</details>  
+   </details>
 
 ### Continuous Training(CT)
 CT means automatically retraining the model when new data or drift is detected.
