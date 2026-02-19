@@ -864,33 +864,33 @@ It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kub
 
 #### Drift Detection. 
 a change/shift in data patterns of production data and training data.   
-1️⃣ Data Drift (Input changes). 
-2️⃣ Concept Drift (Relationship changes). 
-3️⃣ Prediction Drift (Output distribution changes). 
-Do NOT compute drift inside predict(). Drift must run as batch/Cron job.  
+1️⃣ Data Drift (Input changes).  
+2️⃣ Concept Drift (Relationship changes).  
+3️⃣ Prediction Drift (Output distribution changes).  
+Do NOT compute drift inside predict(). Drift must run as batch/Cron job.   
 ##### Store Production inference data
 the input data coming from users for prediction. we must compare: Training data vs Production data, So we store production inputs in:  
-Database (Postgres, MySQL). 
-Object storage (S3). 
-Data warehouse. 
-Feature store ...etc   
+Database (Postgres, MySQL).  
+Object storage (S3).  
+Data warehouse.  
+Feature store ...etc    
 ##### Create drift_job.py
 Drift detection is:  
-- Heavy statistical computation. 
-- Needs historical data. 
+- Heavy statistical computation.  
+- Needs historical data.  
 - Not real-time per request. 
 So we create a separate Python script whose only job is:  
-Read production data (from DB/S3). 
-Load baseline training stats. 
-Compute drift score. 
-Export drift score as Prometheus metric.  
-MLOps implements that logic in drift_job.py
-Data Scientist tells:```“Use PSI threshold 0.3”``
+Read production data (from DB/S3).  
+Load baseline training stats.  
+Compute drift score.  
+Export drift score as Prometheus metric.   
+MLOps implements that logic in drift_job.py  
+Data Scientist tells:```“Use PSI threshold 0.3”```
 It contains:  
-1. Data loading logic. 
+1. Data loading logic.  
 2. Drift calculation. 
 3. Prometheus metric export. 
-Example simplified structure:
+Example simplified structure:  
 ```
 # drift_job.py
 
@@ -1044,6 +1044,49 @@ Increase latency.
 Increase CPU. 
 Break SLA. 
 So we separate serving path and monitoring path. 
+
+##### Data Drift (Input Changes/Shifts)
+The statistical distribution of input features changes compared to training data.  
+Example:  
+Model trained on:  
+Age mean = 35  
+Income mean = 50,000  
+
+Production data:   
+Age mean = 60  
+Income mean = 1,20,000  
+Input changed → Model may behave differently.  
+
+What Changes?: Input features only.  
+Model logic same.  
+Relationship same.  
+
+How We Monitor:  
+We compare:  
+Training feature distribution  
+VS  
+Production feature distribution  
+
+Methods:  
+Mean / Std comparison  
+Histogram comparison  
+PSI (Population Stability Index)  
+KS test  
+KL divergence  
+
+Usually implemented in: drift_job.py (batch job)  
+
+
+##### Concept Drift (Relationship Changes)  
+The relationship between input and output changes.  
+Example:  
+Earlier:  
+Age 30 → High loan approval chance  
+
+Now:  
+Age 30 → Low loan approval chance  
+
+What Changes?: Input may look normal. But prediction correctness drops.  
 
 
 
