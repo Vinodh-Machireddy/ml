@@ -1,6 +1,6 @@
 # INTERVIEW TARGET
 1. Ml Pipelines : Kubeflow Pipelines
-2. Experiment Tracking + Model Registry: Mlflow
+2. Experiment Tracking + Model Registry: Mlflow 
 3. Deployment and serving : ArgoCD + Kserve
 4. Monitoring and alerting : Prometheus & Grafana
 5. Ci/cd Pipelines : GitHub Actions
@@ -297,14 +297,14 @@ In Kubernetes:
 - Deployments roll out new versions continuously.
 
 Because of this dynamic nature, we cannot hardcode targets. Prometheus uses Kubernetes Service Discovery to handle this automatically.
-Prometheus uses Kubernetes API to discover Pods, Services, Nodes, Endpoints, Ingress. When a new pod comes → Prometheus automatically starts scraping it. When pod deletes → Prometheus stops scraping.
+Prometheus talks to the Kubernetes API to discover targets/services like Pods, Nodes, Endpoints, Ingress, drift_job, node-exporter, kube-state-metrics(k8s Objects). Prometheus service discovery = “Find all possible targets”
 
 #### Types: 
-- Kubernetes Service Discovery
-- Static Service Discovery
-- EC2 service discovery
-- DNS-based discovery
-- File-Based Service Discovery
+- Kubernetes SD: ```kubernetes_sd_configs```  
+- Static Service Discovery: ```statis_sd_configs```
+- EC2 service discovery: ```ec2_sd_configs```
+- DNS-based discovery: ```dns_sd_configs```
+- File-Based Service Discovery: ```file_sd_configs```
 
 #### How Service Discovery Works
 Prometheus uses configured service discovery mechanisms to:
@@ -856,7 +856,7 @@ kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanag
 ##### Step-8: Restart Alertmanager  
 It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```   
 
-##### Step-9: Verify
+##### Step-9: Verify  
 ```
    kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
    http://localhost:9093
@@ -944,12 +944,97 @@ spec:
             - containerPort: 8001
           restartPolicy: OnFailure
 ```
-##### Create ServiceMonitor
-Drift job exports metric:```model_drift_score```. 
-Prometheus must scrape it.  
-So we create Service + ServiceMonitor.  
-👉 MLOps Engineer creates this.  
-Because this is Kubernetes + monitoring integration.  
+##### Create Service for Drift Job  
+Prometheus scrapes via Service.  
+drift-service.yaml  
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: drift-service
+  namespace: mlops
+  labels:
+    app: drift-job
+spec:
+  selector:
+    app: drift-job
+  ports:
+  - name: metrics
+    port: 8001
+    targetPort: 8001
+```
+Apply it.  
+
+##### Create ServiceMonitor (MLOps Engineer creates this)
+drift-servicemonitor.yaml  
+```
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: drift-monitor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: drift-job
+  namespaceSelector:
+    matchNames:
+      - mlops
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+```
+Apply it.  
+Now check Prometheus → Targets → drift-service should be UP.  
+
+##### Create Prometheus Alert Rule
+We alert if:  
+Drift score > 0.3 for 15 minutes.  
+
+Prometheus service discovery = “Find all possible targets to monitor”  
+ServiceMonitor tells Prometheus: Out of everything you discovered, scrape only the ones matching these labels  
+
+If you manually configure Prometheus like this:  
+```
+scrape_configs:
+  - job_name: kubernetes-pods
+    kubernetes_sd_configs:
+      - role: pod
+```  
+Then Prometheus:  
+Talks to Kubernetes API  
+Discovers ALL pods  
+Scrapes ALL pods (if not filtered)  
+This is broad and risky.  
+
+When you use kube-prometheus-stack, it automatically installs Prometheus Operator inside your Kubernetes cluster. Prometheus is managed by the Prometheus  Operator. Prometheus Operator changes the way Prometheus config works. Instead of manually writing: ```kubernetes_sd_configs``` file   
+
+Prometheus Operator is a Kubernetes controller that:  
+Watches custom resources (CRDs)  
+Automatically configures Prometheus  
+Manages lifecycle (create/update/delete)  
+It removes the need to manually edit prometheus.yml.  
+
+How It Actually Works (Step-by-Step)  
+Step 1 You create a ServiceMonitor for an application.  
+Step 2 Prometheus Operator detects this ServiceMonitor (it watches CRDs).  
+Step 3 Operator automatically updates Prometheus configuration.  
+Step 4 Prometheus starts scraping that target.  
+No manual restart needed.  
+
+Prometheus works in pull model. But Prometheus does NOT automatically know which service to scrape. So we tell Prometheus: Please scrape this Kubernetes Service every 30 seconds. That instruction is called: ServiceMonitor   
+ServiceMonitor is a Kubernetes object (CRD) created by kube-prometheus-stack.  
+It tells Prometheus:  
+Which namespace  
+Which service (via labels)  
+Which port  
+Which path (/metrics)  
+How often to scrape  
+
+ServiceMonitor does NOT talk to Pod directly. It talks to Service.  
+
+NOTE:  
 Why Drift Is Separate From predictor.py?  
 Because:  
 If 1000 users request per second,  
@@ -959,6 +1044,8 @@ Increase latency.
 Increase CPU. 
 Break SLA. 
 So we separate serving path and monitoring path. 
+
+
 
 
 
