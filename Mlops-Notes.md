@@ -260,6 +260,8 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
+---
+
 # MONITORING (PROMETHEUS & GRAFANA)
 
 <img width="490" height="320" alt="image" src="https://github.com/user-attachments/assets/5e67dc93-67bb-42c7-b713-91598ca68f1e" />
@@ -383,9 +385,8 @@ Grafana (Unified View)
 3️⃣ ML-Specific Monitoring Architecture (Drift + Quality Focused, This focuses more on model behaviour.)
 ```Tools Used: Prometheus, Evidently, Grafana, KServe```
 
-### 1. Prometheus-Based Native Kubernetes Monitoring Architecture
-  
-#### 1. Infrastructure Layer  
+# 1. Prometheus-Based Native Kubernetes Monitoring Architecture  
+## 1. Infrastructure Layer  
 Monitor cluster stability.  
 Infrastructure = node level   
 
@@ -398,19 +399,19 @@ Metrics:
 
 Collected by: node-exporter, kube-state-metrics  
 
-##### Step 1: Install Monitoring Stack 
+### Step 1: Install Monitoring Stack 
 we use kube-prometheus-stack it is a pre-packaged Helm chart that automatically installs a complete Kubernetes monitoring setup like Prometheus, Alertmanager, Grafana, Creates ServiceMonitor, NodeExporter, kube-state-metrics. It provides ready-made dashboards, alert rules, and Kubernetes service discovery.  
 
-##### Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
+### Step 2 : Verify Node-Exporter is Running & CPU Metrics in Prometheus
 kubectl get pods -n monitoring
 kubectl port-forward svc/monitoring-kube-prometheus-prometheus -n monitoring 9090  and http://localhost:9090
  
-##### Step 3 : Create CPU Usage Query (PromQL)
+### Step 3 : Create CPU Usage Query (PromQL)
 ```100 - (avg by(instance)(
   rate(node_cpu_seconds_total{mode="idle"}[5m])
 ) * 100)
 ``` 
-##### Step 4 : Add CPU Panel in Grafana
+### Step 4 : Add CPU Panel in Grafana
   1. Open Grafana
   2. Create Dashboard
   3. Add Panel
@@ -419,7 +420,7 @@ kubectl port-forward svc/monitoring-kube-prometheus-prometheus -n monitoring 909
   6. Set Unit → Percent (0–100)  
      Now you will see live node CPU usage.
      
-##### Step 5 : Create Alert rule and apply for High CPU
+### Step 5 : Create Alert rule and apply for High CPU
 Create file  node-cpu-alert.yaml
 ```
 apiVersion: monitoring.coreos.com/v1
@@ -444,21 +445,21 @@ spec:
 ```
 ```Apply: kubectl apply -f node-cpu-alert.yaml```
 
-##### Step 6 : Configure Alertmanager  
+### Step 6 : Configure Alertmanager  
 Alertmanager already installed via kube-prometheus-stack. configure Slack or Email receiver. When CPU > 85% for 5 mins → alert triggers.  
 
-1. Verify Alertmanager is Running  
+#### 1. Verify Alertmanager is Running  
    i/p: kubectl get pods -n monitoring
    o/p: alertmanager-monitoring-kube-prometheus-alertmanager-0   Running  (If running → ready to configure.)  
  
-2. Create Slack Webhook  
+#### 2. Create Slack Webhook  
    Go to Slack → Settings  
    Create Incoming Webhook  
    Select channel  
    Copy webhook URL
    ```Example:  https://hooks.slack.com/services/T000/B000/XXXX```
 
-3. Create Alertmanager Config File
+#### 3. Create Alertmanager Config File
    Create file: alertmanager-config.yaml
 ```global:
   resolve_timeout: 5m
@@ -488,7 +489,7 @@ receivers:
     require_tls: true
     send_resolved: true
 ```
-4. Create Kubernetes Secret   
+#### 4. Create Kubernetes Secret   
    - Alertmanager config must be stored as secret.
      ```
      kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
@@ -496,10 +497,10 @@ receivers:
      -n monitoring \
      --dry-run=client -o yaml | kubectl apply -f -
      ```
-5. Restart Alertmanager
+#### 5. Restart Alertmanager
    ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```  
 
-6. Verify Configuration
+#### 6. Verify Configuration
    ```
    Port forward:  kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
    open:  http://localhost:9093
@@ -508,7 +509,7 @@ receivers:
    Status → Config  
    Make sure Slack and email receivers are visible.  
    
-7. Test Alert  
+#### 7. Test Alert  
    You can temporarily create a test alert:
 ```
 - alert: TestAlert
@@ -522,7 +523,7 @@ receivers:
 ```  
   After 1 minute → Slack & Email should receive notification.  
 
-##### Step 7 : When Does Alert Trigger?
+### Step 7 : When Does Alert Trigger?
    ```
    If:
    Node CPU > 85%
@@ -533,7 +534,7 @@ receivers:
    ```
 NOTE: Standard Process for Any Infra Metric,  For CPU, Memory, Disk, Node availability, Pod restarts — workflow is always same  
 
-#### 2. Platform Layer (Monitor Workloads)
+## 2. Platform Layer (Monitor Workloads)
 This layer is above infrastructure.  
 Infrastructure = node level  
 Platform layer = workload level (pods, deployments, HPA)  
@@ -555,7 +556,7 @@ This ensures deployment reliability.
 
 Tools Used: ```Prometheus, Grafana, kube-state-metrics(kube-state-metrics gives Kubernetes object metrics)```  
 
-##### 1. Pod Availability
+### 1. Pod Availability
 Check Running pods: ```kube_pod_status_phase{phase="Running"}```  
 If pod not running → issue.  
 
@@ -569,7 +570,7 @@ Alert: Pod Not Running
   annotations:
     summary: "Pod not running"
 ```
-##### 2. Pod Restart Monitoring (Important for ML workloads.)
+### 2. Pod Restart Monitoring (Important for ML workloads.)
 PromQL: ```increase(kube_pod_container_status_restarts_total[5m]) > 3```  
 If restart count > 3 in 5 minutes → alert. Frequent restarts = memory leak or crash.  
 
@@ -584,7 +585,7 @@ Alert YAML:
     summary: "Pod restarting frequently"
     description: "Container restarted more than 3 times in 5 minutes"
 ```
-###### 3. Deployment Availability
+### 3. Deployment Availability
 Check if available replicas < desired replicas:  
 PromQL:  ```kube_deployment_status_replicas_available < kube_deployment_spec_replicas```  
 Alert if mismatch > 5 minutes. This ensures rolling deployments succeed.  
@@ -602,7 +603,7 @@ Alert YAML:
     summary: "Deployment replicas mismatch"
     description: "Available replicas are less than desired replicas"
 ```
-##### 4. Horizontal Pod Autoscaler (HPA)  
+### 4. Horizontal Pod Autoscaler (HPA)  
 Very important for ML serving.  
 If current replicas = max replicas continuously → scaling issue.  
 PromQL:  ```kube_hpa_status_current_replicas == kube_hpa_spec_max_replicas```  
@@ -624,14 +625,14 @@ Alert YAML:
 Why 10m?  
 Because short spikes are normal.  
 
-##### 5. Resource Requests vs Limits
+### 5. Resource Requests vs Limits
 Check if pods close to limit:  
 CPU: ```container_cpu_usage_seconds_total / kube_pod_container_resource_limits_cpu_cores```  
 Memory: ```container_memory_usage_bytes / kube_pod_container_resource_limits_memory_bytes```  
 If usage > 90% of limit → alert.  
 Prevents OOMKilled issues.  
 
-##### Platform Alert Strategy
+### Platform Alert Strategy
 Critical:  
 - Deployment unavailable
 - Pod crash loop
@@ -643,7 +644,7 @@ Warning:
 - Resource usage near limit  
 ```Always use for: duration```
 
-#### 3. Model Serving Layer (KServe)
+## 3. Model Serving Layer (KServe)
 most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.
 
 Core metrics:
@@ -659,12 +660,12 @@ Example logic:
 If p95 latency > 500ms for 5 mins → Warning
 If error rate > 5% → Critical  
 
-##### revision_request_count
+### revision_request_count
 Shows incoming traffic rate.  
 PromQL: ```sum(rate(revision_request_count[5m]))```  
 If traffic suddenly drops to 0 for 5 mins → possible outage.
 
-##### revision_request_latencies
+### revision_request_latencies
 PromQL: ```histogram_quantile(0.95, sum(rate(revision_request_latencies_bucket[5m])) by (le))```  
 This gives 95th percentile latency.
 
@@ -673,14 +674,14 @@ If p95 > 500ms for 5 minutes → Warning
 If p95 > 1s → Critical  
 This ensures SLA protection.  
 
-##### Error Rate Monitoring
+### Error Rate Monitoring
 Error rate query:```sum(rate(revision_request_count{response_code!~"2.."}[5m]))
                   /
                   sum(rate(revision_request_count[5m]))
                  ```  
 If error rate > 5% → Critical alert.
 
-#### 4. ML-Specific Layer
+## 4. ML-Specific Layer
 This layer monitors model behavior, not infrastructure or pods.  
 
 Infra tells you system health.  
@@ -714,7 +715,7 @@ Model logic (predict)
 Monitoring logic (metrics)  
 Response formatting  
 
-##### Prediction distribution
+### 1. Prediction distribution
 Prediction distribution represents how model outputs are distributed across classes or value ranges in production over a given time window.   
 Example (Classification):    
 If a fraud model predicts :  Fraud,  Not Fraud  
@@ -731,7 +732,7 @@ That spread of predicted values is the prediction distribution.
 
 Prediction Distribution Count = How many times model predicted a specific output.   
 
-##### Step-1: Add Counter in Serving File
+#### Step-1: Add Counter in Serving File
 ```
 from prometheus_client import Counter
 
@@ -761,7 +762,7 @@ def predict(self, request: dict):
     return {"predictions": predictions.tolist()}
 ```  
 Now every prediction increases counter.  
-##### Step-3: Convert to Percentage Using PromQL
+#### Step-3: Convert to Percentage Using PromQL
 We do NOT alert on raw counter like 1523  or 412  
 We use rate().  
 PromQL: 
@@ -771,12 +772,12 @@ sum(rate(model_predictions_total{class="approved"}[5m]))
 sum(rate(model_predictions_total[5m]))
 ```  
 This gives percentage of "approved" predictions in last 5 minutes.  
-##### Step-4: Create Grafana Panel  
+#### Step-4: Create Grafana Panel  
 Add two panels:  
 Approved %  
 Rejected %  
 
-###### Step-5: Create Alert rule for Sudden Shift
+##### Step-5: Create Alert rule for Sudden Shift
 Example:  
 Training baseline:  
 Approved = 80%  
@@ -810,7 +811,7 @@ spec:
 ```
 Apply it: ```kubectl apply -f prediction-shift-alert.yaml```  Now Prometheus can fire alert.  
 
-##### Step-6: Configure Alertmanager routing
+#### Step-6: Configure Alertmanager routing
 Create:  ```alertmanager-config.yaml```  
 ```
 global:
@@ -845,7 +846,7 @@ receivers:
     require_tls: true
     send_resolved: true
 ```  
-##### Step-7: Create Kubernetes Secret  
+#### Step-7: Create Kubernetes Secret  
 Alertmanager config must be stored as secret:  
 ```
 kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanager \
@@ -853,28 +854,28 @@ kubectl create secret generic alertmanager-monitoring-kube-prometheus-alertmanag
   -n monitoring \
   --dry-run=client -o yaml | kubectl apply -f -
 ```
-##### Step-8: Restart Alertmanager  
+#### Step-8: Restart Alertmanager  
 It will restart automatically. ```kubectl delete pod alertmanager-monitoring-kube-prometheus-alertmanager-0 -n monitoring```   
 
-##### Step-9: Verify  
+#### Step-9: Verify  
 ```
    kubectl port-forward svc/monitoring-kube-prometheus-alertmanager -n monitoring 9093
-   http://localhost:9093
-```
+   http://localhost:9093  
+```  
 
-#### Drift Detection. 
+### 2. Drift Detection. 
 a change/shift in data patterns of production data and training data.   
 1️⃣ Data Drift (Input changes).  
 2️⃣ Concept Drift (Relationship changes).  
 3️⃣ Prediction Drift (Output distribution changes).  
 Do NOT compute drift inside predict(). Drift must run as batch/Cron job.   
-##### Store Production inference data
+#### Store Production inference data
 the input data coming from users for prediction. we must compare: Training data vs Production data, So we store production inputs in:  
 Database (Postgres, MySQL).  
 Object storage (S3).  
 Data warehouse.  
 Feature store ...etc    
-##### Create drift_job.py
+#### Create drift_job.py
 Drift detection is:  
 - Heavy statistical computation.  
 - Needs historical data.  
@@ -918,7 +919,7 @@ if __name__ == "__main__":
     compute_drift()
 ```  
 It is just a separate batch script.  
-##### Deploy as Kubernetes CronJob
+#### Deploy as Kubernetes CronJob
 Why CronJob?  
 Because we want drift to run:  
 Every 5 minutes  
@@ -944,7 +945,7 @@ spec:
             - containerPort: 8001
           restartPolicy: OnFailure
 ```
-##### Create Service for Drift Job  
+#### Create Service for Drift Job  
 Prometheus scrapes via Service.  
 drift-service.yaml  
 ```
@@ -965,7 +966,7 @@ spec:
 ```
 Apply it.  
 
-##### Create ServiceMonitor (MLOps Engineer creates this)
+#### Create ServiceMonitor (MLOps Engineer creates this)
 drift-servicemonitor.yaml  
 ```
 apiVersion: monitoring.coreos.com/v1
@@ -988,7 +989,7 @@ spec:
 Apply it.  
 Now check Prometheus → Targets → drift-service should be UP.  
 
-##### Create Prometheus Alert Rule
+#### Create Prometheus Alert Rule
 We alert if:  
 Drift score > 0.3 for 15 minutes.  
 
@@ -1045,7 +1046,7 @@ Increase CPU.
 Break SLA. 
 So we separate serving path and monitoring path. 
 
-##### Data Drift (Input Changes/Shifts)
+#### Data Drift (Input Changes/Shifts)
 The statistical distribution of input features changes compared to training data.  
 Example:  
 Model trained on:  
@@ -1077,7 +1078,7 @@ KL divergence
 Usually implemented in: drift_job.py (batch job)  
 
 
-##### Concept Drift (Relationship Changes)  
+#### Concept Drift (Relationship Changes)  
 The relationship between input and output changes.  
 Example:  
 Earlier:  
@@ -1100,7 +1101,7 @@ So we monitor:
 - AUC
 - Precision/Recall
 
- ##### 3. Prediction Drift (Output Distribution Changes)   
+ #### 3. Prediction Drift (Output Distribution Changes)   
 Model output distribution changes.  
 Example:  
 Earlier:  
@@ -1117,131 +1118,3 @@ Key Differences
 Data Drift → Feature shift  
 Prediction Drift → Output shift  
 Concept Drift → Model performance drop  
-
-
-
-
-
-
-
-###### predictor.py/app.py (Serving file)
-```
-import os
-import logging
-import numpy as np
-import joblib
-
-from kserve import Model
-from prometheus_client import start_http_server, Counter, Gauge
-
-# -------------------------------
-# Logging Configuration
-# -------------------------------
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# -------------------------------
-# Start Prometheus Metrics Server
-# -------------------------------
-METRICS_PORT = 8000
-start_http_server(METRICS_PORT)
-logger.info(f"Metrics server started on port {METRICS_PORT}")
-
-# -------------------------------
-# Monitoring Metrics
-# -------------------------------
-
-# Prediction count per class
-prediction_counter = Counter(
-    "model_predictions_total",
-    "Total predictions by class",
-    ["class"]
-)
-
-# Average confidence score
-confidence_avg = Gauge(
-    "model_confidence_avg",
-    "Average prediction confidence"
-)
-
-# Feature distribution example (mean of first feature)
-feature_mean = Gauge(
-    "feature_0_mean",
-    "Mean value of first input feature"
-)
-
-# -------------------------------
-# Custom KServe Model
-# -------------------------------
-class CustomModel(Model):
-
-    def __init__(self, name: str):
-        super().__init__(name)
-
-        model_path = os.getenv("MODEL_PATH", "model.pkl")
-
-        logger.info(f"Loading model from {model_path}")
-        self.model = joblib.load(model_path)
-
-        self.ready = True
-        logger.info("Model loaded successfully")
-
-    # -------------------------------
-    # Prediction Logic
-    # -------------------------------
-
-    def predict(self, request: dict):
-
-        try:
-            # -------------------------------
-            # Input Validation
-            # -------------------------------
-            if "instances" not in request:
-                raise ValueError("Invalid request format: 'instances' key missing")
-
-            data = np.array(request["instances"])
-
-            if data.ndim == 1:
-                data = data.reshape(1, -1)
-
-            # -------------------------------
-            # Feature Distribution Monitoring
-            # -------------------------------
-            feature_mean.set(np.mean(data[:, 0]))
-
-            # -------------------------------
-            # Model Prediction
-            # -------------------------------
-            predictions = self.model.predict(data)
-
-            # If model supports probability
-            if hasattr(self.model, "predict_proba"):
-                probabilities = self.model.predict_proba(data)
-                confidence_avg.set(np.mean(np.max(probabilities, axis=1)))
-            else:
-                confidence_avg.set(1.0)  # fallback
-
-            # -------------------------------
-            # Prediction Distribution Monitoring
-            # -------------------------------
-            for pred in predictions:
-                prediction_counter.labels(class=str(pred)).inc()
-
-            # -------------------------------
-            # Response Formatting
-            # -------------------------------
-            response = {
-                "model_name": self.name,
-                "predictions": predictions.tolist()
-            }
-
-            return response
-
-        except Exception as e:
-            logger.error(f"Prediction error: {str(e)}")
-            raise e
-```
-
-
-
-
