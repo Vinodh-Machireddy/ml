@@ -1086,10 +1086,37 @@ Age 30 → High loan approval chance
 Now:  
 Age 30 → Low loan approval chance  
 
-What Changes?: Input may look normal. But prediction correctness drops.  
+What Changes?: Input may look normal. But prediction correctness drops.   
 
+How We Monitor:  
+Concept drift cannot be detected from input alone.  
 
+We need:  
+Ground truth feedback.  
+So we monitor:  
+- Accuracy
+- F1-score
+- RMSE
+- AUC
+- Precision/Recall
 
+ ##### 3. Prediction Drift (Output Distribution Changes)   
+Model output distribution changes.  
+Example:  
+Earlier:  
+Approved = 80%  
+
+Now:  
+Approved = 20%  
+Output distribution changed.  
+
+What Changes?: Model output behavior. Even if inputs similar.  
+next steps same as infra/platform layers.  PromQL: ```rate(model_predictions_total[5m])``` Compare class ratio to baseline.  
+
+Key Differences  
+Data Drift → Feature shift  
+Prediction Drift → Output shift  
+Concept Drift → Model performance drop  
 
 
 
