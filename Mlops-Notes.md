@@ -64,8 +64,8 @@ This job is triggered on every push, PR, workflow_dispatch to the main branch.
 
 <details>
   <summary><b>Click to expand: MLOps ci/cd Pipeline Stages</b></summary>
-  ### name: MLOps ci/cd Pipeline
-```
+ ```
+  ### MLOps ci/cd Pipeline  
 on:
   push:
     branches: [cicd]
@@ -235,6 +235,7 @@ Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run a
 14.  ArgoCD
 15.  KServe
 16. Monitoring + alerting
+```
   <details>
     <summary><i>Deep Dive: train.py configuration</i></summary>
   </details>
