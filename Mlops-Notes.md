@@ -62,7 +62,9 @@ This job is triggered on every push, PR, workflow_dispatch to the main branch.
  -  ArgoCD
  -  KServe
 
-### name: MLOps ci/cd Pipeline
+<details>
+  <summary><b>Click to expand: MLOps ci/cd Pipeline Stages</b></summary>
+  ### name: MLOps ci/cd Pipeline
 ```
 on:
   push:
@@ -230,11 +232,14 @@ Note:- ArgoCD / KServe / Monitoring → cannot be inside GitHub YAML (they run a
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
 14.  ArgoCD
 15.  KServe
 16. Monitoring + alerting
-```
+  <details>
+    <summary><i>Deep Dive: train.py configuration</i></summary>
+  </details>
+</details>  
+
 ### Continuous Training(CT)
 CT means automatically retraining the model when new data or drift is detected.
 
@@ -260,7 +265,11 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
+
+
 ---
+
+
 
 # MONITORING (PROMETHEUS & GRAFANA)
 
