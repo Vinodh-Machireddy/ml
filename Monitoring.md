@@ -862,10 +862,55 @@ Now:
 Approved = 20%  
 Output distribution changed.  
 
-What Changes?: Model output behavior. Even if inputs similar.  
+##### What Changes?: Model output behavior. Even if inputs similar.  
 next steps same as infra/platform layers.  PromQL: ```rate(model_predictions_total[5m])``` Compare class ratio to baseline.  
 
-Key Differences  
+##### Key Differences:  
 Data Drift → Feature shift  
 Prediction Drift → Output shift  
-Concept Drift → Model performance drop  
+Concept Drift → Model performance drop  / relationship changes  
+
+##### Confusion matrix:
+A confusion matrix is a table used to check how well a classification model is performing.
+[Confusion Matrix]<img width="550" height="450" alt="image" src="https://github.com/user-attachments/assets/152b42ef-0df5-44a4-9c1f-1c04c70d3614" />
+
+1️⃣ True Positive (TP)  
+Model predicted Positive, and it is actually Positive.  
+✔ Correct detection.  
+2️⃣ True Negative (TN)  
+Model predicted Negative, and it is actually Negative.  
+✔ Correct rejection.  
+3️⃣ False Positive (FP)  
+Model predicted Positive, but actually Negative.  
+❌ False alarm.  
+4️⃣ False Negative (FN)  
+Model predicted Negative, but actually Positive.  
+❌ Missed detection.  
+Example: Model says battery healthy, but actually faulty.  
+⚠ Very dangerous in healthcare, automotive, cybersecurity.  
+
+###### Accuracy:
+Accuracy=(TP+TN)/Total  
+Overall correctness.  
+
+###### Precision:
+Precision=TP/(TP+FP)  
+Out of predicted positives, how many are correct?  
+Used when false alarms are costly.  
+
+When to Choose: model has predicted mail to be spam but actual value is not spam. If this is important for you then choose Precision and reduce FP to ZERO. It Depends on suituation. In some cases like Fraud Detection, Cybersecurity ....etc.
+
+Medical Diagnosis: Real Examples  
+If model says patient has disease but actually not:  
+Unnecessary stress  
+Expensive tests  
+Precision important.  
+
+###### Recall (Sensitivity)
+Recall=TP/(TP+FN)  
+Out of actual positives, how many detected?  
+Used when missing a fault is dangerous.  
+
+###### 
+
+
