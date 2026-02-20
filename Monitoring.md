@@ -889,9 +889,40 @@ Model predicted Negative, but actually Positive.
 Example: Model says battery healthy, but actually faulty.  
 ⚠ Very dangerous in healthcare, automotive, cybersecurity.  
 
-###### Accuracy:
+###### Accuracy:  
+Out of all predictions, how many are correct?  
 Accuracy=(TP+TN)/Total  
-Overall correctness.  
+
+Number of positives ≈ Number of negatives  
+Example:  
+50 faulty  
+50 healthy  
+Then accuracy gives good idea.  
+
+If:  
+False positive = small problem  
+False negative = small problem  
+Then accuracy is fine.  
+
+When NOT To Use Accuracy:   
+Case: Imbalanced Data  
+Suppose:  
+1000 batteries  
+990 healthy  
+10 faulty  
+Model predicts: Always "Healthy"  
+
+Then:  
+Correct = 990  
+Wrong = 10  
+Accuracy = 990/1000 = 99%    
+Looks great 😲  
+But model never detected any fault.  
+Recall = 0%  
+This is dangerous.  
+
+In production: We rarely monitor only accuracy.  
+We monitor: Precision, Recall, F1, False Negative Rate, Drift. Because business impact matters more than overall percentage.  
 
 ###### Precision:
 Precision=TP/(TP+FP)  
@@ -906,7 +937,7 @@ Unnecessary stress
 Expensive tests  
 Precision important.  
 
-###### Recall (Sensitivity)
+###### Recall (Sensitivity)  
 Recall=TP/(TP+FN)  
 Out of actual positives, how many detected?  
 Used when missing a fault is dangerous.  
