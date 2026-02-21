@@ -932,14 +932,14 @@ Suppose model predicts 10 batteries as faulty.
 But in real:  
 7 are really faulty  
 3 are actually healthy  
-
+```
 So:  
 TP = 7  
 FP = 3  
 Precision = 7 / (7 + 3) = 7 / 10 = 70%  
 Meaning:  
 Out of all predicted faults, 70% were correct.  
-
+```  
 * It tells, How reliable your positive prediction is.   
 * If precision is low, Model gives too many false alarms.  
 
@@ -953,9 +953,9 @@ Expensive tests
 Precision important.  
 
 ###### Recall (Sensitivity)  
-Out of all real positive cases, how many did the model correctly detect?
-Recall=```TP/(TP+FN)```  
-
+- Out of all real positive cases, how many did the model correctly detect?
+- Recall=```TP/(TP+FN)```  
+```
 So:  
 TP = 7  
 FN = 3  
@@ -963,7 +963,7 @@ Recall = 7 / (7 + 3)
 Recall = 7 / 10 = 70%  
 Meaning:  Model detected 70% of real faults.  
 - It tells, How good the model is at finding real positives.  
-
+```  
 Suppose:  
 10 batteries are actually faulty.  
 Model detected only 7 faulty.  
@@ -979,8 +979,8 @@ If you reduce FP too much:
 Recall may decrease. 
 
 ###### F1-Score
-Balance between Precision and Recall, It combines both into one number.  
-Formula: ```F1=2×(Precision×Recall)/(Precision+Recall)``` It is harmonic mean (not normal average).    
+- Balance between Precision and Recall, It combines both into one number.  
+- Formula: ```F1=2×(Precision×Recall)/(Precision+Recall)``` It is harmonic mean (not normal average).    
 
 Why We Need F1?:  
 Sometimes:  
