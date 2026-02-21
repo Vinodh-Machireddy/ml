@@ -5,18 +5,17 @@
 
 ```GitHub → GitHub Actions → Kubeflow Pipeline → MLflow Tracking → MLflow Registry → Docker → ArgoCD → KServe → Prometheus → Grafana```
 ## How deployment happens from local → production
-Step 1: Develop locally
-Step 2: Push code to GitHub
-Step 3: GitHub Actions builds Docker image
-Step 4: Push image to registry
-Step 5: ArgoCD deploys to cloud Kubernetes
-Step 6: KServe exposes public endpoint
-Step 7: Customers access model
-
- 
+Step 1: Develop locally  
+Step 2: Push code to GitHub  
+Step 3: GitHub Actions builds Docker image  
+Step 4: Push image to registry  
+Step 5: ArgoCD deploys to cloud Kubernetes  
+Step 6: KServe exposes public endpoint  
+Step 7: Customers access model  
 <details>
-  <img width="370" height="553" alt="Screenshot 2026-02-21 at 4 15 15 PM" src="https://github.com/user-attachments/assets/194c3596-7661-46ff-9a3b-d92b73ae2028" />
+   <summary><b>Click to expand: Production MLOps project structure</b></summary>
   <img width="387" height="436" alt="Screenshot 2026-02-21 at 4 14 39 PM" src="https://github.com/user-attachments/assets/81fd56f3-68ec-4d3d-be49-5a977a87bd07" />
+  <img width="370" height="553" alt="Screenshot 2026-02-21 at 4 15 15 PM" src="https://github.com/user-attachments/assets/194c3596-7661-46ff-9a3b-d92b73ae2028" />  
 </details>
 
 ## How customers access ML model in real production
