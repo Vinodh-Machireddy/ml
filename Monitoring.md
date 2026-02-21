@@ -891,7 +891,7 @@ Example: Model says battery healthy, but actually faulty.
 
 ###### Accuracy:  
 Out of all predictions, how many are correct?  
-Accuracy=(TP+TN)/Total  
+Accuracy=```(TP+TN)/Total```    
 
 Number of positives ≈ Number of negatives  
 Example:  
@@ -926,7 +926,7 @@ We monitor: Precision, Recall, F1, False Negative Rate, Drift. Because business 
 
 ###### Precision:
 Out of all predicted positives, how many are correct?  
-Precision=TP/(TP+FP)  
+Precision=```TP/(TP+FP)```   
 
 Suppose model predicts 10 batteries as faulty.    
 But in real:  
@@ -954,7 +954,7 @@ Precision important.
 
 ###### Recall (Sensitivity)  
 Out of all real positive cases, how many did the model correctly detect?
-Recall=TP/(TP+FN)   
+Recall=```TP/(TP+FN)```  
 
 So:  
 TP = 7  
@@ -978,11 +978,31 @@ But FP may increase.
 If you reduce FP too much: 
 Recall may decrease. 
 
+###### F1-Score
+Balance between Precision and Recall, It combines both into one number.  
+Formula: ```F1=2×(Precision×Recall)/(Precision+Recall)``` It is harmonic mean (not normal average).    
 
+Why We Need F1?:  
+Sometimes:  
+Precision high  
+Recall low  
+OR  
+Recall high  
+Precision low  
+Accuracy will not show this properly. F1 gives balance.  
+```
+Suppose:  
+Precision = 80%  
+Recall = 60%  
 
+F1 =
+2 × (0.8 × 0.6) / (0.8 + 0.6)
+= 2 × 0.48 / 1.4
+= 0.96 / 1.4
+= 0.68
 
-
-
-###### 
+So F1 = 68%
+It shows balanced performance.
+```  
 
 
