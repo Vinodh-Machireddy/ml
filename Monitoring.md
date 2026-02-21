@@ -1004,5 +1004,9 @@ F1 =
 So F1 = 68%
 It shows balanced performance.
 ```  
-
+When To Use F1-Score?  
+Use F1 when:  
+- Data is imbalanced  
+- You care about both FP and FN  
+- You want single metric for model selection  
 
