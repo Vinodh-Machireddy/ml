@@ -12,58 +12,11 @@ Step 4: Push image to registry
 Step 5: ArgoCD deploys to cloud Kubernetes
 Step 6: KServe exposes public endpoint
 Step 7: Customers access model
-<details> 
-```
-  mlops-project/
-│
-├── README.md
-├── .gitignore
-│
-├── requirements.txt
-├── Dockerfile
-│
-├── src/
-│   ├── train.py
-│   ├── evaluate.py
-│   ├── predict.py
-│   ├── preprocess.py
-│   ├── utils.py
-│
-├── pipelines/
-│   ├── kubeflow_pipeline.py
-│   ├── components/
-│   │   ├── train_component.py
-│   │   ├── evaluate_component.py
-│   │   ├── register_component.py
-│
-├── deployment/
-│   ├── kserve-inference.yaml
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   ├── ingress.yaml
-│
-├── argocd/
-│   ├── application.yaml
-│
-├── mlflow/
-│   ├── mlflow_config.yaml
-│
-├── monitoring/
-│   ├── prometheus-config.yaml
-│   ├── grafana-dashboard.json
-│
-├── .github/
-│   └── workflows/
-│       ├── ci.yaml
-│       ├── cd.yaml
-│
-├── tests/
-│   ├── test_train.py
-│   ├── test_predict.py
-│
-└── configs/
-    ├── config.yaml
-```
+
+ 
+<details>
+  <img width="370" height="553" alt="Screenshot 2026-02-21 at 4 15 15 PM" src="https://github.com/user-attachments/assets/194c3596-7661-46ff-9a3b-d92b73ae2028" />
+  <img width="387" height="436" alt="Screenshot 2026-02-21 at 4 14 39 PM" src="https://github.com/user-attachments/assets/81fd56f3-68ec-4d3d-be49-5a977a87bd07" />
 </details>
 
 ## How customers access ML model in real production
