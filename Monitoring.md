@@ -925,11 +925,26 @@ In production: We rarely monitor only accuracy.
 We monitor: Precision, Recall, F1, False Negative Rate, Drift. Because business impact matters more than overall percentage.  
 
 ###### Precision:
+Out of all predicted positives, how many are correct?  
 Precision=TP/(TP+FP)  
-Out of predicted positives, how many are correct?  
-Used when false alarms are costly.  
 
-When to Choose: model has predicted mail to be spam but actual value is not spam. If this is important for you then choose Precision and reduce FP to ZERO. It Depends on suituation. In some cases like Fraud Detection, Cybersecurity ....etc.
+Suppose model predicts 10 batteries as faulty.    
+But in real:  
+7 are really faulty  
+3 are actually healthy  
+
+So:  
+TP = 7  
+FP = 3  
+Precision = 7 / (7 + 3) = 7 / 10 = 70%  
+Meaning:  
+Out of all predicted faults, 70% were correct.  
+
+* It tells, How reliable your positive prediction is.   
+* If precision is low, Model gives too many false alarms.  
+
+- When to Choose: Used when false alarms are costly and dangerous. You want to maintain high trust in positive prediction.  
+- model has predicted mail to be spam but actual value is not spam. If this is important for you then choose Precision and reduce FP to ZERO. It Depends on small or big problem. In some cases like Fraud Detection, Cybersecurity ....etc.  
 
 Medical Diagnosis: Real Examples  
 If model says patient has disease but actually not:  
@@ -938,9 +953,35 @@ Expensive tests
 Precision important.  
 
 ###### Recall (Sensitivity)  
-Recall=TP/(TP+FN)  
-Out of actual positives, how many detected?  
-Used when missing a fault is dangerous.  
+Out of all real positive cases, how many did the model correctly detect?
+Recall=TP/(TP+FN)   
+
+So:  
+TP = 7  
+FN = 3  
+Recall = 7 / (7 + 3)  
+Recall = 7 / 10 = 70%  
+Meaning:  Model detected 70% of real faults.  
+- It tells, How good the model is at finding real positives.  
+
+Suppose:  
+10 batteries are actually faulty.  
+Model detected only 7 faulty.  
+
+Medical Example: If 100 patients actually have cancer, Model detects only 60. Recall = 60%  
+This means: ```40 patients missed. Very dangerous.```  
+
+If you increase recall: 
+You reduce FN 
+But FP may increase. 
+
+If you reduce FP too much: 
+Recall may decrease. 
+
+
+
+
+
 
 ###### 
 
