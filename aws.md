@@ -87,5 +87,20 @@ In normal You must:
 - Fargate is a aws Fargate is serverless compute for containers which manages worker nodes.   
 Note:- for worker nodes we can use EC2 Instances also.but, we need to take care of High Availability.
 
+## Setup
+8. Install kubectl:
+===================
+Def:- The Kubernetes command-line tool, kubectl, allows you to run commands against Kubernetes clusters. You can use kubectl to deploy applications, inspect and manage cluster resources, and view logs. 
 
+   - You must use a kubectl version that is within one minor version difference of your cluster.
+   For example, a v1.26 client can communicate with v1.25, v1.26, and v1.27 control planes.
+   Using the latest compatible version of kubectl helps avoid unforeseen issues.
+
+   Note:-  https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+      
+ - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+   
+     - sudo chmod 700 kubectl
+     - sudo mv kubectl /usr/local/bin/kubectl
+     - sudo kubectl version (or) kubectl version --short/--client
 
