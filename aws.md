@@ -55,4 +55,37 @@ Azure AKS
 Google GKE  
 
 
+# EKS
+1. Control Plane  
+2. Data Plane
+   
+If we setup kubernetes using kops, kube Admins. we need to manage entire control plane(master node), it is lenghty process. 
+- kube-API server  
+- etcd(pronounced et-see-dee)  database  
+- kube scheduler
+- kube controller manager  
+- cloud-controller-manager  
+
+That's why we going with aws EKS which is aws managed service which manages complete control plane.  
+
+Normal EKS (Without Fargate): 
+In normal You must:  
+- Create EC2 instances  
+- Manage node groups  
+- Scale nodes  
+- Patch OS  
+- Handle capacity  
+- Pods run on EC2 worker nodes.  
+
+  With Fargate in EKS:  
+  - You run containers  
+  - Without managing EC2 servers  
+  - AWS manages infrastructure  
+  -  No node groups. No instance selection.  
+
+- EKS manages control plane  
+- Fargate is a aws Fargate is serverless compute for containers which manages worker nodes.   
+Note:- for worker nodes we can use EC2 Instances also.but, we need to take care of High Availability.
+
+
 
