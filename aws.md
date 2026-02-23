@@ -65,34 +65,9 @@ If we setup kubernetes using kops, kube Admins. we need to manage entire control
 - kube scheduler
 - kube controller manager  
 - cloud-controller-manager  
-That's why we going with aws EKS which is aws managed service which manages complete control plane.  
+That's why we going with aws EKS which is aws managed service which manages complete control plane.   
 
-## Fargate
-- if any specific req like particular Linux distribution, only windows, specific config then we go for EC2 Instances, otherwise use Fargate for worker nodes.
-
-- EKS manages control plane  
-- aws Fargate is serverless compute for containers which manages worker nodes.   
-Note:- for worker nodes we can use EC2 Instances also.but, we need to take care of High Availability.
-  
-Normal EKS (Without Fargate): 
-In normal You must:  
-- Create EC2 instances  
-- Manage node groups  
-- Scale nodes  
-- Patch OS  
-- Handle capacity  
-- Pods run on EC2 worker nodes.  
-
-  With Fargate in EKS:  
-  - You run containers  
-  - Without managing EC2 servers  
-  - AWS manages infrastructure  
-  -  No node groups. No instance selection.  
-### Fargate Profile:
-Node Group: Group of EC2 instances. These EC2 instances act as Kubernetes worker nodes.  
-There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)
-
-## Setup
+## EKS Setup
 ### Install aws CLI:
 Def:- The AWS Command Line Interface (AWS CLI) is a unified tool to manage your AWS services. With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.  
 ```
@@ -124,5 +99,29 @@ sudo chmod 700 kubectl
 sudo mv kubectl /usr/local/bin/kubectl
 sudo kubectl version (or) kubectl version --short/--client
 ```
-### :
+## Fargate
+- if any specific req like particular Linux distribution, only windows, specific config then we go for EC2 Instances, otherwise use Fargate for worker nodes.
+
+- EKS manages control plane  
+- aws Fargate is serverless compute for containers which manages worker nodes.   
+Note:- for worker nodes we can use EC2 Instances also.but, we need to take care of High Availability.
+  
+Normal EKS (Without Fargate): 
+In normal You must:  
+- Create EC2 instances  
+- Manage node groups  
+- Scale nodes  
+- Patch OS  
+- Handle capacity  
+- Pods run on EC2 worker nodes.  
+
+  With Fargate in EKS:  
+  - You run containers  
+  - Without managing EC2 servers  
+  - AWS manages infrastructure  
+  -  No node groups. No instance selection.  
+### Fargate Profile:
+* Node Group: Group of EC2 instances. These EC2 instances act as Kubernetes worker nodes.   
+* There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)  
+* If you use AWS Fargate: There are no EC2 instances, No node groups, AWS directly runs pods on serverless compute. Instead, you create Fargate profiles.  
 
