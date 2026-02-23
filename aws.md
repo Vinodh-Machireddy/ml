@@ -88,6 +88,9 @@ In normal You must:
   - Without managing EC2 servers  
   - AWS manages infrastructure  
   -  No node groups. No instance selection.  
+### Fargate Profile:
+Node Group: Group of EC2 instances. These EC2 instances act as Kubernetes worker nodes.  
+There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)
 
 ## Setup
 ### Install aws CLI:
