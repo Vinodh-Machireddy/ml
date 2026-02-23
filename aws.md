@@ -80,7 +80,7 @@ sudo apt remove awscli
 Note:- https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html  
 Note:- https://github.com/aws/aws-cli/releases/tag/2.9.19  
      
-### Eksctl: 
+### Install Eksctl: 
 - eksctl is used to create, update, and delete EKS (Elastic Kubernetes Service) clusters on AWS.  
 - eksctl is a command-line tool used to quickly provision and manage AWS EKS clusters without manually configuring networking, IAM, and node groups.  
 Install Eksctl: ```https://docs.aws.amazon.com/eks/latest/eksctl/installation.html```  
