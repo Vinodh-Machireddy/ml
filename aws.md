@@ -125,3 +125,15 @@ In normal You must:
 - There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)  
 - If you use AWS Fargate: There are no EC2 instances, No node groups, AWS directly runs pods on serverless compute. Instead, you create Fargate profiles.  
 
+
+Interview Topics:  
+- scalling   
+- ingress   
+- alb  
+- Architecture explanation  
+- Cost optimisation   
+- Security best practices  ß 
+- monitoring  
+- integration  
+- troubleshoot/debug  
+  
