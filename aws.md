@@ -84,7 +84,7 @@ Note:- https://github.com/aws/aws-cli/releases/tag/2.9.19
 - eksctl is used to create, update, and delete EKS (Elastic Kubernetes Service) clusters on AWS.  
 - eksctl is a command-line tool used to quickly provision and manage AWS EKS clusters without manually configuring networking, IAM, and node groups.  
 Install Eksctl: ```https://docs.aws.amazon.com/eks/latest/eksctl/installation.html```  
-Note:- KOPS / Kube Admin for normal k8s setup.
+Note:- KOPS / Kube Admin for self-managed Kubernetes k8s setup.
 
 ### Install kubectl:
 Def:- The Kubernetes command-line tool, kubectl, allows you to run commands against Kubernetes clusters. You can use kubectl to deploy applications, inspect and manage cluster resources, and view logs.  
@@ -121,7 +121,7 @@ In normal You must:
   - AWS manages infrastructure  
   -  No node groups. No instance selection.  
 ### Fargate Profile:
-* Node Group: Group of EC2 instances. These EC2 instances act as Kubernetes worker nodes.   
-* There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)  
-* If you use AWS Fargate: There are no EC2 instances, No node groups, AWS directly runs pods on serverless compute. Instead, you create Fargate profiles.  
+- Node Group: Group of EC2 instances. These EC2 instances act as Kubernetes worker nodes.   
+- There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)  
+- If you use AWS Fargate: There are no EC2 instances, No node groups, AWS directly runs pods on serverless compute. Instead, you create Fargate profiles.  
 
