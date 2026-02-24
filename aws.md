@@ -192,10 +192,6 @@ Ingress resource is:
 👉 A YAML configuration  
 👉 That defines routing rules  
 👉 For external traffic  
-
-Important:  
-Ingress itself does not route traffic. It needs something called:  
-👉 Ingress Controller: Without controller → Ingress does nothing.  
 ```
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -221,4 +217,28 @@ spec:
             port:
               number: 80
 ```
+Important:  
+Ingress itself does not route traffic. It needs something called:  
+👉 Ingress Controller: Without controller → Ingress does nothing.  
+### Ingress Controller:
+Ingress Controller is actual component that:  
+1. Reads Ingress resource  
+2. Configures LoadBalancer  
+3. Routes traffic  
+
+Popular Controllers:  
+1. NGINX Ingress Controller  
+2. AWS Load Balancer Controller (for EKS)
+
+In AWS EKS: When using AWS Load Balancer Controller: Ingress creates ALB automatically and ALB routes traffic to services.  
+Flow in EKS: ```User → AWS ALB → Ingress Controller → Service → Pod```   
+Note:  
+Pod → runs application  
+Service → stable access to pods  
+Ingress → smart router for HTTP traffic  
+LoadBalancer → exposes to internet  
+
+### IngressClass
+IngressClass tells Kubernetes which Ingress Controller should handle a particular Ingress resource. If you have multiple Ingress Controllers in cluster,
+IngressClass decides who will manage that Ingress.  
 
