@@ -144,10 +144,40 @@ Problem:
 If pod restarts, IP changes. So how to access it reliably?  Because of this, direct Pod communication is not reliable.  
 Answer → Service   
 ### Service
-A Kubernetes Service is a layer/abstraction on Pods which uses a fixed IP address and DNS name to expose.  
-Stable IP address (ClusterIP)   
-Stable DNS name   
-Load balancing across Pods  
+A Kubernetes Service is an abstraction layer over a set of Pods that exposes them through a fixed IP address and DNS name, automatically routes incoming traffic to available Pods, and handles load balancing across them.   
 
-Service automatically routes traffic to available pods.
+#### Core Components of Service
+1. Selector
+Matches Pod labels. This means: All Pods with label app=my-nginx, Become part of this Service. If label does not match → Service will not connect to Pod.
+2. port
+   ```port: 80```  
+   This is the Service port. Inside cluster, you access
+3. targetPort
+   ```targetPort: 8080```
+   This is container port inside Pod. Internal access only,  Not exposed outside cluster
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: ClusterIP
+  selector:
+    app: my-nginx
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+```
+Container runs on port 8080  
+We want Service to expose it on port 80  
+
+#### Types of Services:
+1. ClusterIP (Default)
+Internal communication only, Accessible with in the cluster Only.
+2. NodePort
+   Exposes service on each Node’s IP. Port range: 30000–32767 , Accessible from outside using: ```http://NodeIP:NodePort```
+   Not recommended for production. Used mostly for: Testing, Development
+
+   
 
