@@ -137,3 +137,17 @@ Interview Topics:
 - integration  
 - troubleshoot/debug  
   
+### Pod
+Pod is the smallest deployable unit in Kubernetes Cluster. It runs Your application container With its own IP Inside a Node.   
+Pod gets internal IP Address which changes on restarts. Pod is temporary, Not exposed outside cluster by default.   
+Problem:  
+If pod restarts, IP changes. So how to access it reliably?  Because of this, direct Pod communication is not reliable.  
+Answer → Service   
+### Service
+A Kubernetes Service is a layer/abstraction on Pods which uses a fixed IP address and DNS name to expose.  
+Stable IP address (ClusterIP)   
+Stable DNS name   
+Load balancing across Pods  
+
+Service automatically routes traffic to available pods.
+
