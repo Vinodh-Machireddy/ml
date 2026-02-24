@@ -179,5 +179,46 @@ Internal communication only, Accessible with in the cluster Only.
    Exposes service on each Node’s IP. Port range: 30000–32767 , Accessible from outside using: ```http://NodeIP:NodePort```
    Not recommended for production. Used mostly for: Testing, Development
 
-   
+## Ingress
+Def: Ingress is a Kubernetes object that manages external HTTP and HTTPS access to services inside the cluster.    
+- Suppose you have 3 services, If you create separate LoadBalancer for each , ❌ Very costly, ❌ Difficult to manage  
+- Instead, use: One LoadBalancer, One Ingress, It Routes traffic based on URL path ```(/predict)``` or domain/Host name (```model.mycompany.com```)     
+
+Without Ingress ```User → LoadBalancer → Service → Pod```  If you have 3 services → 3 LoadBalancers.  
+With Ingress ```User → LoadBalancer → Ingress → Service → Pod```  Single LoadBalancer handles all services.  
+
+### Ingress Resource
+Ingress resource is:  
+👉 A YAML configuration  
+👉 That defines routing rules  
+👉 For external traffic  
+
+Important:  
+Ingress itself does not route traffic. It needs something called:  
+👉 Ingress Controller: Without controller → Ingress does nothing.  
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ml-ingress
+spec:
+  rules:
+  - host: mlapp.com
+    http:
+      paths:
+      - path: /predict
+        pathType: Prefix
+        backend:
+          service:
+            name: model-service
+            port:
+              number: 80
+      - path: /train
+        pathType: Prefix
+        backend:
+          service:
+            name: training-service
+            port:
+              number: 80
+```
 
