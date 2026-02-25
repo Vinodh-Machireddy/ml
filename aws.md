@@ -3,6 +3,17 @@
   # AWS
 </div>
 
+Interview Topics:  
+- scalling   
+- ingress   
+- alb  
+- Architecture explanation  
+- Cost optimisation   
+- Security best practices  
+- monitoring  
+- integration  
+- troubleshoot/debug  
+  
 ```GitHub → GitHub Actions → Kubeflow Pipeline → MLflow Tracking → MLflow Registry → Docker → ArgoCD → KServe → Prometheus → Grafana```
 ## How deployment happens from local → production
 Step 1: Develop locally  
@@ -123,19 +134,7 @@ In normal You must:
 ### Fargate Profile:
 - Node Group: Group of EC2 instances. These EC2 instances act as Kubernetes worker nodes.   
 - There are two types: 1.Managed Node Group (AWS manages EC2 lifecycle). 2.Self-managed Node Group (you manage EC2)  
-- If you use AWS Fargate: There are no EC2 instances, No node groups, AWS directly runs pods on serverless compute. Instead, you create Fargate profiles.  
-
-
-Interview Topics:  
-- scalling   
-- ingress   
-- alb  
-- Architecture explanation  
-- Cost optimisation   
-- Security best practices  ß 
-- monitoring  
-- integration  
-- troubleshoot/debug  
+- If you use AWS Fargate: There are no EC2 instances, No node groups, AWS directly runs pods on serverless compute. Instead, you create Fargate profiles.
   
 ### Pod
 Pod is the smallest deployable unit in Kubernetes Cluster. It runs Your application container With its own IP Inside a Node.   
@@ -178,6 +177,19 @@ Internal communication only, Accessible with in the cluster Only.
 2. NodePort
    Exposes service on each Node’s IP. Port range: 30000–32767 , Accessible from outside using: ```http://NodeIP:NodePort```
    Not recommended for production. Used mostly for: Testing, Development
+3. Service Type: LoadBalancer
+   When you create: ```type: LoadBalancer``` Kubernetes directly asks cloud provider (AWS) to create a Load Balancer. ```User → AWS Load Balancer → Service → Pods```
+- Important Points:  
+- Usually creates NLB in EKS  
+- Created per Service  
+- No path-based routing  
+- One LoadBalancer per service (costly if many services)
+
+##### In EKS We use ALB via Ingress:
+Here you:
+- Install AWS Load Balancer Controller
+- Create Ingress resource
+- ALB is created automatically
 
 ## Ingress
 Def: Ingress is a Kubernetes object that manages external HTTP and HTTPS access to services inside the cluster.    
@@ -228,7 +240,7 @@ Ingress Controller is actual component that:
 
 Popular Controllers:  
 1. NGINX Ingress Controller  
-2. AWS Load Balancer Controller (for EKS)
+2. AWS Load Balancer Controller (for EKS)  
 
 In AWS EKS: When using AWS Load Balancer Controller: Ingress creates ALB automatically and ALB routes traffic to services.  
 Flow in EKS: ```User → AWS ALB → Ingress Controller → Service → Pod```   
@@ -240,5 +252,16 @@ LoadBalancer → exposes to internet
 
 ### IngressClass
 IngressClass tells Kubernetes which Ingress Controller should handle a particular Ingress resource. If you have multiple Ingress Controllers in cluster,
-IngressClass decides who will manage that Ingress.  
+IngressClass decides who will manage that Ingress.  It is a seperate yaml file, referenced inside the Ingress resource using ingressClassName.  
+Example: If using AWS Load Balancer Controller.   
+```
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: alb
+spec:
+  controller: ingress.k8s.aws/alb
+```
+## Load Balancer
+A Load Balancer distributes incoming traffic across multiple servers to improve availability, Performance and scalability. In Kubernetes, it exposes services to the internet and forwards traffic to pods.  
 
