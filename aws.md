@@ -192,7 +192,8 @@ Here you:
 - ALB is created automatically
 
 ## Ingress
-Def: Ingress is a Kubernetes object that manages external HTTP and HTTPS access to services inside the cluster.    
+AWS Ingress (in the context of Kubernetes on AWS) refers to an Ingress resource that manages external HTTP/HTTPS traffic into a Kubernetes cluster.  
+An Ingress is a set of rules that controls how outside users access services inside your Kubernetes cluster—think of it as a smart front door for your applications.  
 - Suppose you have 3 services, If you create separate LoadBalancer for each , ❌ Very costly, ❌ Difficult to manage  
 - Instead, use: One LoadBalancer, One Ingress, It Routes traffic based on URL path ```(/predict)``` or domain/Host name (```model.mycompany.com```)     
 
@@ -264,4 +265,5 @@ spec:
 ```
 ## Load Balancer
 A Load Balancer distributes incoming traffic across multiple servers to improve availability, Performance and scalability. In Kubernetes, it exposes services to the internet and forwards traffic to pods.  
+
 
