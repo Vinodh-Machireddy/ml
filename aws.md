@@ -265,5 +265,50 @@ spec:
 ```
 ## Load Balancer
 A Load Balancer distributes incoming traffic across multiple servers to improve availability, Performance and scalability. In Kubernetes, it exposes services to the internet and forwards traffic to pods.  
+## Scaling in Kubernetes
+1. Manual Scaling
+   ```kubectl scale deployment model --replicas=5```  Basic method. Not used in production automation.
+2. HPA (Horizontal Pod Autoscaler)  
+- HPA monitors CPU/memory of running Pods.  
+- If usage crosses the threshold (e.g., CPU > 70%), HPA adds more Pods.  
+- When load drops, HPA removes extra Pods.  
+Example: If your app has 2 Pods and traffic spikes, HPA scales it to 5 Pods automatically.  
+
+Example YAML:  
+```
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: model-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: model-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+Means:
+👉 Target CPU usage = 70%  , Now Kubernetes HPA controller automatically does:  
+If average CPU > 70% → Increase replicas  
+If average CPU < 70% → Decrease replicas  
+Always stays between minReplicas and maxReplicas  
+
+3. VPA (Vertical Pod Autoscaler)
+   Scales the resource limits (CPU & memory) of existing Pods — makes Pods bigger or smaller, not more or fewer.  
+Example: If a Pod needs more memory, VPA increases its memory limit automatically.  
+Note:- Not commonly used with HPA together
+
+4. CA — Cluster Autoscaler  
+Scales the number of Nodes in the cluster itself.  
+Example: If all Nodes are full and new Pods can't be scheduled, CA adds a new Node to the cluster (works well with AWS EC2 Auto Scaling Groups).
+```High Traffic → HPA scales Pods → No Node Capacity → Cluster Autoscaler adds EC2 → Pods scheduled```
 
 
