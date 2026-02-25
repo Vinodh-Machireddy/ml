@@ -6,12 +6,11 @@
 Interview Topics:  
 - scalling   
 - ingress   
-- alb  
+- loadbalancer  
 - Architecture explanation  
 - Cost optimisation   
 - Security best practices  
 - monitoring  
-- integration  
 - troubleshoot/debug  
   
 ```GitHub → GitHub Actions → Kubeflow Pipeline → MLflow Tracking → MLflow Registry → Docker → ArgoCD → KServe → Prometheus → Grafana```
