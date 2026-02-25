@@ -310,4 +310,37 @@ Scales the number of Nodes in the cluster itself.
 Example: If all Nodes are full and new Pods can't be scheduled, CA adds a new Node to the cluster (works well with AWS EC2 Auto Scaling Groups).
 ```High Traffic → HPA scales Pods → No Node Capacity → Cluster Autoscaler adds EC2 → Pods scheduled```
 
+## Security
+### 1. RBAC(Role-Based Access Control)
+It is a Kubernetes resource to control:  
+- Who can access cluster  
+- What actions they can perform  
+- On which resources  
+#### Components of RBAC
+1️⃣ Role
+2️⃣ RoleBinding
+3️⃣ ClusterRole
+4️⃣ ClusterRoleBinding  
+
+### 2. IRSA (IAM Roles for Service Accounts)
+Instead of giving AWS permissions to EC2 nodes, we give permissions directly to Pods.  
+Without IRSA:  
+We attach IAM role to EC2 node  
+All pods on that node get same permissions ❌  
+Security risk  
+
+With IRSA:  
+Each pod gets its own IAM role ✅  
+Fine-grained access control  
+Follows least privilege principle  
+
+```Pod → ServiceAccount → IAM Role → AWS Service (S3, ECR, etc.)```
+### 3. OIDC (OpenID Connect)
+OIDC allows one system to verify the identity of another system using secure tokens.  
+OIDC is the foundation for IRSA. 
+```Pod → ServiceAccount → OIDC Token → AWS STS → Temporary IAM Credentials```  
+
+ServiceAccounts
+IAM 
+
 
