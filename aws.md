@@ -450,3 +450,9 @@ In S3, I implemented lifecycle policies and intelligent tiering to move old arti
 EC2 Cost Optimization by Converted stable workloads to Reserved Instances, and Used Spot for batch processing   
 In EKS, I enabled Cluster Autoscaler and HPA to scale nodes and pods dynamically.  
 Also, I implemented tagging strategy and used AWS Cost Explorer for monitoring and budget alerts.  
+
+
+
+
+
+				
