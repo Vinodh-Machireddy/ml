@@ -423,5 +423,8 @@ If using AWS: Amazon Elastic Container Registry
 - Enable image scanning  
 - Use IAM role-based access  
 3. Secure Running Containers:   
-  - Use Read-Only File System  
+  ```
+  securityContext:
+  readOnlyRootFilesystem: true
+  ```  
 4. Secrets Management  
