@@ -403,6 +403,15 @@ aws sts assume-role \
 - A service(ec2, s3, ecs, lambda) also assumes a role like a user. ```EC2 → Instance Profile → IAM Role → Policies → AWS Services```
 NOTE: Assume role means: Temporarily taking the permissions of an IAM Role. You don’t permanently own it. You borrow it for some time.
 
+### 6. Secret Manager
+AWS Secrets Manager is a service in AWS used to securely store and manage secrets.  
+👉 Secrets means:   
+Database username & password  
+API keys  
+OAuth tokens  
+SSH keys  
+Any sensitive credentials  
+Instead of keeping passwords in code or config files, we store them safely in Secrets Manager.  
 
 
 
