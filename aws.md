@@ -340,7 +340,16 @@ OIDC allows one system to verify the identity of another system using secure tok
 OIDC is the foundation for IRSA. 
 ```Pod → ServiceAccount → OIDC Token → AWS STS → Temporary IAM Credentials```  
 
-ServiceAccounts
+#### 4. ServiceAccounts
+A ServiceAccount is a Kubernetes identity used by Pods to interact with the Kubernetes API or external services.  
+When a Pod wants to:
+- Access Kubernetes API
+- Read secrets
+- Call other services
+- Access AWS (via IRSA)
+It needs an identity. That identity is ServiceAccount.  
+
+
 IAM 
 
 
