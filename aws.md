@@ -340,7 +340,7 @@ OIDC allows one system to verify the identity of another system using secure tok
 OIDC is the foundation for IRSA. 
 ```Pod → ServiceAccount → OIDC Token → AWS STS → Temporary IAM Credentials```  
 
-#### 4. ServiceAccounts
+### 4. ServiceAccounts
 A ServiceAccount is a Kubernetes identity used by Pods to interact with the Kubernetes API or external services.  
 When a Pod wants to:
 - Access Kubernetes API
@@ -349,8 +349,8 @@ When a Pod wants to:
 - Access AWS (via IRSA)
 It needs an identity. That identity is ServiceAccount.  
 
-#### 5. IAM (Identity and Access Management)
-##### Policy   
+### 5. IAM (Identity and Access Management)
+#### Policy   
 Defines permissions who to access, what actions they can perform, and which resource. Ex: ec2, s3, lambda....etc.    
           - Aws Managed Policys  
           - Custom Policys   
@@ -361,7 +361,7 @@ Defines permissions who to access, what actions they can perform, and which reso
   "Resource": "arn:aws:s3:::ml-model-bucket/*"
 }
 ```
-##### Roles 
+#### Roles 
 Role is like a folder/directory which holds policies. A folder just stores files.  
 - But an IAM Role:  
 - Holds policies ✅  (What you can do)  
@@ -369,7 +369,7 @@ Role is like a folder/directory which holds policies. A folder just stores files
 - Generates temporary credentials ✅. AWS uses: STS (Security Token Service)to give temporary credentials.  
 So Role is more than just a Folder.  
 
-###### Example:  
+##### Example:  
 Role is like:
 👉 A temporary ID card with specific permissions.  
 Policy = Rules written on that ID card.  
