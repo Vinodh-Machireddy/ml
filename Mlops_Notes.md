@@ -924,6 +924,76 @@ Group B (users) see predictions from the new model (Challenger).
 Why: To safely test new models on a subset of users before rolling out fully.
 
 
+File formats for saving machine learning models
+1.  .pkl (Python Pickle)
+Primary Use: Saving models from libraries like Scikit-learn, XGBoost, and LightGBM. It's great for traditional machine learning models.
+2.  .h5 (Hierarchical Data Format)
+Primary Use: Saving models from deep learning frameworks, specifically for Keras and TensorFlow.
+3.  .pt / .pth (PyTorch)
+Primary Use: Saving and loading models in PyTorch.
+4.  .onnx (Open Neural Network Exchange)
+Primary Use: Deploying models in production, especially when the training framework is different from the inference environment.
+
+
+
+
+Fine-Tuning:
+=========
+Transfer Learning Technics
+Fine-Tuning?
+Fine-tuning means taking a pre-trained model (like ResNet, MobileNet, BERT, etc.) that already learned general patterns (edges, shapes, language, etc.)
+You remove/freeze the last layer and replace it with a new layer for traffic sign classes.
+Then you fine-tune on your dataset (Indian traffic sign images).
+
+Why Fine-Tuning?
+Saves time → You don’t train from scratch.
+Saves compute cost → Less GPU needed.
+Works with smaller datasets.
+Gives better accuracy because the model already knows basic patterns.
+
+Types of Fine-Tuning
+Fixed Feature Extraction → Freeze the pre-trained backbone, train only the  head i.e last layer(Classification Layer).
+                 Small dataset + similar task → Fixed Feature Extractor.
+You stop updating their weights during training.
+Full Fine-Tuning → Unfreeze more layers, retrain them on your dataset.
+                 Bigger dataset + different task → Full Fine-Tuning.
+Many teams start with fixed extractor, and if results are not good, they move to progressive/full fine-tuning.
+Steps:
+- Load a pre-trained backbone
+Example: ResNet50/MobileNet pre-trained on ImageNet.
+- Replace the last layer (classifier head)
+Old head = 1000 classes → New head = your classes (e.g., 43).
+- Freeze backbone layers: Set requires_grad = False (PyTorch) or mark layers non— trainable (Keras).
+- Train only the head
+Evaluate
+Register & package
+Deploy & monitor
+
+When would it be “Training from Scratch”?
+If you design your own CNN architecture and train only on your traffic sign dataset (with random weights, no pre-training).
+This requires lakhs of images and huge compute (GPUs).
+Usually, only big research labs or companies attempt this.
+
+What is Classification Layer.
+At the end of every model, there is a final layer that gives predictions. Its job is to take the features extracted by the backbone and map them into predicted classes.
+Example:
+In ResNet50 trained on ImageNet → last layer has 1000 outputs (for 1000 categories).
+In your Traffic Sign project → you replace that last layer with 43 outputs (because you have 43 traffic sign classes).
+This last part is called the classification layer (Head or fully connected layer / dense layer).
+
+Command to load pre-trained model from hugging face:
+pip install transformers datasets
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
+
+Notes:
+In a neural network, each connection between neurons has a number attached → that number is called a weight.
+A Traffic Sign Recognition project most commonly falls under the category of deep learning, specifically using a Convolutional Neural Network (CNN).
+
+
+
 
 
 
