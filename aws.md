@@ -310,7 +310,11 @@ Scales the number of Nodes in the cluster itself.
 Example: If all Nodes are full and new Pods can't be scheduled, CA adds a new Node to the cluster (works well with AWS EC2 Auto Scaling Groups).
 ```High Traffic → HPA scales Pods → No Node Capacity → Cluster Autoscaler adds EC2 → Pods scheduled```
 
-## Security
+<div align="center">
+  
+  # Security
+</div>  
+
 ### 1. RBAC(Role-Based Access Control)
 It is a Kubernetes resource to control:  
 - Who can access cluster  
@@ -427,4 +431,11 @@ If using AWS: Amazon Elastic Container Registry
   securityContext:
   readOnlyRootFilesystem: true
   ```  
-4. Secrets Management  
+4. Secrets Management
+
+<div align="center">
+  
+  # Cost Optimisation
+</div>
+
+
