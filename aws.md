@@ -359,6 +359,9 @@ It needs an identity. That identity is ServiceAccount.
   "Resource": "arn:aws:s3:::ml-model-bucket/*"
 }
 ```
-
+Policy → Defines permissions
+Role → Holds permissions
+Service → Uses permissions (A service assumes a role means The service temporarily takes the permissions defined in that IAM Role, And gets temporary AWS credentials)  
+```EC2 → Assume Role → Get Temporary Credentials → Access S3```  
 
 
