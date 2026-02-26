@@ -382,8 +382,9 @@ Policys are only attached to:
 - User Groups
 - Roles
 - Roles can't assign to a user or service, only we can Assume role  ```IAM User → Assume Role → Temporary Credentials → Access S3```
-```
-1. Below JSON Says: user vinodh is allowed to assume this role. 
+
+1. Below JSON Says: user vinodh is allowed to assume this role.
+``` 
 {
   "Effect": "Allow",
   "Principal": {
@@ -402,9 +403,6 @@ aws sts assume-role \
 - A service(ec2, s3, ecs, lambda) also assumes a role like a user. ```EC2 → Instance Profile → IAM Role → Policies → AWS Services```
 NOTE: Assume role means: Temporarily taking the permissions of an IAM Role. You don’t permanently own it. You borrow it for some time.
 
-#### Service 
-Service Uses permissions (A service assumes a role means The service temporarily takes the permissions defined in that IAM Role, And gets temporary AWS credentials)  
-```EC2 → Assume Role → Get Temporary Credentials → Access S3```  
 
 
 
