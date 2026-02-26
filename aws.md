@@ -350,8 +350,10 @@ When a Pod wants to:
 It needs an identity. That identity is ServiceAccount.  
 
 #### 5. IAM (Identity and Access Management)
-
-
+##### Policy   
+Defines permissions who to access, what actions they can perform, and which resource. Ex: ec2, s3, lambda....etc.    
+          - Aws Managed Policys  
+          - Custom Policys   
 ```
 {
   "Effect": "Allow",
@@ -359,9 +361,52 @@ It needs an identity. That identity is ServiceAccount.
   "Resource": "arn:aws:s3:::ml-model-bucket/*"
 }
 ```
-Policy → Defines permissions
-Role → Holds permissions
-Service → Uses permissions (A service assumes a role means The service temporarily takes the permissions defined in that IAM Role, And gets temporary AWS credentials)  
+##### Roles 
+Role is like a folder/directory which holds policies. A folder just stores files.  
+- But an IAM Role:  
+- Holds policies ✅  (What you can do)  
+- Can be assumed by trusted entities ✅  (Who can assume it)  
+- Generates temporary credentials ✅. AWS uses: STS (Security Token Service)to give temporary credentials.  
+So Role is more than just a Folder.  
+
+###### Example:  
+Role is like:
+👉 A temporary ID card with specific permissions.  
+Policy = Rules written on that ID card.  
+Role = The ID card itself.  
+Service/User = Person wearing the ID card.  
+When someone assumes the role: They “wear the ID card” and get those permissions.  
+
+Policys are only attached to:  
+- Users(for permanent Credientials)
+- User Groups
+- Roles
+- Roles can't assign to a user or service, only we can Assume role  ```IAM User → Assume Role → Temporary Credentials → Access S3```
+```
+1. Below JSON Says: user vinodh is allowed to assume this role. 
+{
+  "Effect": "Allow",
+  "Principal": {
+    "AWS": "arn:aws:iam::123456789012:user/vinodh"
+  },
+  "Action": "sts:AssumeRole"
+}
+```
+2. User Assumes Role (CLI Example)
+```
+aws sts assume-role \
+  --role-arn arn:aws:iam::123456789012:role/s3-read-role \
+  --role-session-name test-session
+```
+- AWS returns: Temporary AccessKey, SecretKey, SessionToken.  Now vinodh can access S3 using these temporary credentials.  
+- A service(ec2, s3, ecs, lambda) also assumes a role like a user. ```EC2 → Instance Profile → IAM Role → Policies → AWS Services```
+NOTE: Assume role means: Temporarily taking the permissions of an IAM Role. You don’t permanently own it. You borrow it for some time.
+
+#### Service 
+Service Uses permissions (A service assumes a role means The service temporarily takes the permissions defined in that IAM Role, And gets temporary AWS credentials)  
 ```EC2 → Assume Role → Get Temporary Credentials → Access S3```  
+
+
+
 
 
