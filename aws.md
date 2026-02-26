@@ -413,7 +413,15 @@ SSH keys
 Any sensitive credentials  
 Instead of keeping passwords in code or config files, we store them safely in Secrets Manager.  
 
-
-
-
-
+### 7. Docker
+1. Secure the Docker Image:  
+- Use Minimal Base Images OR distroless images. Smaller image = Less vulnerabilities  
+- Do Not Run as Root User    
+- Scan Images for Vulnerabilities using Trivy.  
+2. Secure Docker Registry:  
+If using AWS: Amazon Elastic Container Registry  
+- Enable image scanning  
+- Use IAM role-based access  
+3. Secure Running Containers:   
+  - Use Read-Only File System  
+4. Secrets Management  
