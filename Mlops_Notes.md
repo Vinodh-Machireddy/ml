@@ -792,8 +792,159 @@ Pipeline code → YAML → CI/CD → Kubeflow → Kubernetes execution
 
 Finally, I compiled the Python DSL into YAML and deployed it through CI/CD into Kubeflow, so the entire ML lifecycle became fully automated, reproducible, and production-ready.
 
+DATASETS
+========
+Kaggle Datasets:  https://www.kaggle.com/datasets
+GitHub Repositories
+Plotly : opensource datasets to train ml models
+uci machine learning repository:  https://archive.ics.uci.edu
+
+
+built‑in datasets in python for pratice:
+1. scikit‑learn (sklearn.datasets)
+2. seaborn (seaborn.load_dataset())
+3. statsmodels (statsmodels.datasets)
+
+
+						MODEL-HUB
+
+models that were already trained on large datasets by big companies or research labs, and made available for others to reuse or fine-tune instead of training from scratch.
+
+Hugging Face, TensorFlow Hub, PyTorch Hub
+AWS SageMaker JumpStart → ready-to-use pre-trained models for NLP, vision, tabular
+Azure ML Model Registry → curated pre-trained models
+Google Cloud Vertex AI Model Garden → Google & open-source models
+
+
+
+API for model serving/expose
+=============================
+models cannot directly interact with users, models shift through software applications which exposes the enduser. these are python frameworks.
+FastAPI (Python)
+Flask
+KServe (Kubernetes-native)
+Django
+...etc
+
+
+# data and Feature pipelines 
+
+
+Row : --->	Sample / Instance / Observation / Record
+Column : ---->	Feature / Attribute / Variable
+output column : -----> is a special type of column:  target column/target variable/label/answer
+
+
+
+
+ML Model:
+--------- 
+It’s the finished product you get after running that recipe on your data.
+he will deploy the ML algorithms i.e ML Models into production.
+
+
+data
+1. primary and
+2. secondary data
+train and test data
+input and output columns/data
+
+
+CPU: Central processing unit
+GPU: Graphical processing unit
+TUP: Tensor processing unit
+QPU: Quantum Processor unit
+DBU: Data Bricks Units
+
+connection to cloud applications
+--------------------------------
+1) google colab
+2) vscode
+3) pycharm
+4) local anaconda jupyter notebook
+5) databricks
+6) GCP Benchmark
+...etc
+
+
+workflow/process for training and evaluating any ML model
+=========================================================
+Process:
+• We need to divide data into two parts train_data and test_data
+• Both train_data and test_data includes input columns(X) and output columns(y)
+• Next we divide train_data to X_train and y_train
+• Next we divide test_data to X_test and y_test
+• Model will be developed based on train data (X_train and y_train)
+• Model predictions performed on X_test data the result we called as y_predictions
+• Finally we compare y_test with y_predictions
+
+
+	ML pipeline
+
+
+Deployment Pipeline (CD Pipeline)
+
+1.Trigger → model approved in registry.
+2.Package model (Docker/container).
+3.Provision infra (Kubernetes, SageMaker, Vertex AI, etc.).
+4.Rollout strategy (Canary, Blue-Green, A/B, etc.).
+5.Run Smoke Tests → API ping, sample inference, latency check (200 OK response). 
+If smoke tests pass → continue rollout (canary, blue-green, etc.).
+If smoke tests fail → rollback immediately.
+
+Deployment Strategies:
+
+Shadow Deployment/Dark Launch:
+- The new model runs in parallel with the current production model.
+- It gets the same live input data, but its predictions are not shown to users (only logged).
+Users still see results from the old stable model(Champion Model).
+Both outputs are stored in logs/metrics DB.
+Later, you compare shadow vs champion
+Why : To test new model performance, predictions with old model  on real production data without risk.
+Blue-Green deployment
+Blue-Green deployment is a safe release strategy where you keep two separate but identical environments:
+Blue = current production (old stable model)
+Green = new version (new model)
+At any time, only one (Blue or Green) serves user traffic.
+To switch, you just change the traffic routing from Blue → Green.
+Why: To deploy new models safely without disturbing running users. To allow instant rollback if something goes wrong.
+
+Canary Deployment
+Canary Deployment means releasing a new model slowly to a small part of traffic/users first.
+Start with maybe 5–10% of requests going to the new model.
+Rest 90–95% still go to the old stable model.
+If new model works fine gradually increase traffic until 100%.
+If new model performs badly → rollback immediately to the old model.
+Why: To reduce risk when deploying new ML models. To check performance on real production users without impacting everyone.
+
+A/B Deployment
+A/B Deployment (also called A/B Testing or Champion–Challenger) means you run two models in production at the same time.
+Group A (users) see predictions from the old model (Champion).
+Group B (users) see predictions from the new model (Challenger).
+Why: To safely test new models on a subset of users before rolling out fully.
+
+
+
 
 
 
 # Strange
 What are Guardrails?
+STRANGE
+—————
+endpoint deployment
+endpoint prediction
+online and batch endpoints
+AutoML
+hyperparameters
+pyspark:
+- PySpark is primarily used for handling and processing large‑scale data in a distributed fashion.
+parallel processing and fast.
+
+- Machine Learning Libraries: Strong experience with machine learning libraries and frameworks such as scikit-learn, TensorFlow, PyTorch, Keras, etc.
+      - For deep learning → TensorFlow, PyTorch, Keras.
+      -	For traditional ML → Scikit-learn.
+      - For boosting models → XGBoost, LightGBM, CatBoost.
+      - For NLP → Hugging Face Transformers.
+- Experience with RestAPI Frameworks like FastAPIs, Flask
+
