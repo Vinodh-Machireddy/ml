@@ -438,4 +438,15 @@ If using AWS: Amazon Elastic Container Registry
   # Cost Optimisation
 </div>
 
+In our organisation, we followed a hybrid MLOps architecture for cost optimisation.
+Instead of running the complete ML lifecycle in AWS, we used local infrastructure for training, validation, MLflow tracking, and DVC versioning.
+Since training jobs are GPU-intensive and long-running, running them in cloud would significantly increase EC2 cost. By using on-prem GPU servers, we avoided per-hour cloud billing and reduced infrastructure cost by nearly 50–60%.
+We used AWS only for deployment and serving using EKS and KServe because inference requires scalability and high availability.
+With HPA and Cluster Autoscaler, we ensured that we pay only for actual traffic usage.
+This hybrid approach helped us optimise cost without compromising scalability and performance.
 
+In ECR, Implemented image lifecycle policy, Delete untagged images older than 30 days. and Only kept last 5 versions. 👉 Reduced ECR storage cost    
+In S3, I implemented lifecycle policies and intelligent tiering to move old artifacts to Glacier.  
+EC2 Cost Optimization by Converted stable workloads to Reserved Instances, and Used Spot for batch processing   
+In EKS, I enabled Cluster Autoscaler and HPA to scale nodes and pods dynamically.  
+Also, I implemented tagging strategy and used AWS Cost Explorer for monitoring and budget alerts.  
