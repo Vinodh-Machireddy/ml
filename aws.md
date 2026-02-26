@@ -349,7 +349,16 @@ When a Pod wants to:
 - Access AWS (via IRSA)
 It needs an identity. That identity is ServiceAccount.  
 
+#### 5. IAM (Identity and Access Management)
 
-IAM 
+
+```
+{
+  "Effect": "Allow",
+  "Action": "s3:GetObject",
+  "Resource": "arn:aws:s3:::ml-model-bucket/*"
+}
+```
+
 
 
