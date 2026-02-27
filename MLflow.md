@@ -42,3 +42,13 @@ MLflow is an open-source platform used to manage the ML lifecycle. it mainly has
 ### Who handles experiment tracking?  
 “In our project, Data Scientists log experiments using MLflow inside Kubeflow Pipelines. As an MLOps Engineer, I set up and managed the MLflow tracking server, configured S3 as artifact store, integrated it with CI/CD, and implemented model promotion workflow from staging to production.”  
 
+Components:
+MLflow → Runs inside EKS (Deployment)  
+RDS PostgreSQL → Backend store  
+S3 → Artifact store  
+IAM Role → Secure S3 access  
+ALB / Ingress → Access MLflow UI  
+
+
+
+
