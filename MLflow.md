@@ -113,10 +113,12 @@ Artifacts → S3
 
 Step 1️⃣ Create S3 Bucket  
 Step 2️⃣ Give Permission to MLflow  
-MLflow running inside EKS must access S3. 👉 Use IAM Role for Service Account (IRSA)  
+   - MLflow running inside EKS must access S3. 👉 Use IAM Role for Service Account (IRSA)
+
 Step 3️⃣ Install S3 Dependency  
-Inside MLflow Docker image, install:  ``` RUN pip install boto3 ```  
-boto3 is AWS SDK for Python. Without this, MLflow cannot upload files to S3.  
+   - Inside MLflow Docker image, install:  ``` RUN pip install boto3 ```  
+   - boto3 is AWS SDK for Python. Without this, MLflow cannot upload files to S3.
+
 Step 4️⃣ Start MLflow with S3 Artifact Root  
 ```
 mlflow server \
@@ -127,4 +129,47 @@ mlflow server \
 ```
 Now  
 Artifacts → S3  
+## Automating model promotion
+Standard Production Flow  
+```
+1. Training Completed
+2. Model Logged to MLflow
+3. Model Registered
+4. Evaluate Metrics
+5. If metrics pass threshold
+       → Promote to Staging
+6. Run validation tests
+7. If approved
+       → Promote to Production
+8. Trigger deployment (KServe)
+```
+Step 1️⃣ Register Model (Inside Training Code)  
+```
+import mlflow
+
+result = mlflow.register_model(
+    "runs:/<run_id>/model",
+    "customer-churn-model"
+)
+```
+Now model appears in Model Registry.  
+Step 2️⃣ Automatically Promote Based on Metrics  
+```
+from mlflow.tracking import MlflowClient
+
+client = MlflowClient()
+
+model_name = "customer-churn-model"
+version = result.version
+
+if accuracy > 0.90:
+    client.transition_model_version_stage(
+        name=model_name,
+        version=version,
+        stage="Staging"
+    )
+```
+This is Automated Model Promotion Logic.  
+
+
 
