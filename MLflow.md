@@ -60,7 +60,15 @@ ALB / Ingress → Access MLflow UI
 🔹 Step 8: Integrate with Kubeflow  
 🔹 Step 9: Manage via ArgoCD (GitOps)  
 
-## Configure Backend Store with PostgreSQL (RDS) 
+## Configure Backend Store with PostgreSQL (RDS)  
+ Backend Store: The database used to store experiment tracking information. This backend store contains metadata.  
+```
+Backend Store = Database  
+Metadata = Data stored inside that database  
+```
+Metadata means: "Data about data"  
+In MLflow, metadata includes: ```Experiment name, Run ID, Parameters, Metrics, Tags, Model version info, Timestamp``` All this is metadata.  
+
 Step 1️⃣ Create RDS PostgreSQL  
 Example DB details:  
 ```
@@ -90,4 +98,19 @@ mlflow server \
 Now:  
 ✅ Metadata → RDS  
 ✅ Artifacts → S3  
+
+## Configuring artifact store (S3)
+Artifact store → actual files: ```model.pkl, Pickle files, plots.png, confusion_matrix.png, feature_importance.csv, entire model folder```  
+Production Architecture, Since you are using EKS + RDS + S3:  
+```
+Data Scientist
+     ↓
+MLflow Server (EKS Pod)
+     ↓
+Metadata → RDS
+Artifacts → S3
+```
+
+
+Step 1️⃣ Create S3 Bucket  
 
