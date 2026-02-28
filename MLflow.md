@@ -50,6 +50,14 @@ IAM Role → Secure S3 access
 ALB / Ingress → Access MLflow UI  
 
 MLflow deployed as Deployment in EKS 
-
+🔹 Step 1: Create RDS PostgreSQL  
+🔹 Step 2: Create S3 Bucket  
+🔹 Step 3: Configure IAM Role for EKS  
+🔹 Step 4: Create Docker Image for MLflow  
+🔹 Step 5: Create Kubernetes Deployment YAML  
+🔹 Step 6: Create Service  
+🔹 Step 7: Expose via Ingress (ALB)  
+🔹 Step 8: Integrate with Kubeflow  
+🔹 Step 9: Manage via ArgoCD (GitOps)
 
 
