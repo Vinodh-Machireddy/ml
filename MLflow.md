@@ -49,7 +49,7 @@ S3 → Artifact store
 IAM Role → Secure S3 access  
 ALB / Ingress → Access MLflow UI  
 
-MLflow deployed as Deployment in EKS 
+## MLflow deployed as Deployment in EKS 
 🔹 Step 1: Create RDS PostgreSQL  
 🔹 Step 2: Create S3 Bucket  
 🔹 Step 3: Configure IAM Role for EKS  
@@ -58,6 +58,36 @@ MLflow deployed as Deployment in EKS
 🔹 Step 6: Create Service  
 🔹 Step 7: Expose via Ingress (ALB)  
 🔹 Step 8: Integrate with Kubeflow  
-🔹 Step 9: Manage via ArgoCD (GitOps)
+🔹 Step 9: Manage via ArgoCD (GitOps)  
 
+## Configure Backend Store with PostgreSQL (RDS) 
+Step 1️⃣ Create RDS PostgreSQL  
+Example DB details:  
+```
+DB name: mlflowdb
+Username: mlflowuser
+Password: ********
+Port: 5432
+```
+Step 2️⃣ Install PostgreSQL Driver   
+When MLflow connects to PostgreSQL database, it needs a Python driver to talk to the database.  
+In MLflow Docker image:  
+```
+FROM python:3.9-slim
+RUN pip install mlflow psycopg2-binary boto3
+CMD ["mlflow", "server"]
+```
+Step 3️⃣ Start MLflow with Backend Store  
+Connection string format:  ```postgresql://username:password@host:port/dbname```  
+Example:   
+```
+mlflow server \
+--backend-store-uri postgresql://mlflowuser:password@rds-endpoint:5432/mlflowdb \
+--default-artifact-root s3://my-mlflow-artifacts \
+--host 0.0.0.0 \
+--port 5000
+```
+Now:  
+✅ Metadata → RDS  
+✅ Artifacts → S3  
 
