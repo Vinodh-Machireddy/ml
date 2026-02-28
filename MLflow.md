@@ -171,5 +171,15 @@ if accuracy > 0.90:
 ```
 This is Automated Model Promotion Logic.  
 
+###  CI/CD integration
+### Model in Production Stage  
+Only Production stage models are deployed.
+CI Updates Deployment YAML
+CI pipeline does:
+Get Production model version
+Get S3 artifact path
+Update KServe manifest YAML  
+Commit to Git repo. 
 
+STEP 3 — ArgoCD Detects Change
 
