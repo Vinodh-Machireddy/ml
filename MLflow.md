@@ -49,6 +49,7 @@ S3 → Artifact store
 IAM Role → Secure S3 access  
 ALB / Ingress → Access MLflow UI  
 
+MLflow deployed as Deployment in EKS 
 
 
 
