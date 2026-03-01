@@ -302,7 +302,6 @@ It does NOT contain model file. KServe loads model dynamically from S3 path.
 ```So retraining → update model URI → redeploy``` No image rebuild required.  
 This is scalable and recommended.  
 
-
 ## Training Image:   
 Kubeflow does:  
 👉 Pull that image  
@@ -315,3 +314,8 @@ ML libraries
 Training script  
 Kubeflow uses it to execute pipeline steps.  
 
+
+Model Artifact Storage (S3)
+Experiment Logging (MLflow)
+Model Registration (MLflow Registry)
+Model Promotion (Staging → Production)
