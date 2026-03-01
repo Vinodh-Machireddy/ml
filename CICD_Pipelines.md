@@ -338,9 +338,11 @@ GitHub Actions
 So the direct answer is Argo Workflow Controller creates the pods. KFP under the hood uses Argo Workflows as its execution engine. You never create pods manually. KFP compiles your pipeline into an Argo Workflow YAML, submits it, and Argo takes over from there.  Each pipeline step runs in its own individual pod.  
 
 ## Training vs Inference Images
-The CI workflow steps are identical for both. The only differences are what triggers them, what code gets copied in, and what dependencies get installed.  
-Training Image: ```Triggered when: src/pipeline/ or requirements.txt changes```  
-Inference Image: ```Triggered when: any code commit```  
+- The CI workflow steps are identical for both. The only differences are what triggers them, what code gets copied in, and what dependencies get installed.  
+- Training Image: ```Triggered when: src/pipeline/ or requirements.txt changes```  
+- Inference Image: ```Triggered when: any code commit```  
+
+Your main ML lifecycle CI consumes the Training Image at step 8, it does not build it. The Training Image was already built and sitting in ECR from its own separate CI workflow. Your main pipeline just references it by tag. If the training image doesn't exist in ECR yet, step 8 will fail because KFP won't be able to pull the image to create the pods.  
 
 ```
 Two Separate CI Flows Running in Parallel (independently)
