@@ -268,5 +268,64 @@ CT means automatically retraining the model when new data or drift is detected.
     types: [new-data-arrived]
 ```
 
+## 1️⃣ After Model is Trained → We Build Docker Image
+### 🔵 Case A – Model Embedded Inside Image
+If after training you build Docker image and include model file, then image contains:
+- Base OS (python:3.9-slim)  
+- Python runtime  
+- All dependencies (scikit-learn, pandas, etc.)  
+- Inference code (FastAPI / Flask app)  
+- Model file (model.pkl)  
+Example structure inside image:  
+```
+/app
+  ├── app.py
+  ├── model.pkl
+  ├── requirements.txt
+```
+So this image is:  👉 Code + Dependencies + Model file  
+This means every retraining → new Docker image build.  Used in small systems or simple deployments.  
 
-Training Environment Image: Kubeflow uses it to execute pipeline steps.
+### 🟢 Case B – Model NOT Inside Image (Production Setup – Your Stack)
+In modern production (like KServe + S3):  
+After training:  
+- Model saved in S3  
+- Model registered in MLflow  
+- Docker image is NOT rebuilt   
+
+The image contains:  
+- Base OS  
+- Python  
+- Inference server code  
+- Logic to download/load model from S3  
+It does NOT contain model file. KServe loads model dynamically from S3 path.  
+```So retraining → update model URI → redeploy``` No image rebuild required.  
+This is scalable and recommended.  
+
+
+## Training Image:   
+Kubeflow does:  
+👉 Pull that image  
+👉 Create Pod  
+👉 Run training inside that container  
+So this image is used as: 🟢 Training Environment Image  
+It contains:  
+Python  
+ML libraries  
+Training script  
+Kubeflow uses it to execute pipeline steps.  
+
+## inference image: 
+If image is inference server image:
+Then:
+ArgoCD deploys it
+Kubernetes creates Pod
+Container starts
+Model loaded from S3
+API starts
+So image is used as:
+🟢 Inference Server Environment
+It contains:
+FastAPI code
+Model loading logic
+Dependencies
