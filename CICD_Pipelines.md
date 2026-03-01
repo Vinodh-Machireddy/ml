@@ -286,7 +286,7 @@ Example structure inside image:
 So this image is:  👉 Code + Dependencies + Model file  
 This means every retraining → new Docker image build.  Used in small systems or simple deployments.  
 
-### 🟢 Case B – Model NOT Inside Image (Production Setup – Your Stack)
+### 🟢 Case B – Model NOT Inside Image (Inference Image)
 In modern production (like KServe + S3):  
 After training:  
 - Model saved in S3  
@@ -315,17 +315,3 @@ ML libraries
 Training script  
 Kubeflow uses it to execute pipeline steps.  
 
-## inference image: 
-If image is inference server image:
-Then:
-ArgoCD deploys it
-Kubernetes creates Pod
-Container starts
-Model loaded from S3
-API starts
-So image is used as:
-🟢 Inference Server Environment
-It contains:
-FastAPI code
-Model loading logic
-Dependencies
