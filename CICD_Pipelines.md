@@ -268,54 +268,11 @@ CT means automatically retraining the model when new data or drift is detected.
     types: [new-data-arrived]
 ```
 
-## 1️⃣ After Model is Trained → We Build Docker Image
-### 🔵 Case A – Model Embedded Inside Image
-If after training you build Docker image and include model file, then image contains:
-- Base OS (python:3.9-slim)  
-- Python runtime  
-- All dependencies (scikit-learn, pandas, etc.)  
-- Inference code (FastAPI / Flask app)  
-- Model file (model.pkl)  
-Example structure inside image:  
-```
-/app
-  ├── app.py
-  ├── model.pkl
-  ├── requirements.txt
-```
-So this image is:  👉 Code + Dependencies + Model file  
-This means every retraining → new Docker image build.  Used in small systems or simple deployments.  
+ 
 
-### 🟢 Case B – Model NOT Inside Image (Inference Image)
-In modern production (like KServe + S3):  
-After training:  
-- Model saved in S3  
-- Model registered in MLflow  
-- Docker image is NOT rebuilt   
 
-The image contains:  
-- Base OS  
-- Python  
-- Inference server code  
-- Logic to download/load model from S3  
-It does NOT contain model file. KServe loads model dynamically from S3 path.  
-```So retraining → update model URI → redeploy``` No image rebuild required.  
-This is scalable and recommended.  
-
-## Before Training starts  We Build Docker Image:   
-Kubeflow does:  
-👉 Pull that image  
-👉 Create Pod  
-👉 Run training inside that container  
-So this image is used as: 🟢 Training Environment Image  
-It contains:  
-Python  
-ML libraries  
-Training script  
-Kubeflow uses it to execute pipeline steps.  
-```
 --- CI Phase (GitHub Actions) ---
-
+```
 1.  Code Commit (Git Push)
 2.  CI Trigger (GitHub Actions)
 3.  Code Checkout
@@ -347,8 +304,123 @@ Kubeflow uses it to execute pipeline steps.
 20. Retraining Pipeline Trigger (webhook → GitHub Actions → new KFP run)
 21. New Model Version Generated (loops back to step 8)
 22. Redeployment (loops back to step 13)  
-```
-
+```  
 NOTE 8b: 
 - When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action. 
 - model artifact already stored in S3 via MLflow artifact store"
+
+
+## How the KFP Training Pipeline Runs on Kubernetes  
+When GitHub Actions reaches the "Model Training" step, it does not run the training code directly inside the GitHub Actions runner. Instead, it just sends a trigger (an API call) to the Kubeflow Pipelines API server, which then schedules and runs the actual training pipeline on your Kubernetes cluster.  
+So the GitHub Actions step looks something like this in practice:  
+```
+# inside your GitHub Actions workflow step
+kfp_client = kfp.Client(host="http://<your-kfp-endpoint>")
+kfp_client.create_run_from_pipeline_func(
+    training_pipeline,
+    arguments={"data_path": "s3://...", "epochs": 10}
+)
+```
+GitHub Actions owns CI orchestration (lint, test, build, push). KFP owns ML orchestration (data prep, train, evaluate, register). Mixing them would make your CI pipeline fragile and hard to debug.  
+
+The only thing to be careful about
+GitHub Actions needs to wait for the KFP run to finish before proceeding to the next steps (evaluation, S3 push, image build). If you fire-and-forget the KFP trigger, your CI pipeline will move on before training is done. So your GitHub Actions step should poll the KFP run status and only proceed on a successful completion status.  
+
+### 1. Who Creates the Pods?
+When GitHub Actions sends the API call to the KFP API server, the following chain happens:
+```
+GitHub Actions
+    → API call to KFP API Server
+        → KFP API Server creates an Argo Workflow object in Kubernetes
+            → Argo Workflow Controller (running in the cluster) reads that object
+                → Argo Controller creates Pods for each pipeline step
+```  
+So the direct answer is Argo Workflow Controller creates the pods. KFP under the hood uses Argo Workflows as its execution engine. You never create pods manually. KFP compiles your pipeline into an Argo Workflow YAML, submits it, and Argo takes over from there.  Each pipeline step runs in its own individual pod.  
+
+## Training vs Inference Images
+The CI workflow steps are identical for both. The only differences are what triggers them, what code gets copied in, and what dependencies get installed.  
+Training Image: ```Triggered when: src/pipeline/ or requirements.txt changes```  
+Inference Image: ```Triggered when: any code commit```  
+
+```
+Two Separate CI Flows Running in Parallel (independently)
+│
+├── Training Image CI (separate workflow)
+│       Triggered when: src/pipeline/ or requirements.txt changes
+│       Steps:
+│           1. Code Checkout
+│           2. Install Dependencies
+│           3. Build Training Docker Image
+│           4. Push Training Image to ECR
+│               → ecr/training-image:sha-abc123
+│       This flow is independent of your main ML lifecycle
+│
+└── Main ML Lifecycle CI (what you finalized)
+        Triggered when: any code commit
+        ...
+        Step 8: Model Training Pipeline (KFP Run)
+                    KFP pulls training-image:sha-abc123 from ECR
+                    Spins up pods using this image
+                    Runs your pipeline components inside those pods
+```
+
+
+### What's Inside Each Image
+#### Training Image
+```
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# ML training dependencies
+COPY requirements.txt .
+RUN pip install \
+    torch \
+    scikit-learn \
+    pandas \
+    numpy \
+    mlflow \        # for experiment tracking & model logging
+    boto3 \         # for S3 access (data + artifacts)
+    kfp \           # for KFP component decorators
+    dvc \           # for data versioning
+    great-expectations  # for data validation
+
+# Your pipeline source code
+COPY src/pipeline/ ./src/pipeline/
+# contains:
+#   data_ingestion.py
+#   data_validation.py
+#   feature_engineering.py
+#   train.py
+#   evaluate.py
+#   register.py
+```
+So when KFP spins up a pod for the train.py step, the pod has Python, all ML libraries, and your training code already inside it. It just runs.  
+
+#### Inference Image
+```
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Inference/serving dependencies only
+COPY requirements.txt .
+RUN pip install \
+    fastapi \       # or flask — to expose prediction endpoint
+    uvicorn \       # ASGI server to serve fastapi
+    mlflow \        # to load model from MLflow/S3
+    boto3 \         # to pull model artifact from S3
+    numpy \
+    scikit-learn    # or torch — only what's needed to run the model
+
+# Your inference source code
+COPY src/inference/ ./src/inference/
+# contains:
+#   server.py       (FastAPI app — /predict endpoint)
+#   model_loader.py (pulls model from S3/MLflow at startup)
+#   preprocessor.py (same feature engineering logic as training)
+
+EXPOSE 8080
+CMD ["uvicorn", "src.inference.server:app", "--host", "0.0.0.0", "--port", "8080"]
+```
+
