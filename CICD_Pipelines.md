@@ -313,30 +313,42 @@ Python
 ML libraries  
 Training script  
 Kubeflow uses it to execute pipeline steps.  
+```
+--- CI Phase (GitHub Actions) ---
 
-1. Code Commit (Git Push)
-2. CI Trigger (GitHub Actions)
-3. Code & Data Checkout
-4. Install Dependencies
-5. Lint check (flake8)
-6. Unit tests (pytest)
-7. Data Pull & Versioning 
-8. Model Trining (Kubeflow Pipeline)
-9. Experiment Tracking (MLflow)
-10. Model Evaluation & Validation
-11. Upload Model Artifact to S3
-12. Model Registration (MLflow Registry)
-13. Model Promotion (Staging → Production)
-14. Build Inference Docker Image
-15. Push Docker Image to ECR.  #CI Ends Here (Artifact + Image ready)
-16. Update KServe Manifest inference.yaml with new image tag #CD starts here
-17. Git Commit Deployment Config
-18. ArgoCD Syncs Deployment
-19. KServe Deploys Model pod
-20. Monitoring
-21. Data/Concept Drift Detection
-22. Alert Trigger
-23. Retraining Pipeline Trigger
-24. New Model Version Generated
-25. Redeployment  
+1.  Code Commit (Git Push)
+2.  CI Trigger (GitHub Actions)
+3.  Code Checkout
+4.  Install Dependencies
+5.  Lint Check (flake8)
+6.  Unit Tests (pytest)
+7.  Data Pull & Versioning (DVC + S3)
+8.  Model Training Pipeline — KFP Run triggered by GitHub Actions (polls for completion)
+        8a. Training            (KFP component)
+        8b. Experiment Tracking (MLflow — logs params, metrics, artifacts to S3)
+        8c. Model Evaluation & Validation (KFP component — gates pipeline on metric threshold)
+9.  Model Registration (MLflow Registry — model artifact stored in S3 via MLflow)
+10. Model Promotion (Staging → Production in MLflow Registry)
+11. Build Inference Docker Image
+12. Push Docker Image to ECR
 
+--- CD Phase (ArgoCD + KServe) ---
+
+13. Update KServe Manifest (inference.yaml — new image tag + S3 model URI)
+14. Git Commit & Push Deployment Config
+15. ArgoCD Detects Drift & Syncs
+16. KServe Deploys Model Pod (pulls image from ECR, model from S3)
+
+--- Monitoring & Retraining Loop ---
+
+17. Monitoring (Prometheus + Grafana — latency, throughput, error rate)
+18. Data/Concept Drift Detection (custom Prometheus metrics)
+19. Alert Trigger (Prometheus Alertmanager)
+20. Retraining Pipeline Trigger (webhook → GitHub Actions → new KFP run)
+21. New Model Version Generated (loops back to step 8)
+22. Redeployment (loops back to step 13)  
+```
+
+NOTE 8b: 
+- When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action. 
+- model artifact already stored in S3 via MLflow artifact store"
