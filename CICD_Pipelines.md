@@ -334,7 +334,7 @@ Kubeflow uses it to execute pipeline steps.
 18. ArgoCD Syncs Deployment
 19. KServe Deploys Model pod
 20. Monitoring
-21. Drift Detection
+21. Data/Concept Drift Detection
 22. Alert Trigger
 23. Retraining Pipeline Trigger
 24. New Model Version Generated
