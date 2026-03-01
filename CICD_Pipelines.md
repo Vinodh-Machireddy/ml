@@ -316,15 +316,14 @@ Kubeflow uses it to execute pipeline steps.
 
 1. Code Commit (Git Push)
 2. CI Trigger (GitHub Actions)
-3. Code Checkout
+3. Code & Data Checkout
 4. Install Dependencies
 5. Unit tests (pytest)
 6. Lint check (flake8)
 7. Model Trining (Kubeflow Pipeline)
-8. Push Model to S3
-9. Model Artifact Storage (S3)
-10. Experiment Logging (MLflow)
-11. Model Registration (MLflow Registry)
+8. Experiment Tracking (MLflow)
+9. Upload Model Artifact to S3
+10. Model Registration (MLflow Registry)
 12. Model Promotion (Staging → Production)
 13. Build Inference Docker Image
 14. Push Docker Image to ECR.  #CI Ends Here (Artifact + Image ready)
