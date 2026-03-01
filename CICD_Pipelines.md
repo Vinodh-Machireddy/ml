@@ -302,7 +302,7 @@ It does NOT contain model file. KServe loads model dynamically from S3 path.
 ```So retraining → update model URI → redeploy``` No image rebuild required.  
 This is scalable and recommended.  
 
-## Training Image:   
+## Before Training starts  We Build Docker Image:   
 Kubeflow does:  
 👉 Pull that image  
 👉 Create Pod  
@@ -314,8 +314,28 @@ ML libraries
 Training script  
 Kubeflow uses it to execute pipeline steps.  
 
+1. Code Commit (Git Push)
+2. CI Trigger (GitHub Actions)
+3. Code Checkout
+4. Install Dependencies
+5. Unit tests (pytest)
+6. Lint check (flake8)
+7. Model Trining (Kubeflow Pipeline)
+8. Push Model to S3
+9. Model Artifact Storage (S3)
+10. Experiment Logging (MLflow)
+11. Model Registration (MLflow Registry)
+12. Model Promotion (Staging → Production)
+13. Build Inference Docker Image
+14. Push Docker Image to ECR.  #CI Ends Here (Artifact + Image ready)
+15. Update KServe Manifest inference.yaml with new image tag #CD starts here
+16. Git Commit Deployment Config
+17. ArgoCD Syncs Deployment
+18. KServe Deploys Model pod
+19. Monitoring
+20. Drift Detection
+21. Alert Trigger
+22. Retraining Pipeline Trigger
+23. New Model Version Generated
+24. Redeployment  
 
-Model Artifact Storage (S3)
-Experiment Logging (MLflow)
-Model Registration (MLflow Registry)
-Model Promotion (Staging → Production)
