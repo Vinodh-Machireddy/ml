@@ -318,23 +318,25 @@ Kubeflow uses it to execute pipeline steps.
 2. CI Trigger (GitHub Actions)
 3. Code & Data Checkout
 4. Install Dependencies
-5. Unit tests (pytest)
-6. Lint check (flake8)
-7. Model Trining (Kubeflow Pipeline)
-8. Experiment Tracking (MLflow)
-9. Upload Model Artifact to S3
-10. Model Registration (MLflow Registry)
-12. Model Promotion (Staging → Production)
-13. Build Inference Docker Image
-14. Push Docker Image to ECR.  #CI Ends Here (Artifact + Image ready)
-15. Update KServe Manifest inference.yaml with new image tag #CD starts here
-16. Git Commit Deployment Config
-17. ArgoCD Syncs Deployment
-18. KServe Deploys Model pod
-19. Monitoring
-20. Drift Detection
-21. Alert Trigger
-22. Retraining Pipeline Trigger
-23. New Model Version Generated
-24. Redeployment  
+5. Lint check (flake8)
+6. Unit tests (pytest)
+7. Data Pull & Versioning 
+8. Model Trining (Kubeflow Pipeline)
+9. Experiment Tracking (MLflow)
+10. Model Evaluation & Validation
+11. Upload Model Artifact to S3
+12. Model Registration (MLflow Registry)
+13. Model Promotion (Staging → Production)
+14. Build Inference Docker Image
+15. Push Docker Image to ECR.  #CI Ends Here (Artifact + Image ready)
+16. Update KServe Manifest inference.yaml with new image tag #CD starts here
+17. Git Commit Deployment Config
+18. ArgoCD Syncs Deployment
+19. KServe Deploys Model pod
+20. Monitoring
+21. Drift Detection
+22. Alert Trigger
+23. Retraining Pipeline Trigger
+24. New Model Version Generated
+25. Redeployment  
 
