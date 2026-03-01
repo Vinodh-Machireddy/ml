@@ -267,3 +267,6 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
+
+
+Training Environment Image: Kubeflow uses it to execute pipeline steps.
