@@ -269,10 +269,10 @@ CT means automatically retraining the model when new data or drift is detected.
 ```
 
  
-
-
---- CI Phase (GitHub Actions) ---
+# ML END-TO-END LIFECYCLE
 ```
+--- CI Phase (GitHub Actions) ---
+
 1.  Code Commit (Git Push)
 2.  CI Trigger (GitHub Actions)
 3.  Code Checkout
