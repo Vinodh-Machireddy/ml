@@ -259,29 +259,5 @@ Finally, I compiled the Python DSL into YAML and deployed it through CI/CD into 
 
 
 
-## How the KFP Training Pipeline Runs on Kubernetes  
-When GitHub Actions reaches the "Model Training" step, it does not run the training code directly inside the GitHub Actions runner. Instead, it just sends a trigger (an API call) to the Kubeflow Pipelines API server, which then schedules and runs the actual training pipeline on your Kubernetes cluster.  
-So the GitHub Actions step looks something like this in practice:  
-```
-# inside your GitHub Actions workflow step
-kfp_client = kfp.Client(host="http://<your-kfp-endpoint>")
-kfp_client.create_run_from_pipeline_func(
-    training_pipeline,
-    arguments={"data_path": "s3://...", "epochs": 10}
-)
-```
-GitHub Actions owns CI orchestration (lint, test, build, push). KFP owns ML orchestration (data prep, train, evaluate, register). Mixing them would make your CI pipeline fragile and hard to debug.  
 
-The only thing to be careful about
-GitHub Actions needs to wait for the KFP run to finish before proceeding to the next steps (evaluation, S3 push, image build). If you fire-and-forget the KFP trigger, your CI pipeline will move on before training is done. So your GitHub Actions step should poll the KFP run status and only proceed on a successful completion status.  
 
-### 1. Who Creates the Pods?
-When GitHub Actions sends the API call to the KFP API server, the following chain happens:
-```
-GitHub Actions
-    → API call to KFP API Server
-        → KFP API Server creates an Argo Workflow object in Kubernetes
-            → Argo Workflow Controller (running in the cluster) reads that object
-                → Argo Controller creates Pods for each pipeline step
-```  
-So the direct answer is Argo Workflow Controller creates the pods. KFP under the hood uses Argo Workflows as its execution engine. You never create pods manually. KFP compiles your pipeline into an Argo Workflow YAML, submits it, and Argo takes over from there.  Each pipeline step runs in its own individual pod.  
