@@ -432,6 +432,7 @@ CMD ["uvicorn", "src.inference.server:app", "--host", "0.0.0.0", "--port", "8080
      <summary><i> --- CI Phase (GitHub Actions) --- </i></summary>
          <details style="margin-left: 20px;">
          <summary><i>1. Code Commit (Git Push)</i></summary>
+          This is the trigger point for the entire pipeline. Here's exactly what happens in real-world production:  
          <details style="margin-left: 20px;">
          <summary><i>2. Unit Testing</i></summary>
          </details>
