@@ -428,13 +428,19 @@ CMD ["uvicorn", "src.inference.server:app", "--host", "0.0.0.0", "--port", "8080
 
 <details>
   <summary><b>Click to expand: ML END-TO-END LIFECYCLE</b></summary>
-  <details style="margin-left: 20px;">
-    <summary><i>CI Phase (GitHub Actions)</i></summary>
-    <details style="margin-left: 20px;">
-      <summary><i>1. Code Commit (Git Push)</i></summary>
-          <details style="margin-left: 20px;">
-          <summary><i>View Sub-steps: 2. Unit Testing</i></summary>
-          </details>
-    </details>
-  </details>
+     <details style="margin-left: 20px;">
+     <summary><i> --- CI Phase (GitHub Actions) --- </i></summary>
+         <details style="margin-left: 20px;">
+         <summary><i>1. Code Commit (Git Push)</i></summary>
+         <details style="margin-left: 20px;">
+         <summary><i>2. Unit Testing</i></summary>
+         </details>
+         </details>
+     </details>
+     <details style="margin-left: 20px;">
+     <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
+     </details> 
+     <details style="margin-left: 20px;">
+     <summary><i> --- Monitoring & Retraining Loop --- </i></summary>
+     </details> 
 </details>
