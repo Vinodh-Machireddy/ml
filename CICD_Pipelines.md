@@ -710,6 +710,18 @@ def evaluate_model(model, X_test, y_test, threshold, verbose,
 flake8 output:
 src/evaluate.py:1:1: C901 'evaluate_model' is too complex (complexity: 11 > 10)
 ```
+### Step 6: Unit Tests (pytest)
+Lint confirmed the code is syntactically clean. Unit tests now confirm the code logically works correctly. This is the last gate before any data or compute is touched.  
+#### What Unit Tests Validate:  
+Unit Tests verify:  
+├── Data preprocessing logic produces correct outputs  
+├── Feature engineering transformations are mathematically correct  
+├── Model training function returns expected object types  
+├── Evaluation metrics are calculated correctly  
+├── Edge cases are handled (nulls, empty DataFrames, wrong dtypes)  
+└── params.yaml is parsed correctly  
+#### The Workflow Step:  
+
 
 
   </details>
