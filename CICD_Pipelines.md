@@ -1978,6 +1978,43 @@ CMD ["uvicorn", "src.predict:app", \
      "--port", "8080", \
      "--workers", "4"]
 ```
+## Step 12: Push Docker Image to ECR
+The Workflow Step:  
+```
+# Inside .github/workflows/ml-pipeline.yml
+
+      # ── STEP 12: Push Docker Image to ECR ──────────────────
+      - name: Push Image to ECR
+        id: push-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_NAME:   churn-inference
+          IMAGE_TAG:    ${{ github.sha }}
+        run: |
+          # Full ECR image URI
+          ECR_IMAGE="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+          ECR_LATEST="$ECR_REGISTRY/$IMAGE_NAME:latest"
+
+          # Tag local image with full ECR URI
+          docker tag churn-inference:$IMAGE_TAG $ECR_IMAGE
+          docker tag churn-inference:$IMAGE_TAG $ECR_LATEST
+
+          # Push both tags to ECR
+          docker push $ECR_IMAGE
+          docker push $ECR_LATEST
+
+          # Export full image URI for downstream deployment steps
+          echo "IMAGE_URI=$ECR_IMAGE" >> $GITHUB_ENV
+          echo "Pushed: $ECR_IMAGE"
+
+      # ── Verify image is in ECR ──────────────────────────────
+      - name: Verify ECR Push
+        run: |
+          aws ecr describe-images \
+            --repository-name churn-inference \
+            --image-ids imageTag=${{ github.sha }} \
+            --region us-east-1
+```
 
   </details>
   
