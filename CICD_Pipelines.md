@@ -785,6 +785,40 @@ The Workflow Step:
         run: |
           dvc pull --run-cache           # pulls data + cached pipeline outputs
 ```
+### Step 8: Model Training Pipeline (KFP Run)
+This is the heart of the entire lifecycle. The runner now has code ✅, dependencies ✅, and data ✅. It's time to fire actual model training — but NOT on the GitHub Actions runner itself. The runner orchestrates training on a dedicated Kubeflow Pipelines (KFP) cluster.  
+> The runner's job in Step 8: compile the pipeline, submit it to Kubeflow, and poll until it finishes. The actual compute happens inside the Kubeflow cluster.  
+The Big Picture of Step 8:
+```
+GitHub Actions Runner                    Kubeflow Cluster (Kubernetes)
+──────────────────────                   ──────────────────────────────
+                                         
+1. Compile KFP pipeline         ──►      
+2. Submit pipeline run          ──►      Pod: 8a. Training
+3. Poll for completion          ◄──      Pod: 8b. MLflow Logging
+        │                                Pod: 8c. Evaluation & Gate
+        │ (blocks until done)            
+        ▼
+   Pass or Fail
+```
+The Workflow Step in GitHub Actions:  
+```
+# Inside .github/workflows/ml-pipeline.yml
+
+      # ── STEP 8: Trigger KFP Pipeline ──────────────────────
+      - name: Compile & Submit KFP Pipeline
+        run: |
+          python pipelines/submit_pipeline.py \
+            --endpoint    ${{ secrets.KFP_ENDPOINT }} \
+            --experiment  "churn-prediction" \
+            --run-name    "run-${{ github.sha }}" \
+            --params-file params.yaml
+        env:
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+```
+
 
 
 
