@@ -1736,7 +1736,7 @@ if __name__ == "__main__":
 
 ---
 
-## What MLflow Registry Looks Like After Promotion
+#### What MLflow Registry Looks Like After Promotion
 ```
 MLflow Registry
 └── Registered Model: "churn-prediction-model"
@@ -1763,7 +1763,7 @@ MLflow Registry
 
 ---
 
-## The Rollback Story — Why Archiving Matters
+#### The Rollback Story — Why Archiving Matters
 ```
 Scenario: v3 goes to Production, but 2 hours later
           business reports a spike in false positives
@@ -1786,7 +1786,7 @@ client.transition_model_version_stage(
 
 ---
 
-## How the Inference Server Knows What Changed
+#### How the Inference Server Knows What Changed
 ```
 Inference server (Step 12+) loads model like this:
 
@@ -1805,7 +1805,7 @@ Stage alias handles the switching automatically.
 
 ---
 
-## Who Writes `promote_model.py`
+#### Who Writes `promote_model.py`
 ```
 Same pattern as register_model.py:
 
@@ -1819,7 +1819,7 @@ Modified only if:  MLflow API changes
 
 ---
 
-## The Complete Promotion Flow
+#### The Complete Promotion Flow
 ```
 Step 9: Model Registered as Staging v3 ✓
       │
@@ -1850,7 +1850,7 @@ GitHub Actions pauses at environment: production
 
 ---
 
-## Full Picture After Step 10
+#### Full Picture After Step 10
 ```
 Step 9:  Model Registration ✓
       │  └── v3 in Staging
@@ -1867,7 +1867,117 @@ Step 10: Model Promotion ✓
       ▼
 Step 11: Build Inference Docker Image ← next
 ```
+## Step 11: Build Inference Docker Image
+The model is now officially Production ✅. Step 11 packages everything needed to serve predictions — the model, its dependencies, and a REST API — into a single portable Docker image.  
+The Workflow Step:  
+```
+# Inside .github/workflows/ml-pipeline.yml
 
+  # ── Job 5: Build & Push Docker Image ──────────────────────
+  build-and-push:
+    name: Build Inference Docker Image
+    runs-on: ubuntu-latest
+    needs: promote-model              # only runs after promotion ✅
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ── Configure AWS credentials for ECR access ───────────
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+
+      # ── Login to Amazon ECR ────────────────────────────────
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Download model artifact from MLflow/S3 ─────────────
+      - name: Download Production Model from MLflow
+        run: |
+          python scripts/download_model.py \
+            --tracking-uri ${{ secrets.MLFLOW_TRACKING_URI }} \
+            --model-name   "churn-prediction-model" \
+            --stage        "Production" \
+            --output-path  "./model"
+        env:
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # ── Build Docker Image ─────────────────────────────────
+      - name: Build Docker Image
+        run: |
+          docker build \
+            --build-arg MODEL_VERSION=${{ env.PRODUCTION_MODEL_VERSION }} \
+            --build-arg GIT_COMMIT=${{ github.sha }} \
+            --tag churn-inference:${{ github.sha }} \
+            --tag churn-inference:latest \
+            .
+```
+#### scripts/download_model.py — Pull Model from MLflow Before Build
+#### The Dockerfile 
+```
+# Dockerfile
+# Written by: MLOps Engineer (once at project setup)
+
+# ── Base Image ─────────────────────────────────────────────────
+FROM python:3.10-slim
+
+# ── Build Arguments (injected by GitHub Actions) ───────────────
+ARG MODEL_VERSION=unknown
+ARG GIT_COMMIT=unknown
+
+# ── Environment Variables (available at runtime) ───────────────
+ENV MODEL_VERSION=${MODEL_VERSION}
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# ── System Dependencies ────────────────────────────────────────
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Working Directory ──────────────────────────────────────────
+WORKDIR /app
+
+# ── Install Python Dependencies ────────────────────────────────
+# Copy requirements FIRST — Docker layer cache optimization
+# If requirements.txt unchanged → this layer is cached
+# Even if code changes → pip install is skipped (fast rebuild)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ── Copy Inference Server Code ─────────────────────────────────
+COPY src/predict.py ./src/predict.py
+
+# ── Copy Model Artifact ────────────────────────────────────────
+# Downloaded from MLflow/S3 in the GitHub Actions step above
+# Baked directly into the image — no S3 call at inference time
+COPY model/ ./model/
+
+# ── Security: non-root user ────────────────────────────────────
+RUN useradd --create-home --shell /bin/bash appuser
+USER appuser
+
+# ── Expose Port ────────────────────────────────────────────────
+EXPOSE 8080
+
+# ── Health Check ───────────────────────────────────────────────
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# ── Start Server ───────────────────────────────────────────────
+CMD ["uvicorn", "src.predict:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8080", \
+     "--workers", "4"]
+```
 
   </details>
   
