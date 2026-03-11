@@ -1197,7 +1197,7 @@ def ml_pipeline(
 
 ---
 
-### How Data Flows Between Components
+#### How Data Flows Between Components
 ```
 
 params.yaml
@@ -1246,7 +1246,7 @@ submit_pipeline.py
 
 ---
 
-### What MLflow Stores After 8b
+#### What MLflow Stores After 8b
 ```  
 MLflow Tracking Server (backed by S3)
 ──────────────────────────────────────
@@ -1279,7 +1279,7 @@ Experiment: churn-prediction
 
 ---
 
-### The Gate in Action — Two Scenarios
+#### The Gate in Action — Two Scenarios
 ```  
 Scenario A: Model PASSES gate
 ─────────────────────────────
@@ -1303,7 +1303,7 @@ No bad Docker image gets built
 
 ---
 
-### What the CI Logs Look Like During Polling
+#### What the CI Logs Look Like During Polling
 ```
 Pipeline submitted. Run ID: abc123xyz
 Track at: https://kubeflow.internal/#/runs/details/abc123xyz
@@ -1322,7 +1322,7 @@ Pipeline completed successfully.
 
 ---
 
-### Full Picture After Step 8
+#### Full Picture After Step 8
 ```  
 Step 7: Data Pull ✓
       │
@@ -1338,6 +1338,8 @@ Step 8: KFP Pipeline ✓
       ▼
 Step 9: Model Registration (MLflow Registry)  ← next  
 ```
+</details>  
+
 ### Step 9: Model Registration (MLflow Registry)
 The pipeline gate passed ✅. The model proved it meets the recall threshold. Now it needs to be formally registered — given a name, a version number, and stored in a central catalog that the entire organization can reference.  
 The Workflow Step:  
@@ -1480,7 +1482,7 @@ if __name__ == "__main__":
 
 ---
 
-## What MLflow Registry Looks Like After Step 9
+#### What MLflow Registry Looks Like After Step 9
 ```
 MLflow Registry
 └── Registered Model: "churn-prediction-model"
@@ -1516,7 +1518,7 @@ MLflow Registry
 
 ---
 
-## What Lives in S3 After Registration
+#### What Lives in S3 After Registration
 ```
 s3://ml-project-mlflow/
 └── artifacts/
@@ -1536,7 +1538,7 @@ s3://ml-project-mlflow/
 
 
 
-  </details>
+
   </details>
   
   <details style="margin-left: 20px;">
