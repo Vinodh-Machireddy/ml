@@ -908,7 +908,9 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-```pipelines/kfp_pipeline.py``` — The Pipeline Definition  
+#### pipelines/kfp_pipeline.py — The Pipeline Definition  
+<details style="margin-left: 20px;">
+<summary><i> pipelines/kfp_pipeline.py </i></summary>
 ```
 # pipelines/kfp_pipeline.py
 
@@ -1338,7 +1340,7 @@ Step 9: Model Registration (MLflow Registry)  ← next
 
 
 
-
+  </details>
   </details>
   <details style="margin-left: 20px;">
   <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
