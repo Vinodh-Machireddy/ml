@@ -1336,10 +1336,7 @@ Step 8: KFP Pipeline ✓
       │
       ▼
 Step 9: Model Registration (MLflow Registry)  ← next
-```
-
-
-
+```  
   </details>
   </details>
   <details style="margin-left: 20px;">
