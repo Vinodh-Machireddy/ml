@@ -1,5 +1,5 @@
 # GitHub repository structure  
-
+```  
 /home/runner/work/ml-project/ml-project/
 ├── .github/
 │   └── workflows/
@@ -25,7 +25,7 @@
 ├── Dockerfile                    ← container image for training/pipeline
 │
 └── README.md                     ← project documentation (recommended)
-
+```  
 
 # Production-Grade ML Pipeline — Complete Repository Structure
 
