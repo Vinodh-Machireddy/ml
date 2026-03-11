@@ -1,3 +1,32 @@
+# GitHub repository structure  
+
+/home/runner/work/ml-project/ml-project/
+├── .github/
+│   └── workflows/
+│       └── ml-pipeline.yml
+│
+├── src/
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── preprocess.py
+│   └── predict.py
+│
+├── pipelines/
+│   ├── kfp_pipeline.py
+│   └── submit_pipeline.py        ← bridge script to submit KFP pipeline
+│
+├── tests/
+│   └── test_preprocess.py
+│
+├── dvc.yaml                      ← pipeline stages definition
+├── dvc.lock                      ← data version references
+├── params.yaml                   ← ML hyperparameters
+├── requirements.txt              ← python dependencies
+├── Dockerfile                    ← container image for training/pipeline
+│
+└── README.md                     ← project documentation (recommended)
+
+
 # Production-Grade ML Pipeline — Complete Repository Structure
 
 > **Context:** This maps to the 12-step CI/CD pipeline for a Senior MLOps Engineer role.
