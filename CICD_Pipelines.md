@@ -567,7 +567,7 @@ git checkout --progress --force \
 ```  
 > **Notice:** Only code files exist. No actual data, no models. Those come in Step 7 (DVC Pull).
 
-### Step 4: Install Dependencies:
+### Step 4: Install Dependencies
 The runner has your code but can't run any of it yet. Python packages, CLI tools, nothing is installed. This step makes the environment execution-ready.  
 
 The Workflow Step:
@@ -585,6 +585,130 @@ The Workflow Step:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+```
+### Step 5: Lint Check (flake8) 
+The runner now has code + dependencies. Before touching any expensive compute (training, data pulls), we validate code quality first. Catching a syntax error here saves 20–40 minutes of wasted pipeline time.  
+The Workflow Step:  
+```
+# Inside .github/workflows/ml-pipeline.yml
+
+      # ── STEP 5: Lint Check ─────────────────────────────────
+      - name: Lint Check (flake8)
+        run: |
+          flake8 src/ pipelines/ \
+            --max-line-length=88 \
+            --max-complexity=10 \
+            --ignore=E203,W503 \
+            --statistics \
+            --count
+```
+The .flake8 Config File (Production Standard)  
+Rather than passing all flags inline, production teams use a config file:  
+```
+# .flake8  (lives at repo root, committed to git)
+
+[flake8]
+# ── Scope ──────────────────────────────────────────────
+per-file-ignores =
+    tests/*: E501           # allow long lines in test files
+    pipelines/*: W503       # allow line breaks before binary operators
+
+# ── Style Rules ────────────────────────────────────────
+max-line-length = 88        # matches Black formatter standard
+max-complexity  = 10        # McCabe complexity — catches overly tangled logic
+indent-size     = 4
+
+# ── Ignored Rules ──────────────────────────────────────
+ignore =
+    E203,   # whitespace before ':' — conflicts with Black
+    W503    # line break before binary operator — conflicts with Black
+
+# ── What to Scan ───────────────────────────────────────
+filename =
+    *.py
+
+# ── What to Skip ───────────────────────────────────────
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    build/,
+    dist/,
+    *.egg-info
+
+# ── Output ─────────────────────────────────────────────
+statistics = true           # summary count per error code
+count = true                # total error count at end
+show-source = true          # show the actual offending line
+show-pep8 = true            # explain what rule was violated
+```
+
+---
+
+#### What flake8 Actually Checks
+
+flake8 bundles **three tools** internally:
+```
+flake8
+  ├── PyFlakes     → logical errors (undefined names, unused imports)
+  ├── pycodestyle  → PEP8 style violations (spacing, line length)
+  └── McCabe       → cyclomatic complexity (tangled logic detection)
+```
+#### 1. PyFlakes — Catches Real Bugs:  
+```
+# src/train.py
+
+import pandas as pd
+import numpy as np
+import requests          # ← F401: imported but unused
+
+def train_model(df):
+    X = df[features]     # ← F821: 'features' undefined — REAL BUG
+    model.fit(X, y)      # ← F821: 'model' undefined — REAL BUG
+    return modl          # ← F821: 'modl' undefined (typo) — REAL BUG
+```
+```
+flake8 output:
+src/train.py:3:1: F401 'requests' imported but unused
+src/train.py:6:9: F821 undefined name 'features'
+src/train.py:7:5: F821 undefined name 'model'
+src/train.py:8:12: F821 undefined name 'modl'
+4     F821 undefined name
+1     F401 imported but unused
+5
+```
+#### 2. pycodestyle — Catches Style Issues:  
+```  
+# src/preprocess.py
+
+def preprocess(df,threshold,verbose=False):  # ← E231: missing spaces after ','
+    if verbose==True:                         # ← E712: use 'if verbose:'
+        x=df['col'].fillna(0)                # ← E225: missing whitespace around =
+        very_long_variable_name = some_function_with_long_name(argument_one,argument_two,argument_three)  # ← E501: line too long
+```
+```
+flake8 output:
+src/preprocess.py:1:18: E231 missing whitespace after ','
+src/preprocess.py:2:13: E712 comparison to True should be 'if cond is True:' or 'if cond:'
+src/preprocess.py:3:10: E225 missing whitespace around operator
+src/preprocess.py:4:89: E501 line too long (112 > 88 characters)
+```
+#### 3. McCabe — Catches Complex Logic
+```
+# src/evaluate.py
+
+def evaluate_model(model, X_test, y_test, threshold, verbose, 
+                   save_report, notify_slack, fallback):
+    if threshold > 0.5:
+        if verbose:
+            if save_report:
+                if notify_slack:
+                    if fallback:        # ← deeply nested = high complexity
+                        ...
+```
+```
+flake8 output:
+src/evaluate.py:1:1: C901 'evaluate_model' is too complex (complexity: 11 > 10)
 ```
 
 
