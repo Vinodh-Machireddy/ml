@@ -909,14 +909,17 @@ if __name__ == "__main__":
     main()
 ```
 #### pipelines/kfp_pipeline.py — The Pipeline Definition  
+
 <details style="margin-left: 20px;">
-<summary><i> pipelines/kfp_pipeline.py </i></summary>
-```
+<summary><i> pipelines/kfp_pipeline.py </i></summary>  
+
+
+
+```  
 # pipelines/kfp_pipeline.py
 
 from kfp import dsl
 from kfp.dsl import component, pipeline, Input, Output, Dataset, Model, Metrics
-
 
 # ─────────────────────────────────────────────────────────────
 # COMPONENT 8a: TRAINING
@@ -1193,12 +1196,13 @@ def ml_pipeline(
     )
     gate_task.set_cpu_request("2")
     gate_task.set_memory_request("4Gi")
-```
+```  
 
 ---
 
 ### How Data Flows Between Components
 ```
+
 params.yaml
     │
     ▼
@@ -1241,12 +1245,12 @@ submit_pipeline.py
     Polling loop in                       │
     GitHub Actions                        │
     detects Succeeded ◄───────────────────┘
-```
+```  
 
 ---
 
 ### What MLflow Stores After 8b
-```
+```  
 MLflow Tracking Server (backed by S3)
 ──────────────────────────────────────
 Experiment: churn-prediction
@@ -1274,12 +1278,12 @@ Experiment: churn-prediction
               │     ├── MLmodel          ← MLflow model metadata
               │     └── conda.yaml       ← environment spec
               └── feature_importance.png
-```
+```  
 
 ---
 
 ### The Gate in Action — Two Scenarios
-```
+```  
 Scenario A: Model PASSES gate
 ─────────────────────────────
 recall = 0.887 > 0.85 threshold
@@ -1298,7 +1302,7 @@ GitHub Actions: exits with code 1 ❌
 Steps 9, 10, 11, 12 NEVER run
 No bad model enters MLflow Registry
 No bad Docker image gets built
-```
+```  
 
 ---
 
@@ -1317,12 +1321,12 @@ Track at: https://kubeflow.internal/#/runs/details/abc123xyz
 [1260s] Pipeline status: Succeeded
 
 Pipeline completed successfully.
-```
+```  
 
 ---
 
 ### Full Picture After Step 8
-```
+```  
 Step 7: Data Pull ✓
       │
       ▼
@@ -1335,9 +1339,9 @@ Step 8: KFP Pipeline ✓
       └── Polling loop: Succeeded → GitHub Actions continues
       │
       ▼
-Step 9: Model Registration (MLflow Registry)  ← next
-```  
-  </details>
+Step 9: Model Registration (MLflow Registry)  ← next  
+```
+</details>
   </details>
   <details style="margin-left: 20px;">
   <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
