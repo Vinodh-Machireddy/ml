@@ -1536,7 +1536,337 @@ s3://ml-project-mlflow/
 ```
 > **NOTE:** The artifact path in S3 is permanent and immutable. MLflow never overwrites a registered version's artifacts — every version is preserved forever for audit and rollback.
 
+### Step 10: Model Promotion (Staging → Production)
+The model is in Staging ✅. This step is the final human + automated gate before a model is officially declared Production and inference infrastructure is built around it.  
+The Two-Layer Promotion Design:  
+```  
+Gate 1 — Automated (Step 8c)
+──────────────────────────────
+  Did recall exceed 0.85?
+  YES → proceed to Staging
+  NO  → pipeline dies
 
+Gate 2 — Human Approval (Step 10)
+──────────────────────────────────
+  Did a senior Data Scientist / ML Lead
+  review the full metrics, fairness report,
+  and business impact before approving?
+  APPROVED → transition to Production
+  REJECTED → stays in Staging, pipeline stops
+```
+#### How Human Approval Works in GitHub Actions:  
+```  
+# Inside .github/workflows/ml-pipeline.yml  
+
+jobs:
+
+  # ── Job 3: Human Approval Gate ────────────────────────────
+  await-approval:
+    name: Await Human Approval for Production Promotion
+    runs-on: ubuntu-latest
+    needs: ml-pipeline              # runs after Step 9 completes
+    environment: production         # ← THIS is the key
+
+    steps:
+      - name: Approval Gate
+        run: |
+          echo "Model v${{ env.MODEL_VERSION }} awaiting promotion approval"
+          echo "Recall:  ${{ env.MODEL_RECALL }}"
+          echo "F1:      ${{ env.MODEL_F1 }}"
+          echo "Commit:  ${{ github.sha }}"
+```
+
+---
+
+#### The `environment: production` Key — How GitHub Enforces Human Approval
+```
+GitHub Repo → Settings → Environments → production
+──────────────────────────────────────────────────────
+  ├── Required reviewers:
+  │     ├── @john-ml-lead       ← must approve
+  │     └── @sarah-data-science ← must approve (either one)
+  │
+  ├── Wait timer: 0 minutes     ← no auto-approval after delay
+  │
+  └── Deployment branches:
+        └── main only           ← can't promote from feature branches
+```
+```
+What the approver sees in GitHub UI:
+──────────────────────────────────────
+┌─────────────────────────────────────────────────┐
+│  Workflow: ML End-to-End Pipeline               │
+│  Job: Promote Model to Production               │
+│                                                 │
+│  Model v3 is ready for Production promotion     │
+│  Recall:  0.887                                 │
+│  F1:      0.910                                 │
+│  Commit:  a3f8c21d                              │
+│                                                 │
+│  MLflow UI: https://mlflow.internal/models/...  │
+│                                                 │
+│  [ Approve and deploy ]   [ Reject ]            │
+└─────────────────────────────────────────────────┘
+```
+> Pipeline is completely paused at this point. The GitHub Actions runner waits up to 30 days for approval. If nobody approves, it times out and the model stays in Staging.
+#### After Approval — The Promotion Step Runs
+```
+# ── Job 4: Execute Promotion ──────────────────────────────
+  promote-model:
+    name: Promote Model to Production
+    runs-on: ubuntu-latest
+    needs: await-approval           # only runs after human approves
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - run: pip install mlflow==2.12.1
+
+      - name: Promote Model to Production
+        run: |
+          python pipelines/promote_model.py \
+            --tracking-uri  ${{ secrets.MLFLOW_TRACKING_URI }} \
+            --model-name    "churn-prediction-model" \
+            --version       ${{ env.MODEL_VERSION }}
+        env:
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+#### pipelines/promote_model.py — The Promotion Script  
+```
+# pipelines/promote_model.py
+# Written by: MLOps Engineer (once at project setup)
+
+import mlflow
+from mlflow.tracking import MlflowClient
+import argparse
+import os
+import sys
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tracking-uri", required=True)
+    parser.add_argument("--model-name",   required=True)
+    parser.add_argument("--version",      required=True, type=int)
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    mlflow.set_tracking_uri(args.tracking_uri)
+    client = MlflowClient()
+
+    # ── Fetch current Production version ──────────────────────
+    current_production = client.get_latest_versions(
+        name=args.model_name,
+        stages=["Production"]
+    )
+
+    # ── Safety Check: confirm Staging version still exists ────
+    staging_version = client.get_model_version(
+        name=args.model_name,
+        version=str(args.version)
+    )
+
+    if staging_version.current_stage != "Staging":
+        print(
+            f"ERROR: Version {args.version} is not in Staging. "
+            f"Current stage: {staging_version.current_stage}"
+        )
+        sys.exit(1)
+
+    print(f"Promoting v{args.version} from Staging → Production")
+
+    # ── Promote new version to Production ─────────────────────
+    client.transition_model_version_stage(
+        name=args.model_name,
+        version=str(args.version),
+        stage="Production",
+        archive_existing_versions=True   # ← auto-archives old Production
+    )
+
+    # ── Add promotion metadata ─────────────────────────────────
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=str(args.version),
+        key="promoted_by",
+        value=os.environ.get("GITHUB_ACTOR", "unknown")  # who approved
+    )
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=str(args.version),
+        key="promoted_at",
+        value=str(os.environ.get("GITHUB_RUN_ID", "unknown"))
+    )
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=str(args.version),
+        key="replaced_version",
+        value=str(current_production[0].version) if current_production else "none"
+    )
+
+    # ── Log what was archived ──────────────────────────────────
+    if current_production:
+        old_version = current_production[0].version
+        print(f"Previous Production v{old_version} → Archived")
+        print(f"New Production:      v{args.version}")
+    else:
+        print(f"First Production version: v{args.version}")
+
+    # ── Export for downstream steps ───────────────────────────
+    with open(os.environ["GITHUB_ENV"], "a") as f:
+        f.write(f"PRODUCTION_MODEL_VERSION={args.version}\n")
+        if current_production:
+            f.write(f"ARCHIVED_MODEL_VERSION={current_production[0].version}\n")
+
+    print("Promotion complete. Proceeding to Docker build.")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+## What MLflow Registry Looks Like After Promotion
+```
+MLflow Registry
+└── Registered Model: "churn-prediction-model"
+      │
+      ├── Version 1  [Archived]      ← was Production, now archived
+      │     ├── Stage:       Archived               (auto by archive_existing_versions=True)
+      │     ├── Recall:      0.861
+      │     └── replaced_by: v3
+      │
+      ├── Version 2  [Archived]      ← was Staging candidate, still archived
+      │     ├── Stage:       Archived
+      │     └── Recall:      0.823
+      │
+      └── Version 3  [Production]    ← just promoted NOW ✅
+            ├── Stage:       Production
+            ├── Recall:      0.887
+            ├── F1:          0.910
+            ├── ROC-AUC:     0.951
+            ├── git_commit:  a3f8c21d...
+            ├── promoted_by: john-ml-lead     ← GitHub actor who approved
+            ├── promoted_at: 8473920156       ← CI run ID
+            └── replaced_version: 1
+```
+
+---
+
+## The Rollback Story — Why Archiving Matters
+```
+Scenario: v3 goes to Production, but 2 hours later
+          business reports a spike in false positives
+
+Rollback in 2 commands:
+────────────────────────────────────────────────────
+# Re-promote the old archived version instantly
+client.transition_model_version_stage(
+    name="churn-prediction-model",
+    version="1",                    ← old Production version
+    stage="Production",
+    archive_existing_versions=True  ← archives broken v3
+)
+
+# v1 model.pkl is still in S3 — never deleted
+# inference server picks it up immediately
+# no retraining needed
+# full audit trail of what happened and when
+```
+
+---
+
+## How the Inference Server Knows What Changed
+```
+Inference server (Step 12+) loads model like this:
+
+model = mlflow.pyfunc.load_model(
+    model_uri="models:/churn-prediction-model/Production"
+                                              ↑
+                                   always points to current
+                                   Production stage version
+                                   
+Before promotion: resolves to v1 → loads v1 model.pkl
+After promotion:  resolves to v3 → loads v3 model.pkl
+
+No hardcoded version numbers in serving code.
+Stage alias handles the switching automatically.
+```
+
+---
+
+## Who Writes `promote_model.py`
+```
+Same pattern as register_model.py:
+
+Written ONCE by:   MLOps Engineer during project setup
+Never touched by:  Data Scientist, Data Engineer
+Modified only if:  MLflow API changes
+                   Approval workflow changes
+                   New metadata tags required
+                   Rollback logic added
+```
+
+---
+
+## The Complete Promotion Flow
+```
+Step 9: Model Registered as Staging v3 ✓
+      │
+      ▼
+GitHub Actions pauses at environment: production
+      │
+      ├── Email sent to: john-ml-lead, sarah-data-science
+      ├── They review MLflow UI (metrics, fairness, artifacts)
+      ├── They review GitHub Actions run (full CI log)
+      └── Decision:
+            │
+            ├── REJECTED → pipeline stops
+            │               model stays in Staging
+            │               team investigates
+            │
+            └── APPROVED → pipeline resumes
+                  │
+                  ▼
+            promote_model.py runs:
+              ├── v3: Staging    → Production ✅
+              ├── v1: Production → Archived
+              ├── promoted_by: john-ml-lead logged
+              └── PRODUCTION_MODEL_VERSION=3 exported
+                  │
+                  ▼
+            Step 11: Build Inference Docker Image ← next
+```
+
+---
+
+## Full Picture After Step 10
+```
+Step 9:  Model Registration ✓
+      │  └── v3 in Staging
+      ▼
+Step 10: Model Promotion ✓
+      │
+      ├── Human approval gate passed
+      ├── v3: Staging → Production
+      ├── v1: Production → Archived (rollback available)
+      ├── Full audit trail: who promoted, when, what replaced
+      ├── Inference server alias "Production" now resolves to v3
+      └── PRODUCTION_MODEL_VERSION=3 in GitHub Actions env
+      │
+      ▼
+Step 11: Build Inference Docker Image ← next
+```
 
 
   </details>
