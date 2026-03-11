@@ -428,20 +428,34 @@ CMD ["uvicorn", "src.inference.server:app", "--host", "0.0.0.0", "--port", "8080
 
 <details>
   <summary><b>Click to expand: ML END-TO-END LIFECYCLE</b></summary>
-     <details style="margin-left: 20px;">
-     <summary><i> --- CI Phase (GitHub Actions) --- </i></summary>
-         <details style="margin-left: 20px;">
-         <summary><i>1. Code Commit (Git Push)</i></summary>
-          This is the trigger point for the entire pipeline. Here's exactly what happens in real-world production:  
-         <details style="margin-left: 20px;">
-         <summary><i>2. Unit Testing</i></summary>
-         </details>
-         </details>
-     </details>
-     <details style="margin-left: 20px;">
-     <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
-     </details> 
-     <details style="margin-left: 20px;">
-     <summary><i> --- Monitoring & Retraining Loop --- </i></summary>
-     </details> 
+  <details style="margin-left: 20px;">
+  <summary><i> --- CI Phase (GitHub Actions) --- </i></summary>
+  <details style="margin-left: 20px;">
+  <summary><i>1. Code Commit (Git Push)</i></summary>
+  This is the trigger point for the entire pipeline. Here's exactly what happens in real-world production:  
+   
+  ### The Chain Reaction This Starts  
+   ```   
+   git push origin main
+        │
+        ▼
+   GitHub detects a push event
+        │
+        ▼
+   Reads .github/workflows/ml-pipeline.yml
+        │
+        ▼
+   Spins up a GitHub Actions Runner  ← Step 2 begins here  
+   ```  
+  <details style="margin-left: 20px;">
+  <summary><i>2. Unit Testing</i></summary>
+  </details>
+  </details>
+  </details>
+  <details style="margin-left: 20px;">
+  <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
+  </details> 
+  <details style="margin-left: 20px;">
+  <summary><i> --- Monitoring & Retraining Loop --- </i></summary>
+  </details> 
 </details>
