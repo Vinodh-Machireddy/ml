@@ -1338,6 +1338,204 @@ Step 8: KFP Pipeline ✓
       ▼
 Step 9: Model Registration (MLflow Registry)  ← next  
 ```
+### Step 9: Model Registration (MLflow Registry)
+The pipeline gate passed ✅. The model proved it meets the recall threshold. Now it needs to be formally registered — given a name, a version number, and stored in a central catalog that the entire organization can reference.  
+The Workflow Step:  
+```
+# Inside .github/workflows/ml-pipeline.yml
+
+      # ── STEP 9: Model Registration ─────────────────────────
+      - name: Register Model in MLflow
+        run: |
+          python pipelines/register_model.py \
+            --tracking-uri  ${{ secrets.MLFLOW_TRACKING_URI }} \
+            --model-name    "churn-prediction-model" \
+            --git-commit    ${{ github.sha }} \
+            --run-id        ${{ env.MLFLOW_RUN_ID }}
+        env:
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:   ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+> **pipelines/register_model.py** — The Registration Script  
+```
+# pipelines/register_model.py
+# Written by: MLOps Engineer (once at project setup)
+
+import mlflow
+from mlflow.tracking import MlflowClient
+import argparse
+import os
+import sys
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tracking-uri", required=True)
+    parser.add_argument("--model-name",   required=True)
+    parser.add_argument("--git-commit",   required=True)
+    parser.add_argument("--run-id",       required=True)
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    mlflow.set_tracking_uri(args.tracking_uri)
+    client = MlflowClient()
+
+    # ── Fetch the run that just completed ─────────────────────
+    run = client.get_run(args.run_id)
+    metrics = run.data.metrics
+    params  = run.data.params
+
+    print(f"Run ID:    {args.run_id}")
+    print(f"Recall:    {metrics['recall']:.4f}")
+    print(f"F1:        {metrics['f1']:.4f}")
+    print(f"ROC-AUC:   {metrics['roc_auc']:.4f}")
+
+    # ── Get the latest version just created by Step 8b ────────
+    # Step 8b already called mlflow.sklearn.log_model() which
+    # auto-created a new version — we just need to find it
+    latest_versions = client.get_latest_versions(
+        name=args.model_name,
+        stages=["None"]          # newly registered = "None" stage
+    )
+
+    if not latest_versions:
+        print("ERROR: No model version found in 'None' stage")
+        sys.exit(1)
+
+    # Get the most recently created version
+    model_version = sorted(
+        latest_versions,
+        key=lambda v: v.creation_timestamp,
+        reverse=True
+    )[0]
+
+    version_number = model_version.version
+    print(f"Model version found: v{version_number}")
+
+    # ── Add description ────────────────────────────────────────
+    client.update_model_version(
+        name=args.model_name,
+        version=version_number,
+        description=(
+            f"RandomForest churn model | "
+            f"Recall: {metrics['recall']:.4f} | "
+            f"F1: {metrics['f1']:.4f} | "
+            f"ROC-AUC: {metrics['roc_auc']:.4f} | "
+            f"Commit: {args.git_commit[:8]}"
+        )
+    )
+
+    # ── Add tags to this version ───────────────────────────────
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=version_number,
+        key="git_commit",
+        value=args.git_commit
+    )
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=version_number,
+        key="recall",
+        value=str(round(metrics["recall"], 4))
+    )
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=version_number,
+        key="dataset_version",
+        value="customers_v3"       # could pull from dvc.lock dynamically
+    )
+    client.set_model_version_tag(
+        name=args.model_name,
+        version=version_number,
+        key="ci_run_id",
+        value=os.environ.get("GITHUB_RUN_ID", "unknown")
+    )
+
+    # ── Transition to Staging ──────────────────────────────────
+    client.transition_model_version_stage(
+        name=args.model_name,
+        version=version_number,
+        stage="Staging",
+        archive_existing_versions=False   # keep old Staging versions visible
+    )
+
+    print(f"Model v{version_number} transitioned to Staging")
+
+    # ── Export version number for downstream steps ─────────────
+    # GitHub Actions reads this to pass to Step 10
+    with open(os.environ["GITHUB_ENV"], "a") as f:
+        f.write(f"MODEL_VERSION={version_number}\n")
+        f.write(f"MLFLOW_RUN_ID={args.run_id}\n")
+
+    print("Registration complete.")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+## What MLflow Registry Looks Like After Step 9
+```
+MLflow Registry
+└── Registered Model: "churn-prediction-model"
+      │
+      ├── Version 1  [Production]    ← previous good model (still serving)
+      │     ├── Stage:       Production
+      │     ├── Recall:      0.861
+      │     ├── Git commit:  b2e1d90f...
+      │     ├── Registered:  2024-10-15 09:32:11
+      │     └── Artifact:    s3://ml-project-mlflow/artifacts/
+      │                        churn-prediction-model/1/model.pkl
+      │
+      ├── Version 2  [Archived]      ← old staging candidate (superseded)
+      │     ├── Stage:       Archived
+      │     ├── Recall:      0.823   ← failed threshold, archived
+      │     └── Git commit:  c9f3a44e...
+      │
+      └── Version 3  [Staging]       ← just registered NOW in Step 9
+            ├── Stage:       Staging
+            ├── Recall:      0.887   ← passed gate ✅
+            ├── F1:          0.910
+            ├── ROC-AUC:     0.951
+            ├── Git commit:  a3f8c21d...   ← exact commit that produced it
+            ├── CI Run ID:   8473920156
+            ├── Dataset:     customers_v3
+            ├── Registered:  2024-11-20 14:17:43
+            └── Artifact:    s3://ml-project-mlflow/artifacts/
+                               churn-prediction-model/3/
+                                 ├── model.pkl
+                                 ├── MLmodel
+                                 └── conda.yaml
+```
+
+---
+
+## What Lives in S3 After Registration
+```
+s3://ml-project-mlflow/
+└── artifacts/
+    └── churn-prediction-model/
+        └── 3/                           ← version number
+            └── model/
+                ├── model.pkl            ← serialized RandomForest
+                ├── MLmodel              ← MLflow model metadata
+                │     flavor: sklearn
+                │     python_version: 3.10.14
+                │     sklearn_version: 1.4.1
+                │     time_created: 2024-11-20T14:17:43
+                ├── conda.yaml           ← conda environment spec
+                └── requirements.txt     ← pip requirements for this model
+```
+> **NOTE:** The artifact path in S3 is permanent and immutable. MLflow never overwrites a registered version's artifacts — every version is preserved forever for audit and rollback.
+
+
+
   </details>
   </details>
   
