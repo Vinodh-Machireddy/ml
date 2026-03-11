@@ -427,30 +427,167 @@ CMD ["uvicorn", "src.inference.server:app", "--host", "0.0.0.0", "--port", "8080
 ```
 
 <details>
-  <summary><b>Click to expand: ML END-TO-END LIFECYCLE</b></summary>
-  <details style="margin-left: 20px;">
-  <summary><i> --- CI Phase (GitHub Actions) --- </i></summary>
-  <details style="margin-left: 20px;">
-  <summary><i>1. Code Commit (Git Push)</i></summary>
+<summary><b>Click to expand: ML END-TO-END LIFECYCLE</b></summary>
+<details style="margin-left: 20px;">
+<summary><i> --- CI Phase (GitHub Actions) --- </i></summary>  
+This job is triggered on every push, PR, workflow_dispatch to the main branch.  
+ 
+### 1. Code Commit (Git Push)
   This is the trigger point for the entire pipeline. Here's exactly what happens in real-world production:  
    
-  ### The Chain Reaction This Starts  
-   ```   
-   git push origin main
+```   
+git push origin main
         │
         ▼
-   GitHub detects a push event
+GitHub detects a push event
         │
         ▼
-   Reads .github/workflows/ml-pipeline.yml
+Reads .github/workflows/ml-pipeline.yml
         │
         ▼
-   Spins up a GitHub Actions Runner  ← Step 2 begins here  
-   ```  
-  <details style="margin-left: 20px;">
-  <summary><i>2. Unit Testing</i></summary>
-  </details>
-  </details>
+Spins up a GitHub Actions Runner  ← Step 2 begins here  
+```  
+### 2. CI Trigger (GitHub Actions)
+   This is where GitHub detects your push and spins up the automation engine.  
+   Think of it as a server that watches your repo and reacts to events. The moment your push lands on GitHub, it reads your workflow file and starts executing   jobs.  
+   
+```  
+Your Machine          GitHub               GitHub Actions Runner
+     │                   │                        │
+     │── git push ──────►│                        │
+     │                   │── detects push event   │
+     │                   │── reads workflow yml ──►│
+     │                   │                        │── spins up VM
+     │                   │                        │── begins Step 3+  
+```  
+```
+# .github/workflows/ml-pipeline.yml
+
+name: ML End-to-End Pipeline
+
+# ─────────────────────────────────────────
+# TRIGGER RULES — what events fire this?
+# ─────────────────────────────────────────
+on:
+  push:
+    branches:
+      - main                  # fires on every push to main
+    paths:                    # ONLY if these files changed
+      - 'src/**'              # any code change
+      - 'params.yaml'         # hyperparameter change
+      - 'dvc.yaml'            # pipeline structure change
+      - 'requirements.txt'    # dependency change
+
+  pull_request:
+    branches:
+      - main                  # fires when PR targets main
+    paths:
+      - 'src/**'
+      - 'params.yaml'
+
+  workflow_dispatch:          # allows MANUAL trigger from GitHub UI
+    inputs:
+      force_retrain:
+        description: 'Force model retraining even if no changes'
+        required: false
+        default: 'false'
+```
+### Step 3: Code Checkout  
+This is the first actual step that runs inside the GitHub Actions Runner VM. Remember — the VM is completely blank. It has no idea what your project looks like. Code Checkout fixes that.  
+
+What the Runner Looks Like BEFORE Checkout  
+```
+GitHub Actions Runner VM (just provisioned)
+├── /home/runner/
+├── /home/runner/work/          ← empty
+└── No code, no files, nothing
+```
+The Checkout Action  
+```
+# Inside .github/workflows/ml-pipeline.yml
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── STEP 3: Code Checkout ──────────────────────────────
+      - name: Checkout Repository
+        uses: actions/checkout@v4       # official GitHub action
+        with:
+          fetch-depth: 0                # fetch FULL git history (explained below)
+          lfs: false                    # we don't use Git LFS (DVC handles large files)
+          token: ${{ secrets.GITHUB_TOKEN }}  # auto-injected by GitHub
+```
+What actions/checkout@v4 Does Internally  
+Under the hood, this action runs a sequence of git commands on the runner:  
+```
+# 1. Initialize a git repo in the runner's workspace
+git init /home/runner/work/ml-project/ml-project
+
+# 2. Add your GitHub repo as the remote origin
+git remote add origin https://github.com/your-org/ml-project.git
+
+# 3. Authenticate using the injected token
+git config http.extraheader \
+  "AUTHORIZATION: Bearer <GITHUB_TOKEN>"
+
+# 4. Fetch the specific commit that triggered this run
+git fetch --no-tags origin \
+  refs/heads/main:refs/remotes/origin/main
+
+# 5. Checkout exactly the commit that was pushed
+git checkout --progress --force \
+  a3f8c21d...   # ← the exact commit SHA from your git push
+```
+
+> **Critical:** It checks out the **exact commit SHA** that triggered the push — not "latest main." This ensures the pipeline runs on precisely what was pushed, even if someone else pushed 2 seconds later.
+
+---
+
+#### What the Runner Looks Like AFTER Checkout
+```
+/home/runner/work/ml-project/ml-project/
+├── .github/
+│   └── workflows/
+│       └── ml-pipeline.yml
+├── src/
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── preprocess.py
+│   └── predict.py
+├── pipelines/
+│   └── kfp_pipeline.py
+├── tests/
+│   └── test_preprocess.py
+├── dvc.yaml                    ← pipeline definition (no data yet)
+├── dvc.lock                    ← data version pointers (no data yet)
+├── params.yaml                 ← hyperparameters
+├── requirements.txt
+└── Dockerfile
+```  
+> **Notice:** Only code files exist. No actual data, no models. Those come in Step 7 (DVC Pull).
+
+### Step 4: Install Dependencies:
+The runner has your code but can't run any of it yet. Python packages, CLI tools, nothing is installed. This step makes the environment execution-ready.  
+
+The Workflow Step:
+```
+# Inside .github/workflows/ml-pipeline.yml
+
+      # ── STEP 4: Install Dependencies ──────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'        # pin exact Python version
+          cache: 'pip'                  # cache pip downloads (explained below)
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+```
+
+
   </details>
   <details style="margin-left: 20px;">
   <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
@@ -458,4 +595,4 @@ CMD ["uvicorn", "src.inference.server:app", "--host", "0.0.0.0", "--port", "8080
   <details style="margin-left: 20px;">
   <summary><i> --- Monitoring & Retraining Loop --- </i></summary>
   </details> 
-</details>
+</details>  
