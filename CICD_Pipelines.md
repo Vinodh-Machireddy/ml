@@ -721,6 +721,46 @@ Unit Tests verify:
 ├── Edge cases are handled (nulls, empty DataFrames, wrong dtypes)  
 └── params.yaml is parsed correctly  
 #### The Workflow Step:  
+```
+# Inside .github/workflows/ml-pipeline.yml
+
+      # ── STEP 6: Unit Tests ─────────────────────────────────
+      - name: Unit Tests (pytest)
+        run: |
+          pytest tests/ \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            -v \
+            -x
+        env:
+          PYTHONPATH: ${{ github.workspace }}  # ensures src/ is importable
+```
+
+#### Flag Breakdown
+```
+pytest tests/               → scan everything inside tests/ folder
+--cov=src                   → measure coverage of src/ code
+--cov-report=xml            → output coverage.xml (for SonarCloud etc.)
+--cov-report=term-missing   → print which exact lines are NOT covered
+--cov-fail-under=80         → FAIL if coverage drops below 80%
+-v                          → verbose: show each test name + pass/fail
+-x                          → stop immediately on first failure
+                              (don't run 50 tests after one breaks)
+```
+
+---
+
+#### Project Test Structure
+```
+tests/
+├── conftest.py                  ← shared fixtures (reusable test data)
+├── test_preprocess.py           ← tests for src/preprocess.py
+├── test_train.py                ← tests for src/train.py
+├── test_evaluate.py             ← tests for src/evaluate.py
+└── test_params.py               ← tests for params.yaml loading
+```
 
 
 
