@@ -909,11 +909,8 @@ if __name__ == "__main__":
     main()
 ```
 #### pipelines/kfp_pipeline.py — The Pipeline Definition  
-
 <details style="margin-left: 20px;">
 <summary><i> pipelines/kfp_pipeline.py </i></summary>  
-
-
 
 ```  
 # pipelines/kfp_pipeline.py
@@ -1341,12 +1338,19 @@ Step 8: KFP Pipeline ✓
       ▼
 Step 9: Model Registration (MLflow Registry)  ← next  
 ```
-</details>
   </details>
+  </details>
+  
   <details style="margin-left: 20px;">
-  <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
+    <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
   </details> 
+  
   <details style="margin-left: 20px;">
-  <summary><i> --- Monitoring & Retraining Loop --- </i></summary>
+    <summary><i> --- Monitoring & Retraining Loop --- </i></summary>  
   </details> 
+  
 </details>  
+
+
+
+
