@@ -761,6 +761,30 @@ tests/
 ├── test_evaluate.py             ← tests for src/evaluate.py
 └── test_params.py               ← tests for params.yaml loading
 ```
+### Step 7: Data Pull & Versioning (DVC + S3)
+Code is verified clean. Now the pipeline needs real data. This step is where DVC bridges the gap between Git (code versioning) and S3 (data storage), pulling the exact data version that corresponds to this commit.  
+The Workflow Step:  
+```
+# Inside .github/workflows/ml-pipeline.yml
+# This runs in Job 2: ml-pipeline (after code-quality job passed)
+
+      # ── STEP 7: Data Pull & Versioning ────────────────────
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+
+      - name: Configure DVC Remote
+        run: |
+          dvc remote add -d s3remote s3://ml-project-data/files
+          dvc remote modify s3remote region us-east-1
+
+      - name: Pull Data from S3 (DVC)
+        run: |
+          dvc pull --run-cache           # pulls data + cached pipeline outputs
+```
 
 
 
