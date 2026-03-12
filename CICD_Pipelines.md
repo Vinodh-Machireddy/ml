@@ -267,48 +267,64 @@ CT means automatically retraining the model when new data or drift is detected.
   repository_dispatch:
     types: [new-data-arrived]
 ```
-
  
-# ML END-TO-END LIFECYCLE
-```
---- CI Phase (GitHub Actions) ---
+<details>
+<summary><b>Click-To-Expand: ML END-TO-END LIFECYCLE</b></summary>
 
-1.  Code Commit (Git Push)
-2.  CI Trigger (GitHub Actions)
-3.  Code Checkout
-4.  Install Dependencies
-5.  Lint Check (flake8)
-6.  Unit Tests (pytest)
-7.  Data Pull & Versioning (DVC + S3)
-8.  Model Training Pipeline — KFP Run triggered by GitHub Actions (polls for completion)
-        8a. Training            (KFP component)
-        8b. Experiment Tracking (MLflow — logs params, metrics, artifacts to S3)
-        8c. Model Evaluation & Validation (KFP component — gates pipeline on metric threshold)
-9.  Model Registration (MLflow Registry — model artifact stored in S3 via MLflow)
-10. Model Promotion (Staging → Production in MLflow Registry)
-11. Build Inference Docker Image
-12. Push Docker Image to ECR
+<details>
+<summary><b>CI Phase (GitHub Actions)</b></summary>
 
---- CD Phase (ArgoCD + KServe) ---
+1. Code Commit (Git Push)  
+2. CI Trigger (GitHub Actions)  
+3. Code Checkout  
+4. Install Dependencies  
+5. Lint Check (flake8)  
+6. Unit Tests (pytest)  
+7. Data Pull & Versioning (DVC + S3)  
 
-13. Update KServe Manifest (inference.yaml — new image tag + S3 model URI)
-14. Git Commit & Push Deployment Config
-15. ArgoCD Detects Drift & Syncs
-16. KServe Deploys Model Pod (pulls image from ECR, model from S3)
+8. Model Training Pipeline — KFP Run triggered by GitHub Actions (polls for completion)
 
---- Monitoring & Retraining Loop ---
+   <details>
+   <summary>Training Pipeline Steps</summary>
 
-17. Monitoring (Prometheus + Grafana — latency, throughput, error rate)
-18. Data/Concept Drift Detection (custom Prometheus metrics)
-19. Alert Trigger (Prometheus Alertmanager)
-20. Retraining Pipeline Trigger (webhook → GitHub Actions → new KFP run)
-21. New Model Version Generated (loops back to step 8)
+   - 8a. Training (KFP component)  
+   - 8b. Experiment Tracking (MLflow — logs params, metrics, artifacts to S3)  
+   - 8c. Model Evaluation & Validation (KFP component — gates pipeline on metric threshold)  
+
+   </details>
+   NOTE 8b:  
+   - When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action.  
+   - model artifact already stored in S3 via MLflow artifact store  
+9. Model Registration (MLflow Registry — model artifact stored in S3 via MLflow)  
+10. Model Promotion (Staging → Production in MLflow Registry)  
+11. Build Inference Docker Image  
+12. Push Docker Image to ECR  
+
+</details>
+
+<details>
+<summary><b>CD Phase (ArgoCD + KServe)</b></summary>
+
+13. Update KServe Manifest (inference.yaml — new image tag + S3 model URI)  
+14. Git Commit & Push Deployment Config  
+15. ArgoCD Detects Drift & Syncs  
+16. KServe Deploys Model Pod (pulls image from ECR, model from S3)  
+
+</details>
+
+<details>
+<summary><b>Monitoring & Retraining Loop</b></summary>
+
+17. Monitoring (Prometheus + Grafana — latency, throughput, error rate)  
+18. Data / Concept Drift Detection (custom Prometheus metrics)  
+19. Alert Trigger (Prometheus Alertmanager)  
+20. Retraining Pipeline Trigger (webhook → GitHub Actions → new KFP run)  
+21. New Model Version Generated (loops back to step 8)  
 22. Redeployment (loops back to step 13)  
-```  
-NOTE 8b: 
-- When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action. 
-- model artifact already stored in S3 via MLflow artifact store"
 
+</details>
+
+</details>  
 
 ## How the KFP Training Pipeline Runs on Kubernetes  
 When GitHub Actions reaches the "Model Training" step, it does not run the training code directly inside the GitHub Actions runner. Instead, it just sends a trigger (an API call) to the Kubeflow Pipelines API server, which then schedules and runs the actual training pipeline on your Kubernetes cluster.  
