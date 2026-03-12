@@ -57,7 +57,7 @@
 
 </details>  
 
-# GitHub repository structure  
+# GitHub repository Folder structure  
 ```  
 /home/runner/work/ml-project/ml-project/
 ├── .github/
