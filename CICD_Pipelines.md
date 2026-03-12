@@ -829,558 +829,63 @@ The Workflow Step:
 This is the heart of the entire lifecycle. The runner now has code ✅, dependencies ✅, and data ✅. It's time to fire actual model training — but NOT on the GitHub Actions runner itself. The runner orchestrates training on a dedicated Kubeflow Pipelines (KFP) cluster.  
 > The runner's job in Step 8: compile the pipeline, submit it to Kubeflow, and poll until it finishes. The actual compute happens inside the Kubeflow cluster.  
 The Big Picture of Step 8:
-```
-GitHub Actions Runner                    Kubeflow Cluster (Kubernetes)
-──────────────────────                   ──────────────────────────────
-                                         
-1. Compile KFP pipeline         ──►      
-2. Submit pipeline run          ──►      Pod: 8a. Training
-3. Poll for completion          ◄──      Pod: 8b. MLflow Logging
-        │                                Pod: 8c. Evaluation & Gate
-        │ (blocks until done)            
-        ▼
-   Pass or Fail
-```
-The Workflow Step in GitHub Actions:  
-```
-# Inside .github/workflows/ml-pipeline.yml
-
-      # ── STEP 8: Trigger KFP Pipeline ──────────────────────
-      - name: Compile & Submit KFP Pipeline
-        run: |
-          python pipelines/submit_pipeline.py \
-            --endpoint    ${{ secrets.KFP_ENDPOINT }} \
-            --experiment  "churn-prediction" \
-            --run-name    "run-${{ github.sha }}" \
-            --params-file params.yaml
-        env:
-          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
-```
-```pipelines/submit_pipeline.py``` — The Orchestrator Script  
-```
-# pipelines/submit_pipeline.py
-
-import kfp
-import kfp.compiler as compiler
-import argparse
-import yaml
-import time
-import sys
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--endpoint",    required=True)
-    parser.add_argument("--experiment",  required=True)
-    parser.add_argument("--run-name",    required=True)
-    parser.add_argument("--params-file", required=True)
-    return parser.parse_args()
-
-
-def main():
-    args = parse_args()
-
-    # Load hyperparameters from params.yaml
-    with open(args.params_file) as f:
-        params = yaml.safe_load(f)
-
-    # Connect to Kubeflow cluster
-    client = kfp.Client(host=args.endpoint)
-
-    # Import the pipeline definition
-    from pipelines.kfp_pipeline import ml_pipeline
-
-    # Compile pipeline to YAML spec
-    compiler.Compiler().compile(
-        pipeline_func=ml_pipeline,
-        package_path="pipeline.yaml"
-    )
-
-    # Submit pipeline run to Kubeflow
-    run = client.create_run_from_pipeline_package(
-        pipeline_file="pipeline.yaml",
-        arguments={
-            "n_estimators":         params["train"]["n_estimators"],
-            "max_depth":            params["train"]["max_depth"],
-            "random_state":         params["train"]["random_state"],
-            "target_column":        params["train"]["target_column"],
-            "min_recall_threshold": params["train"]["min_recall_threshold"],
-        },
-        run_name=args.run_name,
-        experiment_name=args.experiment,
-    )
-
-    print(f"Pipeline submitted. Run ID: {run.run_id}")
-    print(f"Track at: {args.endpoint}/#/runs/details/{run.run_id}")
-
-    # ── POLLING LOOP ──────────────────────────────────────────
-    # GitHub Actions blocks here until Kubeflow finishes
-    poll_interval_seconds = 30
-    timeout_seconds       = 7200   # 2 hour max
-
-    elapsed = 0
-    while elapsed < timeout_seconds:
-        status = client.get_run(run.run_id).run.status
-
-        print(f"[{elapsed}s] Pipeline status: {status}")
-
-        if status == "Succeeded":
-            print("Pipeline completed successfully.")
-            sys.exit(0)             # exit code 0 → GitHub Actions continues
-
-        elif status in ("Failed", "Error"):
-            print(f"Pipeline failed with status: {status}")
-            sys.exit(1)             # exit code 1 → GitHub Actions fails
-
-        elif status == "Skipped":
-            print("Pipeline was skipped — no changes detected.")
-            sys.exit(0)
-
-        time.sleep(poll_interval_seconds)
-        elapsed += poll_interval_seconds
-
-    print("Timeout exceeded — pipeline still running.")
-    sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
-```
-#### pipelines/kfp_pipeline.py — The Pipeline Definition  
-<details style="margin-left: 20px;">
-<summary><i> pipelines/kfp_pipeline.py </i></summary>  
 
 ```  
-# pipelines/kfp_pipeline.py
-
-from kfp import dsl
-from kfp.dsl import component, pipeline, Input, Output, Dataset, Model, Metrics
-
-# ─────────────────────────────────────────────────────────────
-# COMPONENT 8a: TRAINING
-# Each @component runs as an isolated Kubernetes Pod
-# ─────────────────────────────────────────────────────────────
-@component(
-    base_image="python:3.10-slim",
-    packages_to_install=[
-        "scikit-learn==1.4.1",
-        "pandas==2.2.1",
-        "numpy==1.26.4",
-        "boto3==1.34.69",
-    ]
+GitHub Actions          →  "Hey KFP, run this pipeline"
+KFP API Server          →  "OK, let me translate this into something Kubernetes understands"
+Argo Workflow Object    →  "I'm just a YAML definition sitting in Kubernetes"
+Argo Workflow Controller→  "I read that definition and CREATE the actual pods"
+Kubernetes              →  "I schedule and RUN those pods on available nodes"
+```
+When GitHub Actions reaches the "Model Training" step, it does not run the training code directly inside the GitHub Actions runner. Instead, it just sends a trigger (an API call) to the Kubeflow Pipelines API server, which then schedules and runs the actual training pipeline on your Kubernetes cluster.  
+So the GitHub Actions step looks something like this in practice:   
+```
+# Simply says "hey, run this pipeline"
+kfp.Client(host="https://kfp-server-url").create_run_from_pipeline_package(
+    pipeline_file="my_pipeline.yaml",
+    arguments={"param1": "value1"}
 )
-def train_component(
-    n_estimators:  int,
-    max_depth:     int,
-    random_state:  int,
-    target_column: str,
-    model_output:  Output[Model],       # KFP artifact — model file
-    dataset_info:  Output[Dataset],     # KFP artifact — metadata
-):
-    """Pulls data from S3, trains model, saves artifact."""
-    import boto3
-    import pandas as pd
-    import pickle
-    import os
-    from sklearn.ensemble import RandomForestClassifier
-
-    # Pull train data from S3
-    s3 = boto3.client("s3")
-    s3.download_file(
-        "ml-project-data",
-        "train/X_train.csv",
-        "/tmp/X_train.csv"
-    )
-    s3.download_file(
-        "ml-project-data",
-        "train/y_train.csv",
-        "/tmp/y_train.csv"
-    )
-
-    X_train = pd.read_csv("/tmp/X_train.csv")
-    y_train = pd.read_csv("/tmp/y_train.csv").squeeze()
-
-    # Train model
-    model = RandomForestClassifier(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=random_state,
-    )
-    model.fit(X_train, y_train)
-
-    # Save model artifact for downstream components
-    os.makedirs(model_output.path, exist_ok=True)
-    with open(f"{model_output.path}/model.pkl", "wb") as f:
-        pickle.dump(model, f)
-
-    # Save dataset metadata
-    with open(dataset_info.path, "w") as f:
-        f.write(f"rows={len(X_train)},features={X_train.shape[1]}")
-
-    print(f"Training complete. Model saved to {model_output.path}")
-
-
-# ─────────────────────────────────────────────────────────────
-# COMPONENT 8b: EXPERIMENT TRACKING (MLflow)
-# ─────────────────────────────────────────────────────────────
-@component(
-    base_image="python:3.10-slim",
-    packages_to_install=[
-        "mlflow==2.12.1",
-        "scikit-learn==1.4.1",
-        "pandas==2.2.1",
-        "boto3==1.34.69",
-    ]
-)
-def mlflow_tracking_component(
-    n_estimators:       int,
-    max_depth:          int,
-    random_state:       int,
-    mlflow_tracking_uri: str,
-    git_commit:         str,
-    model_input:        Input[Model],   # receives model from 8a
-    mlflow_run_id:      Output[str],    # passes run_id to 8c
-):
-    """Logs params, metrics, and model artifact to MLflow."""
-    import mlflow
-    import mlflow.sklearn
-    import pandas as pd
-    import pickle
-    import boto3
-    from sklearn.metrics import (
-        accuracy_score, recall_score,
-        precision_score, f1_score,
-        roc_auc_score
-    )
-
-    mlflow.set_tracking_uri(mlflow_tracking_uri)
-    mlflow.set_experiment("churn-prediction")
-
-    with mlflow.start_run(run_name=f"rf-{git_commit[:8]}") as run:
-
-        # ── Log Parameters ───────────────────────────────────
-        mlflow.log_params({
-            "model_type":    "random_forest",
-            "n_estimators":  n_estimators,
-            "max_depth":     max_depth,
-            "random_state":  random_state,
-        })
-
-        # ── Log Git metadata as tags ─────────────────────────
-        mlflow.set_tags({
-            "git_commit":   git_commit,
-            "pipeline":     "kubeflow",
-            "dataset":      "customers_v3",
-        })
-
-        # ── Load model from 8a ───────────────────────────────
-        with open(f"{model_input.path}/model.pkl", "rb") as f:
-            model = pickle.load(f)
-
-        # ── Load test data, compute metrics ─────────────────
-        s3 = boto3.client("s3")
-        s3.download_file("ml-project-data", "test/X_test.csv", "/tmp/X_test.csv")
-        s3.download_file("ml-project-data", "test/y_test.csv", "/tmp/y_test.csv")
-
-        X_test = pd.read_csv("/tmp/X_test.csv")
-        y_test = pd.read_csv("/tmp/y_test.csv").squeeze()
-        y_pred = model.predict(X_test)
-        y_prob = model.predict_proba(X_test)[:, 1]
-
-        metrics = {
-            "accuracy":  accuracy_score(y_test, y_pred),
-            "recall":    recall_score(y_test, y_pred),
-            "precision": precision_score(y_test, y_pred),
-            "f1":        f1_score(y_test, y_pred),
-            "roc_auc":   roc_auc_score(y_test, y_prob),
-        }
-
-        # ── Log Metrics ──────────────────────────────────────
-        mlflow.log_metrics(metrics)
-
-        print(f"Metrics logged: {metrics}")
-
-        # ── Log Model Artifact to S3 via MLflow ──────────────
-        mlflow.sklearn.log_model(
-            sk_model=model,
-            artifact_path="model",
-            registered_model_name="churn-prediction-model",
-        )
-
-        # ── Log Feature Importance Plot ──────────────────────
-        import matplotlib.pyplot as plt
-        importances = model.feature_importances_
-        plt.figure(figsize=(10, 6))
-        plt.barh(X_test.columns, importances)
-        plt.title("Feature Importances")
-        plt.savefig("/tmp/feature_importance.png")
-        mlflow.log_artifact("/tmp/feature_importance.png")
-
-        # Pass MLflow run_id to evaluation component
-        with open(mlflow_run_id.path, "w") as f:
-            f.write(run.info.run_id)
-
-
-# ─────────────────────────────────────────────────────────────
-# COMPONENT 8c: EVALUATION & VALIDATION GATE
-# ─────────────────────────────────────────────────────────────
-@component(
-    base_image="python:3.10-slim",
-    packages_to_install=[
-        "mlflow==2.12.1",
-    ]
-)
-def evaluate_and_gate_component(
-    min_recall_threshold: float,
-    mlflow_tracking_uri:  str,
-    mlflow_run_id:        Input[str],   # receives run_id from 8b
-    evaluation_result:    Output[Metrics],
-):
-    """
-    Fetches metrics from MLflow.
-    GATES the pipeline — fails hard if recall below threshold.
-    """
-    import mlflow
-    import sys
-
-    mlflow.set_tracking_uri(mlflow_tracking_uri)
-
-    # Read run_id passed from 8b
-    with open(mlflow_run_id.path) as f:
-        run_id = f.read().strip()
-
-    # Fetch metrics from MLflow
-    client = mlflow.MlflowClient()
-    run    = client.get_run(run_id)
-    metrics = run.data.metrics
-
-    recall    = metrics["recall"]
-    precision = metrics["precision"]
-    f1        = metrics["f1"]
-    roc_auc   = metrics["roc_auc"]
-
-    print(f"Recall:    {recall:.4f}  (threshold: {min_recall_threshold})")
-    print(f"Precision: {precision:.4f}")
-    print(f"F1:        {f1:.4f}")
-    print(f"ROC-AUC:   {roc_auc:.4f}")
-
-    # Log to KFP metrics artifact
-    evaluation_result.log_metric("recall",    recall)
-    evaluation_result.log_metric("precision", precision)
-    evaluation_result.log_metric("f1",        f1)
-    evaluation_result.log_metric("roc_auc",   roc_auc)
-
-    # ── THE GATE ─────────────────────────────────────────────
-    if recall <= min_recall_threshold:
-        print(
-            f"GATE FAILED: recall {recall:.4f} "
-            f"does not exceed threshold {min_recall_threshold}"
-        )
-        sys.exit(1)     # ← kills entire pipeline here
-                        # Step 9 never runs
-                        # No bad model gets registered
-
-    print(f"GATE PASSED: recall {recall:.4f} exceeds {min_recall_threshold}")
-    # Pipeline continues to Step 9
-
-
-# ─────────────────────────────────────────────────────────────
-# PIPELINE ASSEMBLY — wires 8a → 8b → 8c
-# ─────────────────────────────────────────────────────────────
-@pipeline(
-    name="churn-prediction-pipeline",
-    description="Train, track, evaluate and gate churn model"
-)
-def ml_pipeline(
-    n_estimators:         int   = 200,
-    max_depth:            int   = 10,
-    random_state:         int   = 42,
-    target_column:        str   = "churn",
-    min_recall_threshold: float = 0.85,
-    mlflow_tracking_uri:  str   = "",
-    git_commit:           str   = "",
-):
-    # 8a: Train
-    train_task = train_component(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=random_state,
-        target_column=target_column,
-    )
-    train_task.set_cpu_request("8")
-    train_task.set_memory_request("32Gi")
-    train_task.set_gpu_limit("1")            # request GPU node
-
-    # 8b: MLflow Tracking (depends on 8a output)
-    tracking_task = mlflow_tracking_component(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=random_state,
-        mlflow_tracking_uri=mlflow_tracking_uri,
-        git_commit=git_commit,
-        model_input=train_task.outputs["model_output"],
-    )
-    tracking_task.set_cpu_request("4")
-    tracking_task.set_memory_request("16Gi")
-
-    # 8c: Evaluation Gate (depends on 8b output)
-    gate_task = evaluate_and_gate_component(
-        min_recall_threshold=min_recall_threshold,
-        mlflow_tracking_uri=mlflow_tracking_uri,
-        mlflow_run_id=tracking_task.outputs["mlflow_run_id"],
-    )
-    gate_task.set_cpu_request("2")
-    gate_task.set_memory_request("4Gi")
 ```  
+GitHub Actions owns CI orchestration (lint, test, build, push). KFP owns ML orchestration (data prep, train, evaluate, register). Mixing them would make your CI pipeline fragile and hard to debug.  
 
----
+The only thing to be careful about GitHub Actions needs to wait for the KFP run to finish before proceeding to the next steps (evaluation, S3 push, image build). If you fire-and-forget the KFP trigger, your CI pipeline will move on before training is done. So your GitHub Actions step should poll the KFP run status and only proceed on a successful completion status.  
 
-#### How Data Flows Between Components
+Step 1 — GitHub Actions (The Trigger)  
+This is just the starting point. Your CI/CD pipeline makes an API call   
+
+Step 2 — KFP API Server (The Translator) KFP receives the request and thinks:  
+> "OK, this pipeline has 3 steps — preprocess, train, evaluate. Let me convert this into an Argo Workflow YAML and submit it to Kubernetes."
+KFP does NOT create pods directly. It just creates an Argo Workflow object (a Kubernetes custom resource).
+
+Step 3 — Argo Workflow Object (Just a Definition)
+This is just a YAML file stored in Kubernetes. It describes WHAT should run, but by itself it does nothing. Think of it like a blueprint — it's just sitting there waiting.  
+**Step 4 — Argo Workflow Controller (The REAL Pod Creator)**   
+This is the **key player**. The Argo Controller is a process **constantly running inside your Kubernetes cluster**, watching for new Workflow objects. When it sees one:  
+
+> "Oh, a new workflow appeared! Let me read it and create pods for each step."
 ```
-
-params.yaml
-    │
-    ▼
-submit_pipeline.py
-    │
-    ├──────────────────────────────────────┐
-    ▼                                      │
-┌─────────────────────────────┐            │
-│  Pod 8a: train_component    │            │
-│  ─────────────────────────  │            │
-│  S3 → X_train, y_train      │            │
-│  Trains RandomForest        │            │
-│  Saves model.pkl            │            │
-└──────────┬──────────────────┘            │
-           │ model artifact                │
-           ▼                              │
-┌──────────────────────────────────────┐  │
-│  Pod 8b: mlflow_tracking_component   │  │
-│  ──────────────────────────────────  │  │
-│  Loads model.pkl from 8a             │  │
-│  Loads X_test, y_test from S3        │  │
-│  Computes metrics                    │  │
-│  Logs params + metrics → MLflow      │  │
-│  Logs model artifact → S3 (MLflow)   │  │
-│  Outputs: mlflow_run_id              │  │
-└──────────┬───────────────────────────┘  │
-           │ run_id                        │
-           ▼                              │
-┌──────────────────────────────────────┐  │
-│  Pod 8c: evaluate_and_gate_component │  │
-│  ──────────────────────────────────  │  │
-│  Fetches metrics from MLflow         │  │
-│  Compares recall vs threshold        │  │
-│  recall > 0.85?                      │  │
-│    YES → exit(0) → pipeline continues│  │
-│    NO  → exit(1) → pipeline DIES     │  │
-└──────────────────────────────────────┘  │
-           │                              │
-           ▼                              │
-    Polling loop in                       │
-    GitHub Actions                        │
-    detects Succeeded ◄───────────────────┘
-```  
-
----
-
-#### What MLflow Stores After 8b
-```  
-MLflow Tracking Server (backed by S3)
-──────────────────────────────────────
-Experiment: churn-prediction
-  └── Run: rf-a3f8c21d
-        ├── Parameters
-        │     ├── model_type:   random_forest
-        │     ├── n_estimators: 200
-        │     ├── max_depth:    10
-        │     └── random_state: 42
-        │
-        ├── Metrics
-        │     ├── accuracy:  0.912
-        │     ├── recall:    0.887   ← above 0.85 threshold ✅
-        │     ├── precision: 0.934
-        │     ├── f1:        0.910
-        │     └── roc_auc:   0.951
-        │
-        ├── Tags
-        │     ├── git_commit: a3f8c21d9b4e...
-        │     └── pipeline:   kubeflow
-        │
-        └── Artifacts (stored in S3)
-              ├── model/
-              │     ├── model.pkl
-              │     ├── MLmodel          ← MLflow model metadata
-              │     └── conda.yaml       ← environment spec
-              └── feature_importance.png
-```  
-
----
-
-#### The Gate in Action — Two Scenarios
-```  
-Scenario A: Model PASSES gate
-─────────────────────────────
-recall = 0.887 > 0.85 threshold
-8c exits with code 0
-KFP marks pipeline: Succeeded
-Polling loop detects: Succeeded
-GitHub Actions: continues to Step 9 ✅
-
-Scenario B: Model FAILS gate
-─────────────────────────────
-recall = 0.761 < 0.85 threshold
-8c exits with code 1
-KFP marks pipeline: Failed
-Polling loop detects: Failed
-GitHub Actions: exits with code 1 ❌
-Steps 9, 10, 11, 12 NEVER run
-No bad model enters MLflow Registry
-No bad Docker image gets built
-```  
-
----
-
-#### What the CI Logs Look Like During Polling
+Argo Controller sees the workflow object
+    → Creates Pod for "preprocess" step
+    → Waits for it to finish
+    → Creates Pod for "train" step
+    → Waits for it to finish
+    → Creates Pod for "evaluate" step
 ```
-Pipeline submitted. Run ID: abc123xyz
-Track at: https://kubeflow.internal/#/runs/details/abc123xyz
+**The Argo Controller is the one who actually creates the pods.**   
 
-[0s]   Pipeline status: Running
-[30s]  Pipeline status: Running
-[60s]  Pipeline status: Running   ← 8a training in progress
-[90s]  Pipeline status: Running
-...
-[1200s] Pipeline status: Running  ← 8b MLflow logging
-[1230s] Pipeline status: Running  ← 8c evaluation
-[1260s] Pipeline status: Succeeded
+**Step 5 — Kubernetes (The Executor)**  
+Once the pod is created, **Kubernetes scheduler** decides:  
 
-Pipeline completed successfully.
-```  
+> "Which node has enough CPU/memory to run this pod?"  
 
----
+Then it schedules and runs the pod on an available node.    
 
-#### Full Picture After Step 8
-```  
-Step 7: Data Pull ✓
-      │
-      ▼
-Step 8: KFP Pipeline ✓
-      │
-      ├── 8a: Model trained on GPU pod (32GB RAM, 8 CPU)
-      ├── 8b: All params + metrics + artifacts logged to MLflow
-      │         └── Model artifact stored in S3 via MLflow
-      ├── 8c: Recall gate passed (0.887 > 0.85)
-      └── Polling loop: Succeeded → GitHub Actions continues
-      │
-      ▼
-Step 9: Model Registration (MLflow Registry)  ← next  
-```
-</details>  
+
+
+#### pipelines/kfp_pipeline.py — The Pipeline Definition
 
 ### Step 9: Model Registration (MLflow Registry)
+
 The pipeline gate passed ✅. The model proved it meets the recall threshold. Now it needs to be formally registered — given a name, a version number, and stored in a central catalog that the entire organization can reference.  
 The Workflow Step:  
 ```
