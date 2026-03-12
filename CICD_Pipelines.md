@@ -1342,9 +1342,7 @@ AFTER (all new pods running):
   Pod 6: churn-inference:a3f8c21d  ← serving traffic
 
 ZERO DOWNTIME — traffic never drops to zero
-```
-
----
+```  
 
 ### The Prediction Endpoint After Deployment  
 ```
@@ -1390,7 +1388,7 @@ spec:
 
 ---
 
-## Rollback — How It Works in CD
+### Rollback — How It Works in CD
 ```
 Rollback is just a Git revert:
 
@@ -1409,7 +1407,7 @@ Total rollback time: ~2-3 minutes
 
 ---
 
-## Full CD Flow — End to End
+### Full CD Flow — End to End
 ```
 CI Phase Complete (image in ECR) ✅
         │
