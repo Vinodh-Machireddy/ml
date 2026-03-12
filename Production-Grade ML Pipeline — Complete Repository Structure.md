@@ -1,8 +1,6 @@
 <details>
 <summary><b>Click-To-Expand: ML END-TO-END LIFECYCLE</b></summary>
 
----
-
 <details>
 <summary><b>CI Phase (GitHub Actions)</b></summary>
 
@@ -24,15 +22,15 @@
    - 8c. Model Evaluation & Validation (KFP component — gates pipeline on metric threshold)  
 
    </details>
-   > ***NOTE 8b:*** When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action. model artifact already stored in S3 via MLflow artifact store" 
+   NOTE 8b:  
+   - When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action.  
+   - model artifact already stored in S3 via MLflow artifact store  
 9. Model Registration (MLflow Registry — model artifact stored in S3 via MLflow)  
 10. Model Promotion (Staging → Production in MLflow Registry)  
 11. Build Inference Docker Image  
 12. Push Docker Image to ECR  
 
 </details>
-
----
 
 <details>
 <summary><b>CD Phase (ArgoCD + KServe)</b></summary>
@@ -43,8 +41,6 @@
 16. KServe Deploys Model Pod (pulls image from ECR, model from S3)  
 
 </details>
-
----
 
 <details>
 <summary><b>Monitoring & Retraining Loop</b></summary>
@@ -59,10 +55,6 @@
 </details>
 
 </details>  
-
-NOTE 8b: 
-- When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action. 
-- model artifact already stored in S3 via MLflow artifact store"  
 
 # GitHub repository structure  
 ```  
