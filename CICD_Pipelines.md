@@ -1188,7 +1188,7 @@ New:  MODEL_VERSION: "3"                    ← new MLflow version
 
 ---
 
-## Who Updates `inference.yaml` and How
+**Who Updates ```inference.yaml``` and How**
 ```
 Two approaches in real production:
 
@@ -1231,6 +1231,214 @@ git log --oneline deployments/churn-inference/inference.yaml
 a3f8c21  deploy: churn-inference v3 (a3f8c21d)   ← just pushed
 b2e1d90  deploy: churn-inference v1 (b2e1d90f)   ← previous
 c9f3a44  deploy: churn-inference v0 (c9f3a44e)   ← initial deploy
+```
+**ArgoCD Application Definition — Written Once by MLOps**   
+#### argocd/app.yaml  
+#### Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
+```  
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: churn-inference
+  namespace: argocd
+
+spec:
+  project: ml-production
+
+  # ── WHERE to get config from (Git) ───────────────────────────
+  source:
+    repoURL:        https://github.com/your-org/ml-infra-repo
+    targetRevision: main
+    path:           deployments/churn-inference   # watch this folder
+
+  # ── WHERE to deploy to (Kubernetes) ──────────────────────────
+  destination:
+    server:    https://kubernetes.default.svc
+    namespace: ml-production
+
+  # ── HOW to sync ───────────────────────────────────────────────
+  syncPolicy:
+    automated:
+      prune:    true      # delete resources removed from Git
+      selfHeal: true      # re-apply if someone manually changes cluster
+
+    syncOptions:
+      - CreateNamespace=true
+```  
+
+## Step 3: ArgoCD Detects Drift & Syncs
+```
+BEFORE git push:
+────────────────────────────────────────────────────────
+Git repo:          inference.yaml → image: ...a3f8c21d
+Kubernetes cluster: running pod  → image: ...b2e1d90f
+
+ArgoCD compares these every 3 minutes (default polling).
+Detects: GIT ≠ CLUSTER → STATUS: OutOfSync
+
+AFTER git push:
+────────────────────────────────────────────────────────
+ArgoCD detects drift immediately (webhook or next poll)
+Pulls latest inference.yaml from Git
+Applies it to Kubernetes cluster
+STATUS: Syncing → Synced
+```
+
+**What ArgoCD does internally during sync:**
+```
+ArgoCD Sync Process:
+      │
+      ▼
+Pull latest inference.yaml from Git
+      │
+      ▼
+Compare with current cluster state
+      │
+      ▼
+Generate kubectl apply commands:
+  kubectl apply -f inference.yaml -n ml-production
+      │
+      ▼
+Kubernetes API receives new InferenceService spec
+      │
+      ▼
+KServe controller detects InferenceService changed
+      │
+      ▼
+Begins rolling update (Step 4)
+```  
+
+## Step 4: KServe Deploys Model Pod
+
+```
+KServe Rolling Update Process:
+──────────────────────────────────────────────────────
+
+BEFORE (old pods running):
+  Pod 1: churn-inference:b2e1d90f  ← serving traffic
+  Pod 2: churn-inference:b2e1d90f  ← serving traffic
+  Pod 3: churn-inference:b2e1d90f  ← serving traffic
+
+ROLLING UPDATE BEGINS:
+
+  Step A: Start 1 new pod
+    Pod 4: churn-inference:a3f8c21d  ← starting up
+    Pulls image from ECR
+    Runs /health check
+    Waits until readinessProbe passes
+
+  Step B: New pod is healthy → shift traffic
+    Pod 1: churn-inference:b2e1d90f  ← TERMINATED
+    Pod 2: churn-inference:b2e1d90f  ← serving traffic
+    Pod 3: churn-inference:b2e1d90f  ← serving traffic
+    Pod 4: churn-inference:a3f8c21d  ← serving traffic
+
+  Step C: Repeat for remaining old pods
+    ...
+
+AFTER (all new pods running):
+  Pod 4: churn-inference:a3f8c21d  ← serving traffic
+  Pod 5: churn-inference:a3f8c21d  ← serving traffic
+  Pod 6: churn-inference:a3f8c21d  ← serving traffic
+
+ZERO DOWNTIME — traffic never drops to zero
+```
+
+---
+
+### The Prediction Endpoint After Deployment  
+```
+KServe exposes standard endpoint:
+
+POST https://churn-inference.ml-production.svc.cluster.local/v1/models/churn-inference:predict
+
+Request:
+{
+  "instances": [
+    {"age": 35, "tenure_months": 24, "monthly_spend": 80.0}
+  ]
+}
+
+Response:
+{
+  "predictions": [
+    {
+      "churn_probability": 0.2341,
+      "churn_prediction": 0
+    }
+  ],
+  "model_version": "3"
+}  
+```  
+### Canary Deployment — Traffic Splitting
+```
+# Send 10% traffic to new model, 90% to old model
+# Validate new model in production before full rollout
+
+spec:
+  predictor:
+    canaryTrafficPercent: 10      # 10% → new model (v3)
+                                  # 90% → current model (v1)
+    canary:
+      containers:
+        - image: ...churn-inference:a3f8c21d   # new version
+
+# Monitor metrics for 30 mins
+# If recall holds → bump to 50% → 100%
+# If recall drops → set canaryTrafficPercent: 0 → instant rollback
+```
+
+---
+
+## Rollback — How It Works in CD
+```
+Rollback is just a Git revert:
+
+# Something wrong with v3 in production
+git revert a3f8c21d                    # reverts inference.yaml to old image tag
+git push
+
+ArgoCD detects Git changed
+Syncs cluster back to old image
+KServe rolling update runs in reverse
+Old pods (b2e1d90f) come back up
+New pods (a3f8c21d) terminated
+
+Total rollback time: ~2-3 minutes
+```
+
+---
+
+## Full CD Flow — End to End
+```
+CI Phase Complete (image in ECR) ✅
+        │
+        ▼
+Step 1: inference.yaml updated
+        (new image tag + model version)
+        │
+        ▼
+Step 2: Git push to ml-infra-repo
+        (deployment history recorded)
+        │
+        ▼
+Step 3: ArgoCD detects drift
+        (Git ≠ Cluster → OutOfSync)
+        ArgoCD syncs → applies inference.yaml
+        │
+        ▼
+Step 4: KServe rolling update
+        ├── Pulls image from ECR
+        ├── Starts new pods one by one
+        ├── Health checks pass
+        ├── Traffic shifts to new pods
+        └── Old pods terminated
+        │
+        ▼
+Production: /predict endpoint serving
+            churn-inference v3
+            model.pkl from MLflow v3
+            zero downtime ✅
 ```
 
 
