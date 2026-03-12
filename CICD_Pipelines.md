@@ -1438,12 +1438,144 @@ Production: /predict endpoint serving
             model.pkl from MLflow v3
             zero downtime ✅
 ```
-
-
   </details> 
  
   <details>
     <summary><i> --- Monitoring & Retraining Loop --- </i></summary>  
+     
+   ### What This Phase Is in Simple Words  
+```  
+     CI built the model.
+CD deployed it.
+Now the model is serving real predictions 24/7.
+
+But models don't stay good forever.
+Real world data keeps changing.
+Customer behaviour changes.
+Business patterns shift.
+
+This phase answers three questions:
+  1. Is the model still performing well?     (Step 17 — Monitoring)
+  2. Has incoming data changed?              (Step 18 — Drift Detection)
+  3. What do we do when something goes wrong?(Steps 19-22 — Alert + Retrain)
+```
+### The Full Loop Visual  
+```
+Model Serving in Production (KServe)
+              │
+              │ every prediction request
+              ▼
+Step 17: Prometheus scrapes metrics
+              │
+              ▼
+Step 18: Drift detection runs
+              │
+         ┌────┴────┐
+         │         │
+    All good    Problem detected
+         │         │
+         │         ▼
+         │   Step 19: Alertmanager fires alert
+         │         │
+         │         ▼
+         │   Step 20: Webhook → GitHub Actions triggered
+         │         │
+         │         ▼
+         │   Step 21: New KFP run → new model version
+         │         │
+         └────────►▼
+              Step 22: Redeploy (loops to CD Step 13)
+```
+## Step 17: Monitoring (Prometheus + Grafana)  
+- What Prometheus Does:  
+```
+Prometheus is a time-series database.
+It scrapes (pulls) metrics from your running pods
+every 15 seconds and stores them.
+
+Your KServe pod exposes a /metrics endpoint.
+Prometheus calls it → stores the numbers → forever.  
+```  
+## Step 18: Data / Concept Drift Detection
+
+### What Is Drift — Simple Explanation
+```
+DATA DRIFT — inputs have changed
+─────────────────────────────────────────────────
+During training:   average customer age = 34
+In production now: average customer age = 52
+
+The model was never trained on 52-year-old customer data.
+Its predictions become unreliable silently.
+No errors thrown. No crashes. Just wrong answers.
+
+CONCEPT DRIFT — relationship between input and output changed
+─────────────────────────────────────────────────
+During training:   high spend = low churn (loyal customers)
+After economy hit: high spend = high churn (customers leaving)
+
+Same input features, completely different meaning now.
+Model is confidently predicting the wrong thing.
+```
+## Step 19: Alert Trigger (Prometheus Alertmanager)
+- Alerting Rules — Written by MLOps Engineer:  
+- Alertmanager Config — Where Alerts Go
+- What the Slack message looks like:
+
+## Step 20: Retraining Pipeline Trigger
+- Webhook → GitHub Actions
+## Step 21: New Model Version Generated  
+## Step 22: Redeployment (Loops Back to CD)  
+
+## The Complete Loop — All Together
+```
+Production Serving
+      │
+      │ (every 15 seconds)
+      ▼
+Prometheus scrapes /metrics
+      │
+      │ (every hour)
+      ▼
+Drift Detector CronJob runs
+      │
+      ├── No drift → continue monitoring
+      │
+      └── Drift detected
+                │
+                ▼
+           Prometheus Alert fires
+                │
+                ├── Slack notification → team knows
+                │
+                └── Alertmanager webhook → GitHub API
+                          │
+                          ▼
+                   GitHub Actions triggered
+                   (repository_dispatch event)
+                          │
+                          ▼
+                   Full ML pipeline runs again
+                   Steps 3 → 4 → 5 → 6 → 7
+                          │
+                          ▼
+                   Step 8: KFP trains on fresh data
+                   Step 9: New version registered
+                   Step 10: Human approves
+                   Steps 11-12: New image built + pushed
+                          │
+                          ▼
+                   CD Phase:
+                   inference.yaml updated
+                   ArgoCD syncs
+                   KServe deploys new version
+                          │
+                          ▼
+                   Back to: Production Serving
+                   (with better model)
+```
+
+
   </details> 
   
 </details>  
