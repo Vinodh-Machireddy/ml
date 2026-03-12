@@ -1098,16 +1098,153 @@ Step 12    ECR Push + Scan          ~5  minutes
 ─────────────────────────────────────────────────
 Total (excl. human approval):       ~62 minutes  
 ```
-
-
   </details> 
 
   </details>
   
   <details>
-    <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
+    <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>   
+   
+```  
+  In real production these live in a SEPARATE Git repo:
+
+ml-infra-repo/                      ← separate from ml-project repo
+├── deployments/
+│   └── churn-inference/
+│       ├── inference.yaml          ← KServe InferenceService manifest
+│       └── kustomization.yaml      ← optional: Kustomize config
+└── argocd/
+    └── app.yaml                    ← ArgoCD Application definition
+```
+> Why separate repo? So infra changes don't trigger ML retraining CI.   
+And ML code changes don't accidentally touch infra configs.
+
+## Step 1: Update KServe Manifest (```inference.yaml```)
+This file describes how KServe should run your model.
+Written once by MLOps Engineer, updated every deployment.  
+
+```  
+# deployments/churn-inference/inference.yaml
+
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: churn-inference
+  namespace: ml-production
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+
+spec:
+
+  # ── PREDICTOR: the main model serving pod ────────────────────
+  predictor:
+    containers:
+      - name: churn-inference
+        # ↓ UPDATED every deployment (Step 11/12 output)
+        image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/churn-inference:a3f8c21d
+        
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+
+        env:
+          - name: MODEL_VERSION
+            value: "3"                # ← updated to new MLflow version
+          - name: GIT_COMMIT
+            value: "a3f8c21d"
+
+        # ── Health checks ───────────────────────────────────────
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+
+        # ── Resources per pod ───────────────────────────────────
+        resources:
+          requests:
+            cpu:    "2"
+            memory: "4Gi"
+          limits:
+            cpu:    "4"
+            memory: "8Gi"
+
+  # ── AUTO-SCALING ──────────────────────────────────────────────
+  # Scales from 1 to 5 pods based on traffic
+  # Scales DOWN to 0 when no traffic (saves cost)
+  scaleTarget: 100              # requests per second per pod
+  scaleMetric: rps
+  minReplicas: 1
+  maxReplicas: 5
+```
+
+**What gets updated in this file every deployment:**
+```
+Old:  image: ...churn-inference:b2e1d90f    ← previous git SHA
+New:  image: ...churn-inference:a3f8c21d    ← new git SHA from Step 12
+
+Old:  MODEL_VERSION: "1"
+New:  MODEL_VERSION: "3"                    ← new MLflow version
+```
+
+---
+
+## Who Updates `inference.yaml` and How
+```
+Two approaches in real production:
+
+APPROACH 1: GitHub Actions updates it automatically
+──────────────────────────────────────────────────
+Add this step at the END of ml-pipeline.yml (after Step 12):
+
+      - name: Update KServe Manifest
+        run: |
+          # Clone infra repo
+          git clone https://github.com/your-org/ml-infra-repo.git
+          cd ml-infra-repo
+
+          # Update image tag with new git SHA
+          sed -i "s|churn-inference:.*|churn-inference:${{ github.sha }}|g" \
+            deployments/churn-inference/inference.yaml
+
+          # Update model version
+          sed -i "s|MODEL_VERSION.*|MODEL_VERSION\n            value: \"${{ env.PRODUCTION_MODEL_VERSION }}\"|g" \
+            deployments/churn-inference/inference.yaml
+
+          # Commit and push
+          git config user.email "ci@your-company.com"
+          git config user.name  "ML CI Bot"
+          git add deployments/churn-inference/inference.yaml
+          git commit -m "deploy: churn-inference v${{ env.PRODUCTION_MODEL_VERSION }} (${{ github.sha }})"
+          git push
+
+APPROACH 2: MLOps Engineer updates manually
+──────────────────────────────────────────────────
+For teams that want explicit human control
+Change image tag → git push → ArgoCD picks it up  
+```
+## Step 2: Git Commit & Push Deployment Config  
+```
+# What happens in infra repo after update:
+
+git log --oneline deployments/churn-inference/inference.yaml
+
+a3f8c21  deploy: churn-inference v3 (a3f8c21d)   ← just pushed
+b2e1d90  deploy: churn-inference v1 (b2e1d90f)   ← previous
+c9f3a44  deploy: churn-inference v0 (c9f3a44e)   ← initial deploy
+```
+
+
   </details> 
-  
+ 
   <details>
     <summary><i> --- Monitoring & Retraining Loop --- </i></summary>  
   </details> 
