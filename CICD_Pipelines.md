@@ -779,6 +779,30 @@ tests/
 ```
 ### Step 7: Data Pull & Versioning (DVC + S3)
 Code is verified clean. Now the pipeline needs real data. This step is where DVC bridges the gap between Git (code versioning) and S3 (data storage), pulling the exact data version that corresponds to this commit.  
+DVC is an open-source tool designed to handle large files, datasets, and machine learning models — things that Git alone can't manage efficiently.  
+Think of it this way:  
+Git tracks your code changes (versions)  
+DVC tracks your data changes (versions)  
+Together, they give you complete version control over both code and data.  
+
+S3 (Amazon Simple Storage Service)  
+S3 is Amazon's cloud storage service. It acts as a remote storage location where your actual large data files are stored.  
+
+### How DVC + S3 Work Together  
+The problem:  
+Git is not built to handle large files like datasets (e.g., 10GB CSV files). Pushing them to GitHub would be slow and impractical.  
+The solution:  
+DVC stores the actual data files in S3 (cloud) and keeps only a small pointer/reference file (.dvc file) in your Git repository.  
+
+**Simple workflow:**
+1. You add a large dataset using dvc add data.csv
+2. DVC creates a small data.csv.dvc file (just a pointer)
+3. You push the actual data to S3 using dvc push
+4. The pointer file goes to Git, the real data goes to S3
+5. When a teammate needs the data, they run dvc pull — it fetches the exact version from S3
+
+**Data Pull** means downloading the correct version of data from S3 using DVC. Versioning means tracking every change to your dataset over time, so you can go back to any previous version.   
+
 The Workflow Step:  
 ```
 # Inside .github/workflows/ml-pipeline.yml
