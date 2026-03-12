@@ -439,15 +439,676 @@ Gate 2 — Human Approval (Step 10)
 The model is now officially Production ✅. Step 11 packages everything needed to serve predictions — the model, its dependencies, and a REST API — into a single portable Docker image.  
 The Workflow Step:  
 
-> **NOTE** scripts/download_model.py — Pull Model from MLflow Before Build
+> **NOTE** scripts/download_model.py — Pull Model from MLflow Before Build  
+## Step 12: Push Docker Image to ECR  
+The image is built and smoke-tested on the runner ✅. This final step pushes it to Amazon ECR — the central image registry where your Kubernetes/ECS inference infrastructure pulls from to actually serve predictions.  
+
+ 
+  <details>
+    <summary><i> Complete ML CI Pipeline — ml-pipeline.yml </i></summary>  
+   
+```  
+   
+# .github/workflows/ml-pipeline.yml
+# ═══════════════════════════════════════════════════════════════════════════════
+# ML END-TO-END CI PIPELINE
+# Steps: Code Quality → Data Pull → KFP Training → Registration →
+#        Promotion → Docker Build → ECR Push
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: ML End-to-End Pipeline
+
+# ───────────────────────────────────────────────────────────────────────────────
+# STEP 1 & 2: TRIGGER RULES
+# Fires on push to main (only if relevant files changed)
+# or manually via workflow_dispatch
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'pipelines/**'
+      - 'params.yaml'
+      - 'dvc.yaml'
+      - 'requirements.txt'
+      - 'Dockerfile'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'params.yaml'
+
+  workflow_dispatch:
+    inputs:
+      force_retrain:
+        description: 'Force model retraining even if no changes'
+        required: false
+        default: 'false'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# CONCURRENCY: Cancel in-progress runs on same branch
+# Prevents duplicate model versions in MLflow Registry
+# ───────────────────────────────────────────────────────────────────────────────
+concurrency:
+  group: ml-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+# ───────────────────────────────────────────────────────────────────────────────
+# GLOBAL ENVIRONMENT VARIABLES
+# Secrets injected from GitHub → Settings → Secrets and Variables → Actions
+# ───────────────────────────────────────────────────────────────────────────────
+env:
+  AWS_ACCESS_KEY_ID:      ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION:     us-east-1
+  MLFLOW_TRACKING_URI:    ${{ secrets.MLFLOW_TRACKING_URI }}
+  KFP_ENDPOINT:           ${{ secrets.KFP_ENDPOINT }}
+  ECR_REGISTRY:           ${{ secrets.ECR_REGISTRY }}
+  MODEL_NAME:             churn-prediction-model
+  IMAGE_NAME:             churn-inference
+  PYTHON_VERSION:         '3.10'
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 1: CODE QUALITY
+# Steps 3 → 4 → 5 → 6
+# Fast, cheap — runs before any expensive compute
+# ═══════════════════════════════════════════════════════════════════════════════
+jobs:
+  code-quality:
+    name: "Steps 3-6 | Code Quality (Checkout → Lint → Test)"
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 3: CODE CHECKOUT
+      # Checks out exact commit SHA that triggered this run
+      # fetch-depth: 0 = full git history (needed for DVC diffs)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 3 | Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 4: INSTALL DEPENDENCIES
+      # Pins Python version, caches pip downloads
+      # cache: 'pip' saves ~90 seconds on cache hit
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 4 | Set Up Python ${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: "Step 4 | Install Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: "Step 4 | Verify Critical Packages"
+        run: |
+          python -c "import sklearn;  print('sklearn: ',  sklearn.__version__)"
+          python -c "import mlflow;   print('mlflow:   ', mlflow.__version__)"
+          python -c "import kfp;      print('kfp:      ', kfp.__version__)"
+          python -c "import dvc;      print('dvc:      ', dvc.__version__)"
+          aws --version
+          pip list
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 5: LINT CHECK (flake8)
+      # Catches: undefined names, unused imports, style violations,
+      #          overly complex functions (McCabe complexity > 10)
+      # Exit code 1 = pipeline stops, no compute wasted
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 5 | Lint Check (flake8)"
+        run: |
+          flake8 src/ pipelines/ \
+            --max-line-length=88 \
+            --max-complexity=10 \
+            --ignore=E203,W503 \
+            --statistics \
+            --count
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 6: UNIT TESTS (pytest)
+      # Validates: preprocessing logic, training function, metric calculation
+      # --cov-fail-under=80 → fails if coverage drops below 80%
+      # -x → stops on first failure (no point running 50 tests after one breaks)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 6 | Unit Tests (pytest)"
+        run: |
+          pytest tests/ \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            -v \
+            -x
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: "Step 6 | Upload Coverage Report"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 2: ML PIPELINE
+# Steps 7 → 8 → 9
+# Only runs if Job 1 (code-quality) fully passes
+# Touches real data, real compute, real MLflow Registry
+# ═══════════════════════════════════════════════════════════════════════════════
+  ml-pipeline:
+    name: "Steps 7-9 | ML Pipeline (Data → Train → Register)"
+    runs-on: ubuntu-latest
+    needs: code-quality                  # HARD dependency — Job 1 must pass
+
+    steps:
+
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Set Up Python ${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: "Install Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 7: DATA PULL & VERSIONING (DVC + S3)
+      # Reads dvc.lock → pulls exact data version tied to this Git commit
+      # --run-cache → skips pipeline stages whose inputs haven't changed
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 7 | Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+
+      - name: "Step 7 | Configure DVC Remote (S3)"
+        run: |
+          dvc remote add -d s3remote s3://ml-project-data/files
+          dvc remote modify s3remote region us-east-1
+
+      - name: "Step 7 | Pull Data from S3 (DVC)"
+        run: |
+          dvc pull --run-cache
+          echo "Data pull complete. Verifying files..."
+          ls -lh data/train/
+          ls -lh data/test/
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 8: MODEL TRAINING PIPELINE (Kubeflow Pipelines)
+      # Compiles kfp_pipeline.py → submits to Kubeflow cluster
+      # Polls every 30 seconds until pipeline succeeds or fails
+      # Inside Kubeflow:
+      #   8a → Training pod (GPU, 32GB RAM)
+      #   8b → MLflow tracking pod (logs params, metrics, artifact to S3)
+      #   8c → Evaluation gate pod (recall > 0.85 or pipeline dies)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 8 | Compile & Submit KFP Pipeline"
+        run: |
+          python pipelines/submit_pipeline.py \
+            --endpoint    ${{ secrets.KFP_ENDPOINT }} \
+            --experiment  "churn-prediction" \
+            --run-name    "run-${{ github.sha }}" \
+            --params-file params.yaml
+        env:
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GITHUB_SHA:            ${{ github.sha }}
+          GITHUB_ACTOR:          ${{ github.actor }}
+          GITHUB_RUN_ID:         ${{ github.run_id }}
+
+      # submit_pipeline.py writes MLFLOW_RUN_ID to GITHUB_ENV
+      # All downstream steps read it via ${{ env.MLFLOW_RUN_ID }}
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 9: MODEL REGISTRATION (MLflow Registry)
+      # Finds model version created by Step 8b
+      # Adds description + tags (git_commit, recall, dataset, ci_run_id)
+      # Transitions: None → Staging
+      # Exports MODEL_VERSION to GitHub Actions env for Steps 10-12
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 9 | Register Model in MLflow Registry"
+        run: |
+          python pipelines/register_model.py \
+            --tracking-uri ${{ secrets.MLFLOW_TRACKING_URI }} \
+            --model-name   ${{ env.MODEL_NAME }} \
+            --git-commit   ${{ github.sha }} \
+            --run-id       ${{ env.MLFLOW_RUN_ID }}
+        env:
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GITHUB_RUN_ID:         ${{ github.run_id }}
+
+      # register_model.py writes MODEL_VERSION to GITHUB_ENV
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 3: HUMAN APPROVAL GATE
+# Step 10 (Part 1) — pauses pipeline, notifies reviewers
+# Senior Data Scientist / ML Lead reviews metrics in MLflow UI
+# Pipeline waits up to 30 days for approval
+# ═══════════════════════════════════════════════════════════════════════════════
+  await-approval:
+    name: "Step 10 | Await Human Approval for Production Promotion"
+    runs-on: ubuntu-latest
+    needs: ml-pipeline
+    environment: production              # GitHub Environment with required reviewers
+
+    steps:
+      - name: "Step 10 | Display Model Info for Reviewer"
+        run: |
+          echo "══════════════════════════════════════════"
+          echo "  Model Awaiting Production Promotion"
+          echo "══════════════════════════════════════════"
+          echo "  Model Name:    ${{ env.MODEL_NAME }}"
+          echo "  Version:       ${{ env.MODEL_VERSION }}"
+          echo "  Git Commit:    ${{ github.sha }}"
+          echo "  Triggered By:  ${{ github.actor }}"
+          echo "  CI Run:        ${{ github.run_id }}"
+          echo "  MLflow UI:     ${{ secrets.MLFLOW_TRACKING_URI }}"
+          echo "══════════════════════════════════════════"
+          echo "  Review metrics before approving:"
+          echo "  Recall, Precision, F1, ROC-AUC"
+          echo "  Feature importance, fairness report"
+          echo "══════════════════════════════════════════"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 4: PROMOTE MODEL
+# Step 10 (Part 2) — runs only after human approves
+# Transitions model: Staging → Production
+# Archives old Production version (rollback always available)
+# ═══════════════════════════════════════════════════════════════════════════════
+  promote-model:
+    name: "Step 10 | Promote Model (Staging → Production)"
+    runs-on: ubuntu-latest
+    needs: await-approval
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Set Up Python ${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: "Install MLflow"
+        run: pip install mlflow==2.12.1
+
+      - name: "Step 10 | Promote Model to Production"
+        run: |
+          python pipelines/promote_model.py \
+            --tracking-uri ${{ secrets.MLFLOW_TRACKING_URI }} \
+            --model-name   ${{ env.MODEL_NAME }} \
+            --version      ${{ env.MODEL_VERSION }}
+        env:
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GITHUB_ACTOR:          ${{ github.actor }}
+          GITHUB_RUN_ID:         ${{ github.run_id }}
+
+      # promote_model.py writes PRODUCTION_MODEL_VERSION to GITHUB_ENV
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 5: BUILD & PUSH DOCKER IMAGE
+# Steps 11 → 12
+# Only runs after model is officially in Production
+# Packages model.pkl + FastAPI server into portable Docker image
+# Pushes to ECR with 3 tags: git SHA, model version, environment
+# ═══════════════════════════════════════════════════════════════════════════════
+  build-and-push:
+    name: "Steps 11-12 | Build Inference Image & Push to ECR"
+    runs-on: ubuntu-latest
+    needs: promote-model
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Set Up Python ${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: "Install Dependencies"
+        run: pip install mlflow==2.12.1 boto3==1.34.69
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 11 (Part 1): CONFIGURE AWS + ECR LOGIN
+      # Gets temporary ECR auth token (valid 12 hours)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 11 | Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+
+      - name: "Step 11 | Login to Amazon ECR"
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 11 (Part 2): DOWNLOAD PRODUCTION MODEL FROM MLFLOW/S3
+      # Pulls model artifact BEFORE Docker build
+      # model/ folder is then COPY'd into the image
+      # Model baked in = no S3 calls at inference time
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 11 | Download Production Model from MLflow"
+        run: |
+          python scripts/download_model.py \
+            --tracking-uri ${{ secrets.MLFLOW_TRACKING_URI }} \
+            --model-name   ${{ env.MODEL_NAME }} \
+            --stage        "Production" \
+            --output-path  "./model"
+          echo "Model artifact downloaded. Contents:"
+          ls -lh ./model/
+        env:
+          MLFLOW_TRACKING_URI:   ${{ secrets.MLFLOW_TRACKING_URI }}
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 11 (Part 3): BUILD DOCKER IMAGE
+      # --build-arg injects MODEL_VERSION + GIT_COMMIT as ENV vars
+      # Layer cache: pip install skipped if requirements.txt unchanged
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 11 | Build Docker Image"
+        run: |
+          docker build \
+            --build-arg MODEL_VERSION=${{ env.PRODUCTION_MODEL_VERSION }} \
+            --build-arg GIT_COMMIT=${{ github.sha }} \
+            --tag ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --tag ${{ env.IMAGE_NAME }}:latest \
+            .
+          echo "Image built. Size:"
+          docker images ${{ env.IMAGE_NAME }}
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 11 (Part 4): SMOKE TEST BUILT IMAGE
+      # Starts container, hits /health and /predict endpoints
+      # Catches broken inference server BEFORE pushing to ECR
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 11 | Smoke Test Docker Image"
+        run: |
+          # Start container
+          docker run -d \
+            --name test-inference \
+            -p 8080:8080 \
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+          # Wait for FastAPI startup
+          sleep 15
+
+          # Health check
+          echo "Testing /health endpoint..."
+          curl -f http://localhost:8080/health
+          echo ""
+
+          # Single prediction
+          echo "Testing /predict endpoint..."
+          curl -f -X POST http://localhost:8080/predict \
+            -H "Content-Type: application/json" \
+            -d '{"age": 35, "tenure_months": 24, "monthly_spend": 80.0}'
+          echo ""
+
+          # Batch prediction
+          echo "Testing /predict/batch endpoint..."
+          curl -f -X POST http://localhost:8080/predict/batch \
+            -H "Content-Type: application/json" \
+            -d '{
+              "instances": [
+                {"age": 25, "tenure_months": 12, "monthly_spend": 50.0},
+                {"age": 45, "tenure_months": 60, "monthly_spend": 150.0}
+              ]
+            }'
+          echo ""
+
+          # Tear down
+          docker stop test-inference
+          docker rm test-inference
+          echo "Smoke tests passed ✅"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 12: PUSH DOCKER IMAGE TO ECR
+      # Three tags pushed:
+      #   1. Git SHA     → immutable, for rollback + audit
+      #   2. v{N}-production → human readable, links to MLflow version
+      #   3. production  → mutable, what Kubernetes pulls
+      # Only changed layers uploaded (Docker layer deduplication)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 12 | Tag Images for ECR"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          ECR_BASE="$ECR_REGISTRY/${{ env.IMAGE_NAME }}"
+
+          # Tag 1: Git SHA (immutable)
+          docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            $ECR_BASE:${{ github.sha }}
+
+          # Tag 2: Model version (human readable)
+          docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            $ECR_BASE:v${{ env.PRODUCTION_MODEL_VERSION }}-production
+
+          # Tag 3: Environment tag (Kubernetes pulls this)
+          docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            $ECR_BASE:production
+
+          echo "ECR_BASE=$ECR_BASE" >> $GITHUB_ENV
+
+      - name: "Step 12 | Push All Tags to ECR"
+        run: |
+          # Push all three tags
+          docker push ${{ env.ECR_BASE }}:${{ github.sha }}
+          docker push ${{ env.ECR_BASE }}:v${{ env.PRODUCTION_MODEL_VERSION }}-production
+          docker push ${{ env.ECR_BASE }}:production
+
+          # Export full image URI for deployment step
+          echo "IMAGE_URI=${{ env.ECR_BASE }}:${{ github.sha }}" >> $GITHUB_ENV
+          echo "Pushed successfully:"
+          echo "  → ${{ env.ECR_BASE }}:${{ github.sha }}"
+          echo "  → ${{ env.ECR_BASE }}:v${{ env.PRODUCTION_MODEL_VERSION }}-production"
+          echo "  → ${{ env.ECR_BASE }}:production"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 12 (Part 2): ECR SECURITY SCAN
+      # ECR automatically scans on push
+      # Fail pipeline if any CRITICAL CVEs found
+      # Protects production from known vulnerable dependencies
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 12 | Wait for ECR Vulnerability Scan"
+        run: sleep 60
+
+      - name: "Step 12 | Check ECR Scan Results"
+        run: |
+          SCAN_RESULT=$(aws ecr describe-image-scan-findings \
+            --repository-name ${{ env.IMAGE_NAME }} \
+            --image-id imageTag=${{ github.sha }} \
+            --region us-east-1)
+
+          CRITICAL=$(echo $SCAN_RESULT | \
+            python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          findings = data.get('imageScanFindings', {})
+          counts = findings.get('findingSeverityCounts', {})
+          print(counts.get('CRITICAL', 0))
+            ")
+
+          echo "Critical vulnerabilities: $CRITICAL"
+
+          if [ "$CRITICAL" -gt "0" ]; then
+            echo "CRITICAL CVEs detected — blocking deployment."
+            exit 1
+          fi
+
+          echo "Security scan passed ✅ — no critical vulnerabilities."
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # STEP 12 (Part 3): VERIFY IMAGE IN ECR
+      # Final confirmation image is queryable in registry
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Step 12 | Verify Image in ECR"
+        run: |
+          aws ecr describe-images \
+            --repository-name ${{ env.IMAGE_NAME }} \
+            --image-ids imageTag=${{ github.sha }} \
+            --region us-east-1
+          echo "Image verified in ECR ✅"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # PIPELINE COMPLETE — Print full summary
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: "Pipeline Complete — Summary"
+        run: |
+          echo "═══════════════════════════════════════════════════════"
+          echo "  ML PIPELINE COMPLETE ✅"
+          echo "═══════════════════════════════════════════════════════"
+          echo "  Git Commit:      ${{ github.sha }}"
+          echo "  Triggered By:    ${{ github.actor }}"
+          echo "  Model Name:      ${{ env.MODEL_NAME }}"
+          echo "  Model Version:   ${{ env.PRODUCTION_MODEL_VERSION }}"
+          echo "  MLflow Run ID:   ${{ env.MLFLOW_RUN_ID }}"
+          echo "  Image URI:       ${{ env.IMAGE_URI }}"
+          echo "  ECR Tags:        :${{ github.sha }}"
+          echo "                   :v${{ env.PRODUCTION_MODEL_VERSION }}-production"
+          echo "                   :production"
+          echo "═══════════════════════════════════════════════════════"
+          echo "  Steps Completed:"
+          echo "    ✅ Step  3  — Code Checkout"
+          echo "    ✅ Step  4  — Dependencies Installed"
+          echo "    ✅ Step  5  — Lint Passed (flake8)"
+          echo "    ✅ Step  6  — Unit Tests Passed (pytest)"
+          echo "    ✅ Step  7  — Data Pulled (DVC + S3)"
+          echo "    ✅ Step  8a — Model Trained (KFP GPU Pod)"
+          echo "    ✅ Step  8b — Experiment Tracked (MLflow)"
+          echo "    ✅ Step  8c — Recall Gate Passed"
+          echo "    ✅ Step  9  — Model Registered (Staging)"
+          echo "    ✅ Step 10  — Human Approved + Promoted (Production)"
+          echo "    ✅ Step 11  — Docker Image Built + Smoke Tested"
+          echo "    ✅ Step 12  — Image Pushed to ECR + Scan Passed"
+          echo "═══════════════════════════════════════════════════════"
+          echo "  Kubernetes rolling update now in progress..."
+          echo "  churn-inference:production → 3 pods running v${{ env.PRODUCTION_MODEL_VERSION }}"
+          echo "═══════════════════════════════════════════════════════"
+```
+
+---
+
+## Job Dependency Graph
+```
+PUSH TO MAIN
+      │
+      ▼
+┌─────────────────────┐
+│   JOB 1             │  Steps 3 → 4 → 5 → 6
+│   code-quality      │  ~5 minutes
+│   (ubuntu runner)   │
+└──────────┬──────────┘
+           │ needs: code-quality
+           ▼
+┌─────────────────────┐
+│   JOB 2             │  Steps 7 → 8 → 9
+│   ml-pipeline       │  ~40-50 minutes
+│   (ubuntu runner    │  (polls Kubeflow cluster)
+│    + KFP cluster)   │
+└──────────┬──────────┘
+           │ needs: ml-pipeline
+           ▼
+┌─────────────────────┐
+│   JOB 3             │  Step 10 (Part 1)
+│   await-approval    │  pauses indefinitely
+│   environment:      │  until human approves
+│   production        │  in GitHub UI
+└──────────┬──────────┘
+           │ needs: await-approval
+           ▼
+┌─────────────────────┐
+│   JOB 4             │  Step 10 (Part 2)
+│   promote-model     │  Staging → Production
+│   (ubuntu runner)   │  ~2 minutes
+└──────────┬──────────┘
+           │ needs: promote-model
+           ▼
+┌─────────────────────┐
+│   JOB 5             │  Steps 11 → 12
+│   build-and-push    │  Build + Smoke Test
+│   (ubuntu runner)   │  + Push to ECR
+└─────────────────────┘  ~10 minutes
+```
+
+---
+
+## GitHub Secrets Required
+```
+GitHub Repo → Settings → Secrets and Variables → Actions
+
+Secret Name                Value
+─────────────────────────  ──────────────────────────────────────────
+AWS_ACCESS_KEY_ID          IAM user key with S3 + ECR permissions
+AWS_SECRET_ACCESS_KEY      IAM user secret
+MLFLOW_TRACKING_URI        https://mlflow.your-company.internal
+KFP_ENDPOINT               https://kubeflow.your-company.internal
+ECR_REGISTRY               123456789012.dkr.ecr.us-east-1.amazonaws.com
+```
+
+---
+
+## Total Pipeline Timeline
+```
+Step 3-4   Install + Checkout       ~2  minutes
+Step 5-6   Lint + Tests             ~3  minutes
+Step 7     DVC Data Pull            ~5  minutes
+Step 8     KFP Training             ~40 minutes
+Step 9     Registration             ~1  minute
+Step 10    Human Approval           variable (minutes to hours)
+Step 10    Promotion                ~1  minute
+Step 11    Docker Build + Test      ~5  minutes
+Step 12    ECR Push + Scan          ~5  minutes
+─────────────────────────────────────────────────
+Total (excl. human approval):       ~62 minutes  
+```
+
+
+  </details> 
 
   </details>
   
-  <details style="margin-left: 20px;">
+  <details>
     <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>
   </details> 
   
-  <details style="margin-left: 20px;">
+  <details>
     <summary><i> --- Monitoring & Retraining Loop --- </i></summary>  
   </details> 
   
