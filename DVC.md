@@ -22,7 +22,23 @@ DVC stores the actual data files in S3 (cloud) and keeps only a small pointer/re
 4. The pointer file goes to Git, the real data goes to S3
 5. When a teammate needs the data, they run dvc pull — it fetches the exact version from S3
 
-**Data Pull** means downloading the correct version of data from S3 using DVC. Versioning means tracking every change to your dataset over time, so you can go back to any previous version.
+**Data Pull** means downloading the correct version of data from S3 using DVC. Versioning means tracking every change to your dataset over time, so you can go back to any previous version. 
+Example:
+```
+# Add data to DVC tracking
+dvc add datasets/training_data.csv
+
+# Push actual data to S3
+dvc push
+
+# Teammate pulls the data
+dvc pull
+
+# Go back to an older version
+git checkout v1.0
+dvc checkout
+```
+
 
 Git is capable of doing auditing, versioning, RBAC for code repo’s
 Same capabilities is required for Data also, But git not designed for  large files(GB, TB)
