@@ -220,29 +220,6 @@ on:
 ### Step 3: Code Checkout  
 This is the first actual step that runs inside the GitHub Actions Runner VM. Remember — the VM is completely blank. It has no idea what your project looks like. Code Checkout fixes that.  
 
-What the Runner Looks Like BEFORE Checkout  
-```
-GitHub Actions Runner VM (just provisioned)
-├── /home/runner/
-├── /home/runner/work/          ← empty
-└── No code, no files, nothing
-```
-The Checkout Action  
-```
-# Inside .github/workflows/ml-pipeline.yml
-jobs:
-  code-quality:
-    runs-on: ubuntu-latest
-
-    steps:
-      # ── STEP 3: Code Checkout ──────────────────────────────
-      - name: Checkout Repository
-        uses: actions/checkout@v4       # official GitHub action
-        with:
-          fetch-depth: 0                # fetch FULL git history (explained below)
-          lfs: false                    # we don't use Git LFS (DVC handles large files)
-          token: ${{ secrets.GITHUB_TOKEN }}  # auto-injected by GitHub
-```
 What actions/checkout@v4 Does Internally  
 Under the hood, this action runs a sequence of git commands on the runner:  
 ```
@@ -264,33 +241,9 @@ git fetch --no-tags origin \
 git checkout --progress --force \
   a3f8c21d...   # ← the exact commit SHA from your git push
 ```
-
 > **Critical:** It checks out the **exact commit SHA** that triggered the push — not "latest main." This ensures the pipeline runs on precisely what was pushed, even if someone else pushed 2 seconds later.
 
 ---
-
-#### What the Runner Looks Like AFTER Checkout
-```
-/home/runner/work/ml-project/ml-project/
-├── .github/
-│   └── workflows/
-│       └── ml-pipeline.yml
-├── src/
-│   ├── train.py
-│   ├── evaluate.py
-│   ├── preprocess.py
-│   └── predict.py
-├── pipelines/
-│   └── kfp_pipeline.py
-├── tests/
-│   └── test_preprocess.py
-├── dvc.yaml                    ← pipeline definition (no data yet)
-├── dvc.lock                    ← data version pointers (no data yet)
-├── params.yaml                 ← hyperparameters
-├── requirements.txt
-└── Dockerfile
-```  
-> **Notice:** Only code files exist. No actual data, no models. Those come in Step 7 (DVC Pull).
 
 ### Step 4: Install Dependencies
 The runner has your code but can't run any of it yet. Python packages, CLI tools, nothing is installed. This step makes the environment execution-ready.  
@@ -329,49 +282,8 @@ The Workflow Step:
 ```
 The .flake8 Config File (Production Standard)  
 Rather than passing all flags inline, production teams use a config file:  
-```
-# .flake8  (lives at repo root, committed to git)
-
-[flake8]
-# ── Scope ──────────────────────────────────────────────
-per-file-ignores =
-    tests/*: E501           # allow long lines in test files
-    pipelines/*: W503       # allow line breaks before binary operators
-
-# ── Style Rules ────────────────────────────────────────
-max-line-length = 88        # matches Black formatter standard
-max-complexity  = 10        # McCabe complexity — catches overly tangled logic
-indent-size     = 4
-
-# ── Ignored Rules ──────────────────────────────────────
-ignore =
-    E203,   # whitespace before ':' — conflicts with Black
-    W503    # line break before binary operator — conflicts with Black
-
-# ── What to Scan ───────────────────────────────────────
-filename =
-    *.py
-
-# ── What to Skip ───────────────────────────────────────
-exclude =
-    .git,
-    __pycache__,
-    .venv,
-    build/,
-    dist/,
-    *.egg-info
-
-# ── Output ─────────────────────────────────────────────
-statistics = true           # summary count per error code
-count = true                # total error count at end
-show-source = true          # show the actual offending line
-show-pep8 = true            # explain what rule was violated
-```
-
----
 
 #### What flake8 Actually Checks
-
 flake8 bundles **three tools** internally:
 ```
 flake8
@@ -379,62 +291,7 @@ flake8
   ├── pycodestyle  → PEP8 style violations (spacing, line length)
   └── McCabe       → cyclomatic complexity (tangled logic detection)
 ```
-#### 1. PyFlakes — Catches Real Bugs:  
-```
-# src/train.py
 
-import pandas as pd
-import numpy as np
-import requests          # ← F401: imported but unused
-
-def train_model(df):
-    X = df[features]     # ← F821: 'features' undefined — REAL BUG
-    model.fit(X, y)      # ← F821: 'model' undefined — REAL BUG
-    return modl          # ← F821: 'modl' undefined (typo) — REAL BUG
-```
-```
-flake8 output:
-src/train.py:3:1: F401 'requests' imported but unused
-src/train.py:6:9: F821 undefined name 'features'
-src/train.py:7:5: F821 undefined name 'model'
-src/train.py:8:12: F821 undefined name 'modl'
-4     F821 undefined name
-1     F401 imported but unused
-5
-```
-#### 2. pycodestyle — Catches Style Issues:  
-```  
-# src/preprocess.py
-
-def preprocess(df,threshold,verbose=False):  # ← E231: missing spaces after ','
-    if verbose==True:                         # ← E712: use 'if verbose:'
-        x=df['col'].fillna(0)                # ← E225: missing whitespace around =
-        very_long_variable_name = some_function_with_long_name(argument_one,argument_two,argument_three)  # ← E501: line too long
-```
-```
-flake8 output:
-src/preprocess.py:1:18: E231 missing whitespace after ','
-src/preprocess.py:2:13: E712 comparison to True should be 'if cond is True:' or 'if cond:'
-src/preprocess.py:3:10: E225 missing whitespace around operator
-src/preprocess.py:4:89: E501 line too long (112 > 88 characters)
-```
-#### 3. McCabe — Catches Complex Logic
-```
-# src/evaluate.py
-
-def evaluate_model(model, X_test, y_test, threshold, verbose, 
-                   save_report, notify_slack, fallback):
-    if threshold > 0.5:
-        if verbose:
-            if save_report:
-                if notify_slack:
-                    if fallback:        # ← deeply nested = high complexity
-                        ...
-```
-```
-flake8 output:
-src/evaluate.py:1:1: C901 'evaluate_model' is too complex (complexity: 11 > 10)
-```
 ### Step 6: Unit Tests (pytest)
 Lint confirmed the code is syntactically clean. Unit tests now confirm the code logically works correctly. This is the last gate before any data or compute is touched.  
 #### What Unit Tests Validate:  
@@ -463,29 +320,6 @@ Unit Tests verify:
           PYTHONPATH: ${{ github.workspace }}  # ensures src/ is importable
 ```
 
-#### Flag Breakdown
-```
-pytest tests/               → scan everything inside tests/ folder
---cov=src                   → measure coverage of src/ code
---cov-report=xml            → output coverage.xml (for SonarCloud etc.)
---cov-report=term-missing   → print which exact lines are NOT covered
---cov-fail-under=80         → FAIL if coverage drops below 80%
--v                          → verbose: show each test name + pass/fail
--x                          → stop immediately on first failure
-                              (don't run 50 tests after one breaks)
-```
-
----
-
-#### Project Test Structure
-```
-tests/
-├── conftest.py                  ← shared fixtures (reusable test data)
-├── test_preprocess.py           ← tests for src/preprocess.py
-├── test_train.py                ← tests for src/train.py
-├── test_evaluate.py             ← tests for src/evaluate.py
-└── test_params.py               ← tests for params.yaml loading
-```
 ### Step 7: Data Pull & Versioning (DVC + S3)
 Code is verified clean. Now the pipeline needs real data. This step is where DVC bridges the gap between Git (code versioning) and S3 (data storage), pulling the exact data version that corresponds to this commit.  
 DVC is an open-source tool designed to handle large files, datasets, and machine learning models — things that Git alone can't manage efficiently.  
@@ -512,28 +346,6 @@ DVC stores the actual data files in S3 (cloud) and keeps only a small pointer/re
 
 **Data Pull** means downloading the correct version of data from S3 using DVC. Versioning means tracking every change to your dataset over time, so you can go back to any previous version.   
 
-The Workflow Step:  
-```
-# Inside .github/workflows/ml-pipeline.yml
-# This runs in Job 2: ml-pipeline (after code-quality job passed)
-
-      # ── STEP 7: Data Pull & Versioning ────────────────────
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            us-east-1
-
-      - name: Configure DVC Remote
-        run: |
-          dvc remote add -d s3remote s3://ml-project-data/files
-          dvc remote modify s3remote region us-east-1
-
-      - name: Pull Data from S3 (DVC)
-        run: |
-          dvc pull --run-cache           # pulls data + cached pipeline outputs
-```
 ### Step 8: Model Training Pipeline (KFP Run)
 This is the heart of the entire lifecycle. The runner now has code ✅, dependencies ✅, and data ✅. It's time to fire actual model training — but NOT on the GitHub Actions runner itself. The runner orchestrates training on a dedicated Kubeflow Pipelines (KFP) cluster.  
 > The runner's job in Step 8: compile the pipeline, submit it to Kubeflow, and poll until it finishes. The actual compute happens inside the Kubeflow cluster.  
