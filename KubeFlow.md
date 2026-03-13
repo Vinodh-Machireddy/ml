@@ -135,7 +135,7 @@ if __name__ == "__main__":
         package_path="ev_battery_fault_pipeline.yaml"
     )
 ```  
-Resources, retry, timeout:  
+**Resources, retry, timeout:**   
 They decide how the training pod runs in Kubernetes. They do NOT change ML logic.  
 They control runtime behaviour of the pod.  
 ```
@@ -144,7 +144,7 @@ They control runtime behaviour of the pod.
         train_task.set_retry(3)  # If this step fails, Kubeflow will try again up to 3 times.  
         train_task.set_timeout(7200) # If this step runs more than 7200 seconds (2 hours), Kubeflow will stop it automatically.  
 ```  
-environment variables:  
+**environment variables:**   
 It adds an environment variable inside the training pod so your training code knows in which environment it is running.  
 ```
 dsl.EnvVar(name="ENVIRONMENT", value=environment) this creates  
@@ -155,7 +155,7 @@ Your Python code can read it like this:
 		import os
 		env = os.getenv("ENVIRONMENT")
 ```  
-/secrets:  
+**/secrets:**   
 ```
 train_task.add_secret(secret_name=“ev-telemetry-secret", mount_path="/secrets" )  
  It securely gives sensitive information to the training pod.  
@@ -166,7 +166,7 @@ When the training pod starts, Kubernetes mounts the secret at:  /secrets  Inside
    		with open("/secrets/DB_PASSWORD") as f:
    		 password = f.read()
 ```  
-Caching:  
+**Caching:**   
 train_task.set_caching_options(True) # If you run the pipeline again It tells Kubeflow to reuse the result of this step if nothing has changed.  
 evaluation:  
 The training step created a model file, for example:   
@@ -178,7 +178,7 @@ If evaluation says model is good → register it
 accuracy = 0.92  
 metrics = "accuracy=0.92, recall=0.90”  
 
-Promotion Gate:  
+**Promotion Gate:**   
 dsl.Condition(…) This creates a decision point in the pipeline. Run the next step only if this condition is true.”  
 		eval_task.outputs["accuracy"] >= accuracy_threshold  
 
@@ -190,7 +190,7 @@ Creates / updates an InferenceService
 Points it to your model in S3 / GCS / MinIO  
 
 
-Drift monitoring:  
+**Drift monitoring:** 
 In real life, after a model is deployed, the data it sees can slowly change. When data changes too much, the model’s accuracy also drops. This problem is called data drift or model drift. This step makes sure your system can detect that change early.  
 Compiler:  
 This part is used to convert your Kubeflow pipeline Python code into a YAML file.  
@@ -202,9 +202,11 @@ Versioned in Git
 Deployed via CI/CD  
 Uploaded to Kubeflow UI  
 
-NOTE: Each Kubeflow pipeline component runs in its own isolated pod, but components are linked through the pipeline using input–output dependencies. The pipeline builds a DAG, and Kubeflow executes the pods in that order, passing outputs from one component to the next.  
-How outputs are stored in Kubeflow  
-When a component finishes, its outputs are stored in two different ways:  
+> **NOTE:** Each Kubeflow pipeline component runs in its own isolated pod, but components are linked through the pipeline using input–output dependencies. The pipeline builds a DAG, and Kubeflow executes the pods in that order, passing outputs from one component to the next.  
+
+**How outputs are stored in Kubeflow**
+When a component finishes, its outputs are stored in two different ways:   
+```  
 Parameters → small values (strings, numbers, booleans)  
 accuracy = 0.92  
 status = "success"  
@@ -213,22 +215,23 @@ model_version = "v3"
 Artifacts → files / large data (Anything stored as a file: datasets, models, logs, reports)  
 /data/battery_raw_v1.csv  
 /models/ev_fault_model.joblib  
-/metrics/report.json  
+/metrics/report.json
+```  
 
-Interview Explanation:  
-I automated ML pipeline orchestration using Kubeflow Pipelines by separating ML logic and orchestration clearly.  
-ML engineers focused on built reusable components using @dsl.component, which runs inside the pod – like data ingestion, validation, feature engineering, model training, and evaluation.  
+## Interview Explanation:  
+- I automated ML pipeline orchestration using Kubeflow Pipelines by separating ML logic and orchestration clearly.   
+- ML engineers focused on built reusable components using @dsl.component, which runs inside the pod – like data ingestion, validation, feature engineering, model training, and evaluation.  
 
-I  integrated the orchestration layer using @dsl.pipeline that defines execution order, dependencies, promotion gates, and production controls like resources, retries, secrets, and environment variables.  
+- I  integrated the orchestration layer using @dsl.pipeline that defines execution order, dependencies, promotion gates, and production controls like resources, retries, secrets, and environment variables.  
 
-I added drift monitoring and notification hooks so the pipeline continues into post-deployment phase.  
+- I added drift monitoring and notification hooks so the pipeline continues into post-deployment phase.  
 
-One important part of the orchestration was adding promotion gates. Since we were working on a safety-critical system, I added a condition that checks model accuracy before allowing it to move to the registry.   
-So instead of trusting every trained model, the pipeline itself makes the decision:  
-Only models that meet quality standards are promoted.  
-This removed human error and brought strong governance into the ML lifecycle.  
+- One important part of the orchestration was adding promotion gates. Since we were working on a safety-critical system, I added a condition that checks model accuracy before allowing it to move to the registry.   
+- So instead of trusting every trained model, the pipeline itself makes the decision:  
+- Only models that meet quality standards are promoted.  
+- This removed human error and brought strong governance into the ML lifecycle.  
 
-Next, I focused on making the pipeline production-ready.  
+**Next, I focused on making the pipeline production-ready.**  
 I added full runtime controls at the orchestration level:  
 CPU and memory limits for heavy training jobs  
 Retry logic for temporary failures  
