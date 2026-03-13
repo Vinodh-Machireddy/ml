@@ -62,28 +62,38 @@
 /home/runner/work/ml-project/ml-project/
 ├── .github/
 │   └── workflows/
-│       └── ml-pipeline.yml
+│       └── ml-pipeline.yml              ← GitHub Actions CI workflow
 │
 ├── src/
-│   ├── train.py
-│   ├── evaluate.py
-│   ├── preprocess.py
-│   └── predict.py
+│   ├── train.py                         ← model training
+│   ├── evaluate.py                      ← model evaluation
+│   ├── preprocess.py                    ← data preprocessing
+│   └── predict.py                       ← inference logic
 │
-├── pipelines/
-│   ├── kfp_pipeline.py
-│   └── submit_pipeline.py        ← bridge script to submit KFP pipeline
+├── pipelines/                           ← ALL Kubeflow related files
+│   ├── kfp_pipeline.py                  ← FILE 1: pipeline definition
+│   │   ├── @component definitions       ← pipeline components
+│   │   │   ├── preprocess component
+│   │   │   ├── train component
+│   │   │   └── evaluate component
+│   │   │
+│   │   └── @pipeline assembly           ← connects all components
+│   │
+│   └── submit_pipeline.py               ← FILE 2: compile + submit + poll
+│       ├── compile logic                ← compile KFP pipeline YAML
+│       ├── submit logic                 ← submit run to Kubeflow
+│       └── polling loop                 ← monitor pipeline status
 │
 ├── tests/
-│   └── test_preprocess.py
+│   └── test_preprocess.py               ← unit tests
 │
-├── dvc.yaml                      ← pipeline stages definition
-├── dvc.lock                      ← data version references
-├── params.yaml                   ← ML hyperparameters
-├── requirements.txt              ← python dependencies
-├── Dockerfile                    ← container image for training/pipeline
+├── dvc.yaml                             ← DVC pipeline stages
+├── dvc.lock                             ← data version tracking
+├── params.yaml                          ← hyperparameters
+├── requirements.txt                     ← Python dependencies
+├── Dockerfile                           ← container image for pipeline
 │
-└── README.md                     ← project documentation (recommended)
+└── README.md                            ← project documentation
 ```  
 
 # Production-Grade ML Pipeline — Complete Repository Structure
