@@ -82,7 +82,6 @@ def ev_battery_fault_pipeline(
         ingest_task = ingest_battery_data(data_version=data_version)
 
         # 2️⃣ Validate sensor data         # raw_data_path=“/data/battery_raw_v1.csv"
-
         validate_task = validate_battery_data(raw_data_path=ingest_task.outputs["raw_data_path"] )
 
         # 3️⃣ Generate features.         # clean_data_path= “/data/battery_clean_v1.csv"
@@ -91,7 +90,7 @@ def ev_battery_fault_pipeline(
         # 4️⃣ Train fault classifier
         train_task = train_fault_classifier(features_path=feature_task.outputs["features_path"])
 
-       train_task.set_cpu_limit(“4")  
+        train_task.set_cpu_limit(“4")  
         train_task.set_memory_limit(“8Gi") 
         train_task.set_retry(3) 
         train_task.set_timeout(7200)
@@ -140,7 +139,7 @@ Resources, retry, timeout:
 They decide how the training pod runs in Kubernetes. They do NOT change ML logic.  
 They control runtime behaviour of the pod.  
 ```
- train_task.set_cpu_limit(“4")   This training pod can use maximum 4 CPU cores.  
+ 		train_task.set_cpu_limit(“4")   This training pod can use maximum 4 CPU cores.  
         train_task.set_memory_limit(“8Gi")  # This pod can use maximum 8 GB RAM.  
         train_task.set_retry(3)  # If this step fails, Kubeflow will try again up to 3 times.  
         train_task.set_timeout(7200) # If this step runs more than 7200 seconds (2 hours), Kubeflow will stop it automatically.  
