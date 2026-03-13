@@ -342,7 +342,7 @@ This is the heart of the entire lifecycle. The runner now has code ✅, dependen
 
 In a production MLOps setup, GitHub Actions runners do not perform the actual model training. Training usually requires high compute resources, persistent volumes, GPUs/CPUs, and long execution time, which are not suitable for GitHub runners. Instead, the runner’s role is only to orchestrate the training process on a dedicated Kubeflow Pipelines (KFP) cluster.
 
-When the github Actions reaches the “Model Training” step, GitHub Actions simply triggers the training pipeline. The runner first **compiles the Kubeflow pipeline**, which means converting the pipeline Python file into a YAML specification that Kubeflow can understand and execute. After compilation, the runner **submits** this pipeline.yaml file to the Kubeflow Pipelines API server.
+When the github Actions reaches the “Model Training” step, GitHub Actions simply triggers the training pipeline. The runner first **compiles the Kubeflow pipeline**, which means converting the pipeline Python file into a YAML specification that Kubeflow can understand and execute. After compilation, the runner **submits** this kfp_pipeline.yaml file to the Kubeflow Pipelines API server.
 
 Once submitted, the Kubeflow Pipelines system schedules and runs the pipeline inside the Kubernetes cluster, where the actual compute resources are available. The GitHub Actions **runner then polls** the pipeline status periodically until the execution finishes (Succeeded or Failed).
 
@@ -362,7 +362,7 @@ submit_pipeline.py runs
       ▼
 client = kfp.Client(host="https://kubeflow.internal")
       │
-      │ 2. Send pipeline.yaml + params via HTTP POST
+      │ 2. Send kfp_pipeline.yaml + params via HTTP POST
       ▼
 POST https://kubeflow.internal/apis/v2beta1/runs
 Body: {
@@ -389,7 +389,7 @@ run_id = "abc123xyz"          ◄───────────────�
 PHASE 2: KUBEFLOW EXECUTES (background)
 ────────────────────────────────────────
 
-                                Kubeflow Pipeline Controller reads pipeline.yaml
+                                Kubeflow Pipeline Controller reads kfp_pipeline.yaml
                                       │
                                       ▼
                                 Creates Kubernetes Pods for each component:
