@@ -342,55 +342,226 @@ This is the heart of the entire lifecycle. The runner now has code ✅, dependen
 
 In a production MLOps setup, GitHub Actions runners do not perform the actual model training. Training usually requires high compute resources, persistent volumes, GPUs/CPUs, and long execution time, which are not suitable for GitHub runners. Instead, the runner’s role is only to orchestrate the training process on a dedicated Kubeflow Pipelines (KFP) cluster.
 
-When the github Actions reaches the “Model Training” step, GitHub Actions simply triggers the training pipeline. The runner first compiles the Kubeflow pipeline, which means converting the pipeline Python file into a YAML specification that Kubeflow can understand and execute. After compilation, the runner submits this pipeline to the Kubeflow Pipelines API server.
+When the github Actions reaches the “Model Training” step, GitHub Actions simply triggers the training pipeline. The runner first **compiles the Kubeflow pipeline**, which means converting the pipeline Python file into a YAML specification that Kubeflow can understand and execute. After compilation, the runner **submits** this pipeline.yaml file to the Kubeflow Pipelines API server.
 
-Once submitted, the Kubeflow Pipelines system schedules and runs the pipeline inside the Kubernetes cluster, where the actual compute resources are available. The GitHub Actions runner then polls the pipeline status periodically until the execution finishes (Succeeded or Failed).
+Once submitted, the Kubeflow Pipelines system schedules and runs the pipeline inside the Kubernetes cluster, where the actual compute resources are available. The GitHub Actions **runner then polls** the pipeline status periodically until the execution finishes (Succeeded or Failed).
 
 > **NOTE:** we wrote kfp_pipeline.py in Python, But Kubeflow cluster does NOT understand Python files. Kubeflow only understands YAML (Kubernetes language).
 
-
-
-
+#### The Full Journey — Step by Step
 ```
-# Simply says "hey, run this pipeline"
-kfp.Client(host="https://kfp-server-url").create_run_from_pipeline_package(
-    pipeline_file="my_pipeline.yaml",
-    arguments={"param1": "value1"}
-)
+GitHub Actions Runner              Kubeflow Cluster (Kubernetes)
+──────────────────────             ─────────────────────────────
+
+PHASE 1: SUBMIT
+───────────────
+
+submit_pipeline.py runs
+      │
+      │ 1. Connect to Kubeflow API
+      ▼
+client = kfp.Client(host="https://kubeflow.internal")
+      │
+      │ 2. Send pipeline.yaml + params via HTTP POST
+      ▼
+POST https://kubeflow.internal/apis/v2beta1/runs
+Body: {
+  pipeline_spec: <contents of pipeline.yaml>,
+  run_name: "run-a3f8c21d",
+  experiment_name: "churn-prediction",
+  arguments: {
+    n_estimators: 200,
+    max_depth: 10,
+    ...
+  }
+}
+      │
+      │ 3. Kubeflow receives → creates Run object
+      ▼                        returns run_id instantly
+run_id = "abc123xyz"          ◄────────────────────────────────
+      │
+      │ 4. Runner gets run_id back
+      │    Kubeflow is NOW working in background
+      │    Runner does NOT wait — it starts polling
+      ▼
+
+
+PHASE 2: KUBEFLOW EXECUTES (background)
+────────────────────────────────────────
+
+                                Kubeflow Pipeline Controller reads pipeline.yaml
+                                      │
+                                      ▼
+                                Creates Kubernetes Pods for each component:
+
+                                Pod 1 (train_component):
+                                  image: python:3.10-slim
+                                  command: pip install... && python3 -c "..."
+                                  resources: CPU=8, RAM=32Gi, GPU=1
+                                  STATUS: Running
+                                      │
+                                      │ (training finishes — 30-40 mins)
+                                      ▼
+                                Pod 1 STATUS: Completed ✅
+                                model.pkl saved to shared storage (MinIO)
+                                      │
+                                      ▼
+                                Pod 2 (mlflow_tracking_component):
+                                  Starts ONLY after Pod 1 completes
+                                  Reads model.pkl from shared storage
+                                  Logs to MLflow
+                                  STATUS: Running → Completed ✅
+                                      │
+                                      ▼
+                                Pod 3 (evaluate_and_gate_component):
+                                  Starts ONLY after Pod 2 completes
+                                  Checks recall > 0.85
+                                  STATUS: Running → Completed ✅ or Failed ❌
+
+                                Overall Run STATUS: Succeeded or Failed
+
+
+PHASE 3: POLLING (runner checks every 30 seconds)
+──────────────────────────────────────────────────
+
+Runner polls Kubeflow API:
+      │
+      ├── [0s]   GET /apis/v2beta1/runs/abc123xyz → status: Running
+      ├── [30s]  GET /apis/v2beta1/runs/abc123xyz → status: Running
+      ├── [60s]  GET /apis/v2beta1/runs/abc123xyz → status: Running
+      │           ...
+      │           (20-40 minutes pass)
+      │           ...
+      ├── [1800s] GET /apis/v2beta1/runs/abc123xyz → status: Succeeded
+      │
+      ▼
+status == "Succeeded" → sys.exit(0)  ← runner continues to Step 9
+status == "Failed"    → sys.exit(1)  ← runner stops, pipeline fails
+```
+
+**What submit_pipeline.py Contains:** compile logic + submit logic + polling loop 
+```
+# pipelines/submit_pipeline.py
+# Written by: MLOps Engineer (ONE file, THREE responsibilities)
+# ─────────────────────────────────────────────────────────────
+# RESPONSIBILITY 1: Compile   (Python → YAML)
+# RESPONSIBILITY 2: Submit    (YAML → Kubeflow API)
+# RESPONSIBILITY 3: Poll      (check status every 30s)
+# ─────────────────────────────────────────────────────────────
+
+import kfp
+import kfp.compiler as compiler
+import argparse
+import yaml
+import time
+import sys
+import os
+from pipelines.kfp_pipeline import ml_pipeline   # imports FILE 1
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--endpoint",    required=True)
+    parser.add_argument("--experiment",  required=True)
+    parser.add_argument("--run-name",    required=True)
+    parser.add_argument("--params-file", required=True)
+    return parser.parse_args()
+
+
+def main():
+    args   = parse_args()
+    params = yaml.safe_load(open(args.params_file))
+
+    # ══════════════════════════════════════════════════════════
+    # RESPONSIBILITY 1: COMPILE
+    # Converts kfp_pipeline.py Python → pipeline.yaml (YAML)
+    # ══════════════════════════════════════════════════════════
+    print("Compiling pipeline...")
+    compiler.Compiler().compile(
+        pipeline_func=ml_pipeline,        # from kfp_pipeline.py
+        package_path="pipeline.yaml"      # output on runner disk
+    )
+    print("Compiled → pipeline.yaml ✅")
+
+    # ══════════════════════════════════════════════════════════
+    # RESPONSIBILITY 2: SUBMIT
+    # Sends pipeline.yaml to Kubeflow API
+    # Returns run_id immediately — does not block
+    # ══════════════════════════════════════════════════════════
+    print("Connecting to Kubeflow...")
+    client = kfp.Client(host=args.endpoint)
+
+    print("Submitting pipeline run...")
+    run = client.create_run_from_pipeline_package(
+        pipeline_file="pipeline.yaml",
+        arguments={
+            "n_estimators":         params["train"]["n_estimators"],
+            "max_depth":            params["train"]["max_depth"],
+            "random_state":         params["train"]["random_state"],
+            "target_column":        params["train"]["target_column"],
+            "min_recall_threshold": params["train"]["min_recall_threshold"],
+            "mlflow_tracking_uri":  os.environ["MLFLOW_TRACKING_URI"],
+            "git_commit":           os.environ["GITHUB_SHA"],
+        },
+        run_name=args.run_name,
+        experiment_name=args.experiment,
+    )
+
+    run_id = run.run_id
+    print(f"Submitted ✅  Run ID: {run_id}")
+    print(f"Kubeflow UI:  {args.endpoint}/#/runs/details/{run_id}")
+
+    # ══════════════════════════════════════════════════════════
+    # RESPONSIBILITY 3: POLL
+    # Checks run status every 30 seconds
+    # Blocks runner until Kubeflow finishes
+    # Passes result back via sys.exit code
+    # ══════════════════════════════════════════════════════════
+    poll_interval = 30
+    timeout       = 7200    # 2 hours max
+    elapsed       = 0
+
+    while elapsed < timeout:
+        status = client.get_run(run_id).run.status
+        print(f"[{elapsed}s] Status: {status}")
+
+        if status == "Succeeded":
+            print("Pipeline SUCCEEDED ✅")
+
+            # Write MLflow run_id to GitHub Actions env
+            # Step 9 (register_model.py) reads this
+            mlflow_run_id = extract_mlflow_run_id(client, run_id)
+            with open(os.environ["GITHUB_ENV"], "a") as f:
+                f.write(f"MLFLOW_RUN_ID={mlflow_run_id}\n")
+
+            sys.exit(0)     # ← GitHub Actions sees ✅ → Step 9 starts
+
+        elif status in ("Failed", "Error", "Cancelled"):
+            print(f"Pipeline {status} ❌")
+            sys.exit(1)     # ← GitHub Actions sees ❌ → pipeline stops
+
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+
+    print("Timeout exceeded.")
+    sys.exit(1)
+
+
+def extract_mlflow_run_id(client, run_id):
+    """Parse MLflow run ID from KFP run artifacts."""
+    run_detail = client.get_run(run_id)
+    # KFP stores component outputs as artifacts
+    # mlflow_tracking_component wrote run_id as an output artifact
+    for artifact in run_detail.run.run_details.task_details:
+        if "mlflow_run_id" in artifact.outputs:
+            return artifact.outputs["mlflow_run_id"]
+
+
+if __name__ == "__main__":
+    main()
 ```  
-GitHub Actions owns CI orchestration (lint, test, build, push). KFP owns ML orchestration (data prep, train, evaluate, register). Mixing them would make your CI pipeline fragile and hard to debug.  
 
-The only thing to be careful about GitHub Actions needs to wait for the KFP run to finish before proceeding to the next steps (evaluation, S3 push, image build). If you fire-and-forget the KFP trigger, your CI pipeline will move on before training is done. So your GitHub Actions step should poll the KFP run status and only proceed on a successful completion status.  
-
-Step 1 — GitHub Actions (The Trigger)  
-This is just the starting point. Your CI/CD pipeline makes an API call   
-
-Step 2 — KFP API Server (The Translator) KFP receives the request and thinks:  
-> "OK, this pipeline has 3 steps — preprocess, train, evaluate. Let me convert this into an Argo Workflow YAML and submit it to Kubernetes."
-KFP does NOT create pods directly. It just creates an Argo Workflow object (a Kubernetes custom resource).
-
-Step 3 — Argo Workflow Object (Just a Definition)
-This is just a YAML file stored in Kubernetes. It describes WHAT should run, but by itself it does nothing. Think of it like a blueprint — it's just sitting there waiting.  
-**Step 4 — Argo Workflow Controller (The REAL Pod Creator)**   
-This is the **key player**. The Argo Controller is a process **constantly running inside your Kubernetes cluster**, watching for new Workflow objects. When it sees one:  
-
-> "Oh, a new workflow appeared! Let me read it and create pods for each step."
-```
-Argo Controller sees the workflow object
-    → Creates Pod for "preprocess" step
-    → Waits for it to finish
-    → Creates Pod for "train" step
-    → Waits for it to finish
-    → Creates Pod for "evaluate" step
-```
-**The Argo Controller is the one who actually creates the pods.**   
-
-**Step 5 — Kubernetes (The Executor)**  
-Once the pod is created, **Kubernetes scheduler** decides:  
-> "Which node has enough CPU/memory to run this pod?"  
-Then it schedules and runs the pod on an available node.    
-
-## Training vs Inference Images
+#### Training vs Inference Images
 - The CI workflow steps are identical for both. The only differences are what triggers them, what code gets copied in, and what dependencies get installed.  
 - Training Image: ```Triggered when: src/pipeline/ or requirements.txt changes```  
 - Inference Image: ```Triggered when: any code commit```  
