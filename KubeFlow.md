@@ -1,30 +1,29 @@
 # KUBEFLOW  
-What is Kubeflow?  
+## What is Kubeflow?  
 Kubeflow is a Kubernetes-native platform designed to run the entire machine learning lifecycle—data-loading, training, evaluation, pipelines, deployment, monitoring, retraining.  
 
-Why Kubeflow?  
-Kubeflow is used to make Machine Learning production-ready, the same disciplined way traditional software is built and deployed using DevOps.  
+## Why Kubeflow?  
+Kubeflow is used to make Machine Learning production-ready models, the same disciplined way how we develope a traditional software app is built and deployed using DevOps.  
 
-Kubeflow Components:  
+## Kubeflow Components:  
 <img width="273" height="149" alt="image" src="https://github.com/user-attachments/assets/c7feb8cf-2211-4364-9cca-825e2751db32" />   
 
 DSL:  
 Kubeflow uses a Python-based DSL to declaratively define ML pipelines, which are later compiled into Kubernetes-executable YAML workflows.  
 
-Kubeflow Pipeline: ML workflow automation  
-It helps us automate the full ML lifecycle – from data ingestion to training, evaluation, deployment, and monitoring.  
-Technically:  
+## Kubeflow Pipeline:
+Kubeflow Pipelines (KFP) is a platform for building and running ML workflows as automated pipelines on Kubernetes.
+
 We write pipelines using Python DSL  
-Kubeflow compiles it into YAML  
 Kubernetes executes it as a DAG of pods  
 Each step runs in its own container, but all steps are connected using inputs and outputs.  
 
-Why?  
+**Why?**  
 Automation – no manual steps  
 Reproducibility – same pipeline, same result  
 
 
-MLE → writes @dsl.component (logic, what runs inside pod)  
+**MLE → writes @dsl.component (logic, what runs inside pod)** 
 What MLE owns:  
 Component logic (training, feature processing, validation)  
 Inputs & outputs of components  
@@ -32,7 +31,7 @@ Python code that runs inside the container
 Making components reusable & production-ready  
 NOTE: ML engineers create reusable Kubeflow components containing the ML logic, which are then shared with the MLOps engineer. MLE decides what happens inside the pod.  
 
-MLOps → writes @dsl.pipeline (orchestration, how it runs in cluster)  
+**MLOps → writes @dsl.pipeline (orchestration, how it runs in cluster)**  
 What MLOps owns:  
 Wiring components together  
 Execution order & dependencies  
