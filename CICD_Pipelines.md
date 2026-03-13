@@ -338,19 +338,19 @@ DVC stores the actual data files in S3 (cloud) and keeps only a small pointer/re
 **Data Pull** means downloading the correct version of data from S3 using DVC. Versioning means tracking every change to your dataset over time, so you can go back to any previous version.   
 
 ### Step 8: Model Training Pipeline (KFP Run)
-This is the heart of the entire lifecycle. The runner now has code ✅, dependencies ✅, and data ✅. It's time to fire actual model training — but NOT on the GitHub Actions runner itself. The runner orchestrates training on a dedicated Kubeflow Pipelines (KFP) cluster.  
-> The runner's job in Step 8: compile the pipeline, submit it to Kubeflow, and poll until it finishes. The actual compute happens inside the Kubeflow cluster.  
-The Big Picture of Step 8:
+This is the heart of the entire lifecycle. The runner now has code ✅, dependencies ✅, and data ✅. It's time to fire actual model training. 
 
-```  
-GitHub Actions          →  "Hey KFP, run this pipeline"
-KFP API Server          →  "OK, let me translate this into something Kubernetes understands"
-Argo Workflow Object    →  "I'm just a YAML definition sitting in Kubernetes"
-Argo Workflow Controller→  "I read that definition and CREATE the actual pods"
-Kubernetes              →  "I schedule and RUN those pods on available nodes"
-```
-When GitHub Actions reaches the "Model Training" step, it does not run the training code directly inside the GitHub Actions runner. Instead, it just sends a trigger (an API call) to the Kubeflow Pipelines API server, which then schedules and runs the actual training pipeline on your Kubernetes cluster.  
-So the GitHub Actions step looks something like this in practice:   
+In a production MLOps setup, GitHub Actions runners do not perform the actual model training. Training usually requires high compute resources, persistent volumes, GPUs/CPUs, and long execution time, which are not suitable for GitHub runners. Instead, the runner’s role is only to orchestrate the training process on a dedicated Kubeflow Pipelines (KFP) cluster.
+
+When the github Actions reaches the “Model Training” step, GitHub Actions simply triggers the training pipeline. The runner first compiles the Kubeflow pipeline, which means converting the pipeline Python file into a YAML specification that Kubeflow can understand and execute. After compilation, the runner submits this pipeline to the Kubeflow Pipelines API server.
+
+Once submitted, the Kubeflow Pipelines system schedules and runs the pipeline inside the Kubernetes cluster, where the actual compute resources are available. The GitHub Actions runner then polls the pipeline status periodically until the execution finishes (Succeeded or Failed).
+
+> **NOTE:** we wrote kfp_pipeline.py in Python, But Kubeflow cluster does NOT understand Python files. Kubeflow only understands YAML (Kubernetes language).
+
+
+
+
 ```
 # Simply says "hey, run this pipeline"
 kfp.Client(host="https://kfp-server-url").create_run_from_pipeline_package(
