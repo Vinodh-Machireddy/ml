@@ -92,7 +92,7 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 <details>
 <summary><b>ML END-TO-END LIFECYCLE (CI, CT, CD, CM)</b></summary>
 <details style="margin-left: 20px;">
-<summary><i> --- CI Phase (GitHub Actions) --- </i></summary>  
+<summary><i> ===== CI Phase (GitHub Actions) ===== </i></summary>  
 This job is triggered on every push, PR, workflow_dispatch to the main branch.  
  
 ### 1. Code Commit (Git Push)
@@ -552,6 +552,7 @@ The Workflow Step:
 ## Step 12: Push Docker Image to ECR  
 The image is built and smoke-tested on the runner ✅. This final step pushes it to Amazon ECR — the central image registry where your Kubernetes/ECS inference infrastructure pulls from to actually serve predictions.  
 
+---
  
   <details>
     <summary><i> Complete ML CI Pipeline — ml-pipeline.yml </i></summary>  
@@ -1207,12 +1208,14 @@ Step 12    ECR Push + Scan          ~5  minutes
 ─────────────────────────────────────────────────
 Total (excl. human approval):       ~62 minutes  
 ```
-  </details> 
+  </details>  
 
+  ---  
+  
   </details>
   
   <details>
-    <summary><i> --- CD Phase (ArgoCD + KServe) --- </i></summary>   
+    <summary><i> ===== CD Phase (ArgoCD + KServe) ===== </i></summary>   
    
 ```  
   In real production these live in a SEPARATE Git repo:
@@ -1559,7 +1562,7 @@ Production: /predict endpoint serving
   </details> 
  
   <details>
-    <summary><i> --- Monitoring & Retraining Loop --- </i></summary>  
+    <summary><i> ===== Monitoring & Retraining Loop ===== </i></summary>  
      
    ### What This Phase Is in Simple Words  
 ```  
