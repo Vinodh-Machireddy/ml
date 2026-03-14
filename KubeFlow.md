@@ -22,6 +22,22 @@ Each step runs in its own container, but all steps are connected using inputs an
 Automation – no manual steps  
 Reproducibility – same pipeline, same result  
 
+### 1. Component (@dsl.component)
+A component is one single step in your pipeline. Each component is like one small independent worker that does one job.  
+**Key points:**
+Each component runs inside its own Docker container
+Components are isolated — one component's failure doesn't corrupt another
+You mention input/output types clearly so KFP knows how to pass data between steps
+base_image tells which Docker image to use
+packages_to_install installs dependencies at runtime  
+
+### 2. Pipeline (@dsl.pipeline)
+A pipeline connects multiple components together in a defined order.   
+
+### 3. Compilation
+After writing the pipeline in Python, you compile it into a YAML file. This YAML is what Kubernetes actually understands and executes.  
+
+### 4. KFP Client (Submitting the Pipeline) 
 
 **MLE → writes @dsl.component (logic, what runs inside pod)** 
 What MLE owns:  
@@ -232,29 +248,30 @@ Artifacts → files / large data (Anything stored as a file: datasets, models, l
 - This removed human error and brought strong governance into the ML lifecycle.  
 
 **Next, I focused on making the pipeline production-ready.**  
-I added full runtime controls at the orchestration level:  
-CPU and memory limits for heavy training jobs  
-Retry logic for temporary failures  
-Timeouts to prevent long-running stuck jobs  
-I also injected:  
-Environment variables, so the same pipeline works in dev, QA, and production  
-Kubernetes secrets, so credentials are handled securely and never hard-coded  
-This way, ML engineers could focus on modeling, while the pipeline handled reliability, security, and consistency.  
+I added full runtime controls at the orchestration level:
+- CPU and memory limits for heavy training jobs
+- Retry logic for temporary failures
+- Timeouts to prevent long-running stuck jobs
+I also injected:
+- Environment variables, so the same pipeline works in dev, QA, and production
+- Kubernetes secrets, so credentials are handled securely and never hard-coded
+This way, ML engineers could focus on modeling, while the pipeline handled reliability, security, and consistency.
+ 
 
 Automation did not stop at training and deployment.   
 I extended the pipeline into the post-deployment phase by adding:  
-Drift monitoring setup  
-Notification hooks  
+- Drift monitoring setup  
+- Notification hooks  
 For drift monitoring, we stored the training data as reference and compared it continuously with new incoming data. If data patterns changed too much, the system raised alerts. This helped us decide when to retrain the model, instead of waiting for performance issues to appear in production.  
 The notification hooks ensured that:  
-The team always knows when the pipeline succeeds or fails  
-Issues are caught early without manual checking  
+- The team always knows when the pipeline succeeds or fails  
+- Issues are caught early without manual checking  
 So the pipeline became not just an execution tool, but a continuous monitoring system.  
 
 Finally, I automated the build and deployment of the pipeline itself.  
 Using the Kubeflow compiler, I converted the Python-based DSL into a YAML workflow. This YAML was version-controlled in Git and deployed using our CI/CD pipeline into Kubeflow.  
 So the complete automation flow became:  
-Pipeline code → YAML → CI/CD → Kubeflow → Kubernetes execution  
+**Pipeline code → YAML → CI/CD → Kubeflow → Kubernetes execution**  
 
 Finally, I compiled the Python DSL into YAML and deployed it through CI/CD into Kubeflow, so the entire ML lifecycle became fully automated, reproducible, and production-ready.  
 
