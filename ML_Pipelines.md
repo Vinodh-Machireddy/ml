@@ -4,12 +4,13 @@ The entire ML pipeline has 4 major phases:
 Phase 1: CI (Continuous Integration)    → Code push → Test → Build
 Phase 2: CT (Continuous Training)       → Train → Evaluate → Register
 Phase 3: CD (Continuous Deployment)     → Deploy model to production
-Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
+Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain  
 ```
+
 <details>
 <summary><b>GitHub Repository Folder Structure</b></summary>  
-```
-/home/runner/work/ml-project/ml-project/
+```  
+/home/runner/work/ml-project/ml-project/  
 ├── .github/
 │   └── workflows/
 │       └── ml-pipeline.yml              ← GitHub Actions CI workflow
@@ -45,6 +46,7 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 │
 └── README.md                            ← project documentation
 ```    
+
 </details>   
 
 
