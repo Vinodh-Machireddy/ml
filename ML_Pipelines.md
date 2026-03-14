@@ -6,6 +6,45 @@ Phase 2: CT (Continuous Training)       → Train → Evaluate → Register
 Phase 3: CD (Continuous Deployment)     → Deploy model to production
 Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 ```
+```
+/home/runner/work/ml-project/ml-project/
+├── .github/
+│   └── workflows/
+│       └── ml-pipeline.yml              ← GitHub Actions CI workflow
+│
+├── src/
+│   ├── train.py                         ← model training
+│   ├── evaluate.py                      ← model evaluation
+│   ├── preprocess.py                    ← data preprocessing
+│   └── predict.py                       ← inference logic
+│
+├── pipelines/                           ← ALL Kubeflow related files
+│   ├── kfp_pipeline.py                  ← FILE 1: pipeline definition
+│   │   ├── @component definitions       ← pipeline components
+│   │   │   ├── preprocess component
+│   │   │   ├── train component
+│   │   │   └── evaluate component
+│   │   │
+│   │   └── @pipeline assembly           ← connects all components
+│   │
+│   └── submit_pipeline.py               ← FILE 2: compile + submit + poll
+│       ├── compile logic                ← compile KFP pipeline YAML
+│       ├── submit logic                 ← submit run to Kubeflow
+│       └── polling loop                 ← monitor pipeline status
+│
+├── tests/
+│   └── test_preprocess.py               ← unit tests
+│
+├── dvc.yaml                             ← DVC pipeline stages
+├── dvc.lock                             ← data version tracking
+├── params.yaml                          ← hyperparameters
+├── requirements.txt                     ← Python dependencies
+├── Dockerfile                           ← container image for pipeline
+│
+└── README.md                            ← project documentation
+```
+---  
+
 ## ML LIFECYCLE STEPS
 <details>
 <summary><b>Click-To-Expand: ML END-TO-END LIFECYCLE</b></summary>
