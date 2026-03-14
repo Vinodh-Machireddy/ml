@@ -6,7 +6,8 @@ Phase 2: CT (Continuous Training)       → Train → Evaluate → Register
 Phase 3: CD (Continuous Deployment)     → Deploy model to production
 Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 ```
-## GitHub repository Folder structure
+<details>
+<summary><b>GitHub Repository Folder Structure</b></summary>  
 ```
 /home/runner/work/ml-project/ml-project/
 ├── .github/
@@ -43,12 +44,12 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 ├── Dockerfile                           ← container image for pipeline
 │
 └── README.md                            ← project documentation
-```
----  
+```    
+</details>   
 
-## ML LIFECYCLE STEPS
+
 <details>
-<summary><b>Click-To-Expand: ML END-TO-END LIFECYCLE</b></summary>
+<summary><b>ML LIFECYCLE STEPS</b></summary>
 
 <details>
 <summary><b>CI Phase (GitHub Actions)</b></summary>
@@ -98,10 +99,9 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 </details>
 </details>  
      
- --- 
-## ML END-TO-END LIFECYCLE (CI, CT, CD, CM)
+
 <details>
-<summary><b>Click to expand: ML END-TO-END LIFECYCLE</b></summary>
+<summary><b>ML END-TO-END LIFECYCLE (CI, CT, CD, CM)</b></summary>
 <details style="margin-left: 20px;">
 <summary><i> --- CI Phase (GitHub Actions) --- </i></summary>  
 This job is triggered on every push, PR, workflow_dispatch to the main branch.  
