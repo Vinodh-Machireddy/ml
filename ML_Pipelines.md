@@ -1,4 +1,5 @@
-# First, Understand the Big Picture. The entire ML pipeline has 4 major phases:  
+# First, Understand the Big Picture. 
+The entire ML pipeline has 4 major phases:  
 ```
 Phase 1: CI (Continuous Integration)    → Code push → Test → Build
 Phase 2: CT (Continuous Training)       → Train → Evaluate → Register
@@ -61,7 +62,7 @@ MLE pushes code to GitHub
 └─────────────────────────────────────────────────┘
 ```
 
-## ML END-TO-END LIFECYCLE 
+## ML LIFECYCLE STEPS
 <details>
 <summary><b>Click-To-Expand: ML END-TO-END LIFECYCLE</b></summary>
 
@@ -77,15 +78,9 @@ MLE pushes code to GitHub
 7. Data Pull & Versioning (DVC + S3)  
 
 8. Model Training Pipeline — KFP Run triggered by GitHub Actions (polls for completion)
-
-   <details>
-   <summary>Training Pipeline Steps</summary>
-
    - 8a. Training (KFP component)  
    - 8b. Experiment Tracking (MLflow — logs params, metrics, artifacts to S3)  
    - 8c. Model Evaluation & Validation (KFP component — gates pipeline on metric threshold)  
-
-   </details>
    NOTE 8b:  
    - When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action.  
    - model artifact already stored in S3 via MLflow artifact store  
@@ -118,14 +113,9 @@ MLE pushes code to GitHub
 
 </details>
 </details>  
-
->  **Production Ready Tech Stack:** 
-```Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.```
-
-<div align="center"> 
-        
+     
  --- 
- 
+## ML END-TO-END LIFECYCLE (CI, CT, CD, CM)
 <details>
 <summary><b>Click to expand: ML END-TO-END LIFECYCLE</b></summary>
 <details style="margin-left: 20px;">
