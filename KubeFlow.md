@@ -52,17 +52,31 @@ NOTE: ML engineers create reusable Kubeflow components containing the ML logic, 
 ### 1. First, I convert MLE's code into KFP components.
 
 Once we receive raw code(Data Ingestion, Validation, Feature Eng, Training, Evaluation)  from MLE's. we convert it into KFP Components (@dsl.components). where we change: 
-Change 1: Add @dsl.component Decorator  
-   - Without this decorator, it's just a normal Python function. KFP doesn't know it's a pipeline step.
-Change 2: Replace Hardcoded Input Path with Input[Dataset]
-  - MLE's path /home/mle/data/battery_features.csv only works on their laptop. On Kubernetes Pod, this path doesn't exist.
-Change 3: Replace Local Model Save with Output[Model]
-  - MLE saves to /home/mle/models/model.pkl. If their laptop crashes, model is gone forever. Also, next pipeline step (evaluation) can't access MLE's laptop path.
-Change 4: Replace print() with Output[Metrics]
-  - MLE prints accuracy to terminal. After 50 runs, nobody remembers which run gave 94% accuracy and which gave 87%. No comparison possible.
-Change 5: Containerize the components
-Change 5: Add Model Metadata
-  - After 6 months, nobody remembers — "Which framework was used? What model type? What accuracy?" Metadata answers all these questions.
+Change 1:  Add @dsl.component decorator        → KFP recognises it as pipeline step
+Change 2:  Replace hardcoded input path         → Input[Dataset] — works on any machine
+Change 3:  Replace local model save             → Output[Model] — saved to S3 automatically
+Change 4:  Replace print() with Output[Metrics] → Metrics tracked in KFP UI
+Change 5:  Add model metadata                   → Model labelled with framework, accuracy, etc.
+Change 6:  Extract hyperparameters              → Configurable per run without code change
+Change 7:  Move imports inside function         → Works inside KFP container
+Change 8:  Create new file in components/       → MLE's original file stays untouched
+Change 9:  Create Dockerfile                    → Production-grade containerisation
+Change 10: Create requirements.txt              → Pinned versions for reproducibility
+Change 11: Add stratify to train-test split     → Balanced class distribution
+Change 12: Add n_jobs=-1                        → Use all CPU cores for faster training
+Change 13: Add random_state=42                  → Same input = same output every time
+> **NOTE:** INFRASTRUCTURE CHANGES (MLOps core work): 1 to 10 except 6th change. ||  CODE QUALITY IMPROVEMENTS (MLOps suggests to MLE or adds directly): 6,11,12,13.
+
+
+ MLOps creates NEW FILE → components/training/train_fault_classifier.py
+        Copies ML logic from MLE's file
+        ADDS: @dsl.component, base_image, pinned packages
+        REPLACES: hardcoded paths → Input/Output artifacts
+        REPLACES: print → metric logging
+        MOVES: imports inside function
+        ADDS: metadata
+        EXTRACTS: hyperparameters as function params
+
 
 ### 2. Second, I designed the pipeline definition  
 
