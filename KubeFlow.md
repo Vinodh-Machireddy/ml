@@ -48,6 +48,26 @@ Making components reusable & production-ready
 NOTE: ML engineers create reusable Kubeflow components containing the ML logic, which are then shared with the MLOps engineer. MLE decides what happens inside the pod.  
 
 **MLOps → writes @dsl.pipeline (orchestration, how it runs in cluster)**  
+
+### 1. First, I convert MLE's code into KFP components.
+
+Once we receive raw code(Data Ingestion, Validation, Feature Eng, Training, Evaluation)  from MLE's. we convert it into KFP Components (@dsl.components). where we change: 
+Change 1: Add @dsl.component Decorator  
+   - Without this decorator, it's just a normal Python function. KFP doesn't know it's a pipeline step.
+Change 2: Replace Hardcoded Input Path with Input[Dataset]
+  - MLE's path /home/mle/data/battery_features.csv only works on their laptop. On Kubernetes Pod, this path doesn't exist.
+Change 3: Replace Local Model Save with Output[Model]
+  - MLE saves to /home/mle/models/model.pkl. If their laptop crashes, model is gone forever. Also, next pipeline step (evaluation) can't access MLE's laptop path.
+Change 4: Replace print() with Output[Metrics]
+  - MLE prints accuracy to terminal. After 50 runs, nobody remembers which run gave 94% accuracy and which gave 87%. No comparison possible.
+Change 5: Containerize the components
+Change 5: Add Model Metadata
+  - After 6 months, nobody remembers — "Which framework was used? What model type? What accuracy?" Metadata answers all these questions.
+
+### 2. Second, I designed the pipeline definition  
+
+
+
 What MLOps owns:  
 Wiring components together  
 Execution order & dependencies  
