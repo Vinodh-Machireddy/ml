@@ -9,6 +9,7 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 
 <details>
 <summary><b>GitHub Repository Folder Structure</b></summary>  
+   
 ```  
 /home/runner/work/ml-project/ml-project/  
 ├── .github/
@@ -46,16 +47,14 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 │
 └── README.md                            ← project documentation
 ```    
-
 </details>   
 
 
-<details>
-<summary><b>ML LIFECYCLE STEPS</b></summary>
-
-<details>
-<summary><b>CI Phase (GitHub Actions)</b></summary>
-
+<details>  
+<summary><b>ML LIFECYCLE STEPS</b></summary>   
+   
+```     
+                             =========== CI PHASE ========  
 1. Code Commit (Git Push)  
 2. CI Trigger (GitHub Actions)  
 3. Code Checkout  
@@ -63,44 +62,32 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 5. Lint Check (flake8)  
 6. Unit Tests (pytest)  
 7. Data Pull & Versioning (DVC + S3)  
-
 8. Model Training Pipeline — KFP Run triggered by GitHub Actions (polls for completion)
    - 8a. Training (KFP component)  
    - 8b. Experiment Tracking (MLflow — logs params, metrics, artifacts to S3)  
    - 8c. Model Evaluation & Validation (KFP component — gates pipeline on metric threshold)  
-   NOTE 8b:  
-   - When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no separate explicit upload action.  
-   - model artifact already stored in S3 via MLflow artifact store  
+   NOTE 8b: 
+     When MLflow logs the model inside the KFP pipeline (step 8b), it writes directly to S3 automatically. There is no      separate explicit upload action.  
+    model artifact already stored in S3 via MLflow artifact store  
 9. Model Registration (MLflow Registry — model artifact stored in S3 via MLflow)  
 10. Model Promotion (Staging → Production in MLflow Registry)  
 11. Build Inference Docker Image  
 12. Push Docker Image to ECR  
-
-</details>
-
-<details>
-<summary><b>CD Phase (ArgoCD + KServe)</b></summary>
-
+                            =========== CD PHASE ========  
 13. Update KServe Manifest (inference.yaml — new image tag + S3 model URI)  
 14. Git Commit & Push Deployment Config  
 15. ArgoCD Detects Drift & Syncs  
 16. KServe Deploys Model Pod (pulls image from ECR, model from S3)  
-
-</details>
-
-<details>
-<summary><b>Monitoring & Retraining Loop</b></summary>
-
+                            =========== CM PHASE ========  
 17. Monitoring (Prometheus + Grafana — latency, throughput, error rate)  
 18. Data / Concept Drift Detection (custom Prometheus metrics)  
 19. Alert Trigger (Prometheus Alertmanager)  
 20. Retraining Pipeline Trigger (webhook → GitHub Actions → new KFP run)  
 21. New Model Version Generated (loops back to step 8)  
 22. Redeployment (loops back to step 13)  
-
-</details>
+```  
 </details>  
-     
+    
 
 <details>
 <summary><b>ML END-TO-END LIFECYCLE (CI, CT, CD, CM)</b></summary>
