@@ -253,7 +253,8 @@ When the training pod starts, Kubernetes mounts the secret at:  /secrets  Inside
 ```  
 **Caching:**   
 train_task.set_caching_options(True) # If you run the pipeline again It tells Kubeflow to reuse the result of this step if nothing has changed.  
-evaluation:  
+
+**evaluation:**  
 The training step created a model file, for example:   
 /models/ev_fault_model.joblib  
 That file location is saved as an output of the training step. Now we pass that output to the evaluation step. So you are telling Kubeflow: “Use the same model that was just trained.”  
@@ -267,13 +268,11 @@ metrics = "accuracy=0.92, recall=0.90”
 dsl.Condition(…) This creates a decision point in the pipeline. Run the next step only if this condition is true.”  
 		eval_task.outputs["accuracy"] >= accuracy_threshold  
 
-
 This is just another Kubeflow component you create, like your other steps.  
 Inside that component, you write code that:  
 Uses KServe SDK or kubectl  
 Creates / updates an InferenceService  
 Points it to your model in S3 / GCS / MinIO  
-
 
 **Drift monitoring:** 
 In real life, after a model is deployed, the data it sees can slowly change. When data changes too much, the model’s accuracy also drops. This problem is called data drift or model drift. This step makes sure your system can detect that change early.  
