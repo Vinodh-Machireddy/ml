@@ -22,36 +22,15 @@ Each step runs in its own container, but all steps are connected using inputs an
 Automation – no manual steps  
 Reproducibility – same pipeline, same result  
 
-### 1. Component (@dsl.component)
+## 1. Component (@dsl.component) 
 A component is one single step in your pipeline. Each component is like one small independent worker that does one job.  
-**Key points:**
-Each component runs inside its own Docker container
-Components are isolated — one component's failure doesn't corrupt another
-You mention input/output types clearly so KFP knows how to pass data between steps
-base_image tells which Docker image to use
-packages_to_install installs dependencies at runtime  
+**Key points:**  
+- Each component runs inside its own Docker container  
+- Components are isolated — one component's failure doesn't corrupt another  
 
-### 2. Pipeline (@dsl.pipeline)
-A pipeline connects multiple components together in a defined order.   
-
-### 3. Compilation
-After writing the pipeline in Python, you compile it into a YAML file. This YAML is what Kubernetes actually understands and executes.  
-
-### 4. KFP Client (Submitting the Pipeline) 
-
-**MLE → writes @dsl.component (logic, what runs inside pod)** 
-What MLE owns:  
-Component logic (training, feature processing, validation)  
-Inputs & outputs of components  
-Python code that runs inside the container  
-Making components reusable & production-ready  
-NOTE: ML engineers create reusable Kubeflow components containing the ML logic, which are then shared with the MLOps engineer. MLE decides what happens inside the pod.  
-
-**MLOps → writes @dsl.pipeline (orchestration, how it runs in cluster)**  
-
-### 1. First, I convert MLE's code into KFP components.
-
-Once we receive raw code(Data Ingestion, Validation, Feature Eng, Training, Evaluation)  from MLE's. we convert it into KFP Components (@dsl.components). where we change: 
+### 1. First, I convert MLE's code into KFP components.  
+Once we receive raw code(Data Ingestion, Validation, Feature Eng, Training, Evaluation)  from MLE's. we convert it into KFP Components (@dsl.components). where we change:   
+```  
 Change 1:  Add @dsl.component decorator        → KFP recognises it as pipeline step
 Change 2:  Replace hardcoded input path         → Input[Dataset] — works on any machine
 Change 3:  Replace local model save             → Output[Model] — saved to S3 automatically
@@ -65,126 +44,182 @@ Change 10: Create requirements.txt              → Pinned versions for reproduc
 Change 11: Add stratify to train-test split     → Balanced class distribution
 Change 12: Add n_jobs=-1                        → Use all CPU cores for faster training
 Change 13: Add random_state=42                  → Same input = same output every time
+```
+
 > **NOTE:** INFRASTRUCTURE CHANGES (MLOps core work): 1 to 10 except 6th change. ||  CODE QUALITY IMPROVEMENTS (MLOps suggests to MLE or adds directly): 6,11,12,13.
 
+**Final Converted Code of train.py**  
+```  
+# components/training/train_fault_classifier.py — MLOps creates this NEW file (Change 8)
 
- MLOps creates NEW FILE → components/training/train_fault_classifier.py
-        Copies ML logic from MLE's file
-        ADDS: @dsl.component, base_image, pinned packages
-        REPLACES: hardcoded paths → Input/Output artifacts
-        REPLACES: print → metric logging
-        MOVES: imports inside function
-        ADDS: metadata
-        EXTRACTS: hyperparameters as function params
+from kfp import dsl                                                    # Change 1
+from kfp.dsl import Input, Output, Dataset, Model, Metrics             # Change 2, 3, 4
 
-
-### 2. Second, I designed the pipeline definition  
-
-
-
-What MLOps owns:  
-Wiring components together  
-Execution order & dependencies  
-Resources (CPU, memory, GPU)  
-Retries & timeouts  
-Secrets & env variables  
-Conditions (promotion gates)  
-Monitoring & alerts  
-CI/CD integration  
-NOTE:- MLOps engineer integrates these components into a pipeline, and decides how pods run in the cluster.  
-```
-COMPONENT 1: Ingest EV Battery Telemetry  
-@dsl.component(
-    base_image="python:3.9-slim",
-    packages_to_install=["scikit-learn", “joblib"]
+@dsl.component(                                                        # Change 1
+    base_image="python:3.9-slim",                                      # Change 1
+    packages_to_install=["scikit-learn==1.3.0", "pandas==2.0.3",       # Change 10
+                         "joblib==1.3.2"]
 )
-COMPONENT 2: Data Validation
-def validate_battery_data
-COMPONENT 3: Feature Engineering
-def generate_battery_features
-COMPONENT 4: Train Fault Classification Model
-def train_fault_classifier
-COMPONENT 5: Evaluate Model
-def evaluate_fault_model
-COMPONENT 6: Register Model
-def register_fault_model
-COMPONENT 7: Drift Monitoring Setup
-def setup_drift_monitoring
-COMPONENT 8: Notification / Monitoring Hook
-def notify_pipeline_status
+def train_fault_classifier(
+    features_data: Input[Dataset],                                     # Change 2
+    model_artifact: Output[Model],                                     # Change 3
+    training_metrics: Output[Metrics],                                 # Change 4
+    n_estimators: int = 200,                                           # Change 6
+    max_depth: int = 15,                                               # Change 6
+    test_size: float = 0.2                                             # Change 6
+):
+    import pandas as pd                                                # Change 7
+    from sklearn.ensemble import RandomForestClassifier                # Change 7
+    from sklearn.model_selection import train_test_split               # Change 7
+    from sklearn.metrics import accuracy_score, f1_score               # Change 7
+    import joblib                                                      # Change 7
+
+    df = pd.read_csv(features_data.path)                               # Change 2
+
+    X = df.drop(columns=["fault_type", "battery_id", "timestamp"])
+    y = df["fault_type"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=42, stratify=y         # Change 6, 11, 13
+    )
+
+    model = RandomForestClassifier(
+        n_estimators=n_estimators,                                     # Change 6
+        max_depth=max_depth,                                           # Change 6
+        random_state=42,                                               # Change 13
+        n_jobs=-1                                                      # Change 12
+    )
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average="weighted")
+
+    training_metrics.log_metric("accuracy", float(accuracy))           # Change 4
+    training_metrics.log_metric("f1_score", float(f1))                 # Change 4
+    training_metrics.log_metric("n_estimators", n_estimators)          # Change 4
+    training_metrics.log_metric("max_depth", max_depth)                # Change 4
+    training_metrics.log_metric("training_samples", len(X_train))      # Change 4
+    training_metrics.log_metric("test_samples", len(X_test))           # Change 4
+
+    joblib.dump(model, model_artifact.path)                            # Change 3
+
+    model_artifact.metadata["framework"] = "scikit-learn"              # Change 5
+    model_artifact.metadata["model_type"] = "RandomForestClassifier"   # Change 5
+    model_artifact.metadata["accuracy"] = float(accuracy)              # Change 5
+    model_artifact.metadata["f1_score"] = float(f1)                    # Change 5
+    model_artifact.metadata["training_samples"] = len(X_train)         # Change 5  
 ```
-```
-@dsl.pipeline(
-    name="ev-battery-health-fault-pipeline",
-    description="Production-grade Kubeflow pipeline for EV Battery Health Fault Classification"
-)
+> NOTE: Same for remaining all components.
+
+---
+
+
+## 2. @dsl.pipeline (orchestration, how it runs in cluster) 
+```  
+@dsl.pipeline(name="ev-battery-fault-pipeline")
 def ev_battery_fault_pipeline(
-    data_version: str = “v1",              #These three are pipeline parameters
+    data_version: str = "v1",
     accuracy_threshold: float = 0.90,
     environment: str = "prod"
 ):
+    with dsl.ExitHandler(notify_pipeline_status(status="completed")):
 
-    # Exit handler → monitoring always runs
-    with dsl.ExitHandler(
-        notify_pipeline_status(status="completed")
-    ):
-        # 1️⃣ Ingest telemetry
-        ingest_task = ingest_battery_data(data_version=data_version)
+        # ──────────────────────────────────────────
+        # Step 1: Ingest — LIGHT component
+        # ──────────────────────────────────────────
+        ingest = ingest_battery_data(data_version=data_version)
+        ingest.set_cpu_limit("1")              # just downloading file, 1 CPU enough
+        ingest.set_memory_limit("2Gi")         # small memory
+        ingest.set_retry(3)                    # S3 network can fail, retry 3 times
+        ingest.set_timeout(1800)               # 30 min max
+        ingest.set_caching_options(True)       # same version = skip download
+        ingest.add_secret(secret_name="aws-credentials", mount_path="/secrets")  # needs S3 access
+        ingest.set_display_name("Ingest Battery Telemetry")
 
-        # 2️⃣ Validate sensor data         # raw_data_path=“/data/battery_raw_v1.csv"
-        validate_task = validate_battery_data(raw_data_path=ingest_task.outputs["raw_data_path"] )
-
-        # 3️⃣ Generate features.         # clean_data_path= “/data/battery_clean_v1.csv"
-        feature_task = generate_battery_features(clean_data_path=validate_task.outputs["clean_data_path"] )
-
-        # 4️⃣ Train fault classifier
-        train_task = train_fault_classifier(features_path=feature_task.outputs["features_path"])
-
-        train_task.set_cpu_limit(“4")  
-        train_task.set_memory_limit(“8Gi") 
-        train_task.set_retry(3) 
-        train_task.set_timeout(7200)
-
-        train_task.add_env_variable(dsl.EnvVar(name="ENVIRONMENT", value=environment) )
-
-        train_task.add_secret(secret_name=“ev-telemetry-secret", mount_path="/secrets" )
-        train_task.set_caching_options(True)
-
-        # 5️⃣ Evaluate model
-        eval_task = evaluate_fault_model(
-            model_path=train_task.outputs["model_path"],
-            features_path=feature_task.outputs["features_path"]
+        # ──────────────────────────────────────────
+        # Step 2: Validate — LIGHT component
+        # ──────────────────────────────────────────
+        validate = validate_battery_data(
+            raw_data=ingest.outputs["raw_data"]
         )
+        validate.set_cpu_limit("2")            # some pandas processing
+        validate.set_memory_limit("4Gi")       # data fits in 4GB
+        validate.set_retry(1)                  # data validation rarely fails randomly
+        validate.set_timeout(1800)             # 30 min max
+        validate.set_caching_options(True)
+        validate.set_display_name("Validate Sensor Data")
+        # ❌ No secrets needed — just reading data from previous step
+        # ❌ No GPU needed — just pandas operations
 
-        # 6️⃣ Promotion gate (safety critical)
-            with dsl.Condition(eval_task.outputs["accuracy"] >= accuracy_threshold ):
+        # ──────────────────────────────────────────
+        # Step 3: Feature Engineering — MEDIUM component
+        # ──────────────────────────────────────────
+        features = generate_battery_features(
+            clean_data=validate.outputs["clean_data"]
+        )
+        features.set_cpu_limit("2")            # rolling window calculations
+        features.set_memory_limit("4Gi")
+        features.set_retry(1)
+        features.set_timeout(3600)             # 1 hour max
+        features.set_caching_options(True)
+        features.set_display_name("Generate Battery Features")
+        # ❌ No secrets needed
+        # ❌ No GPU needed
 
-            register_fault_model(
-                model_path=train_task.outputs["model_path"],
-                metrics=eval_task.outputs["metrics"]
+        # ──────────────────────────────────────────
+        # Step 4: Training — HEAVIEST component
+        # ──────────────────────────────────────────
+        train = train_fault_classifier(
+            features_data=features.outputs["features_data"],
+            n_estimators=200,
+            max_depth=15
+        )
+        train.set_cpu_limit("4")               # heavy computation
+        train.set_memory_limit("8Gi")          # large dataset in memory
+        train.set_gpu_limit("1")               # if deep learning model
+        train.set_retry(3)                     # OOM/network failures possible
+        train.set_timeout(7200)                # 2 hours max — training takes time
+        train.set_caching_options(True)
+        train.add_secret(secret_name="aws-credentials", mount_path="/secrets")
+        train.add_env_variable(dsl.EnvVar(name="ENVIRONMENT", value=environment))
+        train.add_node_selector("node_type", "gpu-node")   # run on GPU machine
+        train.add_toleration(key="nvidia.com/gpu", operator="Exists", effect="NoSchedule")
+        train.set_display_name("Train EV Battery Fault Classifier")
+
+        # ──────────────────────────────────────────
+        # Step 5: Evaluate — MEDIUM component
+        # ──────────────────────────────────────────
+        evaluate = evaluate_fault_model(
+            model_artifact=train.outputs["model_artifact"],
+            features_data=features.outputs["features_data"]
+        )
+        evaluate.set_cpu_limit("2")            # prediction + metric calculation
+        evaluate.set_memory_limit("4Gi")
+        evaluate.set_retry(1)
+        evaluate.set_timeout(1800)             # 30 min max
+        evaluate.set_caching_options(False)    # ❌ always evaluate fresh, never cache
+        evaluate.set_display_name("Evaluate Fault Model")
+
+        # ──────────────────────────────────────────
+        # Step 6: Register — LIGHT component
+        # ──────────────────────────────────────────
+        with dsl.Condition(evaluate.output >= accuracy_threshold):
+            register = register_fault_model(
+                model_artifact=train.outputs["model_artifact"],
+                eval_metrics=evaluate.outputs["eval_metrics"]
             )
-# ✅ KServe deployment step
-    deploy_task = deploy_model_kserve(
-        model_uri=register_task.outputs["model_uri"],
-        service_name="ev-battery-fault-classifier",
-        namespace="mlops-prod"
-               )
-
-        # 7️⃣ Drift monitoring setup
-        setup_drift_monitoring(
-            reference_data=feature_task.outputs["features_path"],
-            model_name="ev_battery_fault_classifier"
-        )
-
-
-	# 8. COMPILER: Python DSL → YAML
-
-if __name__ == "__main__":
-    kfp.compiler.Compiler().compile(
-        pipeline_func=ev_battery_fault_pipeline,
-        package_path="ev_battery_fault_pipeline.yaml"
-    )
+            register.set_cpu_limit("1")            # just API calls to MLflow
+            register.set_memory_limit("2Gi")
+            register.set_retry(3)                  # MLflow server might be busy
+            register.set_timeout(600)              # 10 min max — just registration
+            register.set_caching_options(False)    # ❌ never cache registration
+            register.add_secret(secret_name="mlflow-credentials", mount_path="/secrets")
+            register.add_env_variable(dsl.EnvVar(name="MLFLOW_TRACKING_URI", value="http://mlflow-server:5000"))
+            register.set_display_name("Register Model in MLflow")  
 ```  
+	
+
 **Resources, retry, timeout:**   
 They decide how the training pod runs in Kubernetes. They do NOT change ML logic.  
 They control runtime behaviour of the pod.  
@@ -254,19 +289,11 @@ Uploaded to Kubeflow UI
 
 > **NOTE:** Each Kubeflow pipeline component runs in its own isolated pod, but components are linked through the pipeline using input–output dependencies. The pipeline builds a DAG, and Kubeflow executes the pods in that order, passing outputs from one component to the next.  
 
-**How outputs are stored in Kubeflow**
-When a component finishes, its outputs are stored in two different ways:   
-```  
-Parameters → small values (strings, numbers, booleans)  
-accuracy = 0.92  
-status = "success"  
-model_version = "v3"  
+## 3. Compilation
+After writing the pipeline in Python, you compile it into a YAML file. This YAML is what Kubernetes actually understands and executes.  
 
-Artifacts → files / large data (Anything stored as a file: datasets, models, logs, reports)  
-/data/battery_raw_v1.csv  
-/models/ev_fault_model.joblib  
-/metrics/report.json
-```  
+## 4. KFP Client (Submitting the Pipeline) 
+
 
 ## Interview Explanation:  
 - I automated ML pipeline orchestration using Kubeflow Pipelines by separating ML logic and orchestration clearly.   
