@@ -42,7 +42,7 @@ It provides four core components:
 - Production deployment
 
 ### Who handles experiment tracking?  
-“In our project, Data Scientists log experiments using MLflow inside Kubeflow Pipelines. As an MLOps Engineer, I set up and managed the MLflow tracking server,  I configured aws S3 for artifact store, integrated it with CI/CD, and implemented model promotion workflow from staging to production.”  
+“In our project, Data Scientists log experiments using MLflow inside Kubeflow Pipelines. As an MLOps Engineer, I set up and managed the MLflow tracking server,  I configured aws S3 for artifact store, Configured backend store (DB) for metadata, integrated it with CI/CD, and implemented model promotion workflow from staging to production.”  
 
 Components:
 MLflow → Runs inside EKS (Deployment)  
