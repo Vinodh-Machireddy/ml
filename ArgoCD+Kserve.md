@@ -59,28 +59,23 @@ This is the actual code that runs when a prediction request comes in. In KServe,
 - predict() — Run the actual model inference and get the output  
 - postprocess() — Transform model output into a user-friendly response   
 
-
-
-			
+### Endpoint			
 Endpoint is the deployed model’s API address where applications send requests to get predictions.  
 endpoint is a network-accessible URL (e.g., https://mycompany.com/predict)  
 
-Model Serving System  
+### Model Serving System  
 Def: Model Serving Systems are platforms that take trained machine learning models and make them available for real-time or batch predictions in production, we can manage deployment, scalability, Multi-Model Management, versioning, monitoring, and security.  
 
-KServe (Kubeflow Serving) – Kubernetes-native, supports multi-model, autoscaling, and inference pipelines.  
-Seldon Core – Advanced Kubernetes serving, supports canary, A/B testing, explainability.  
-TensorFlow Serving – Optimized for TensorFlow models, production-grade serving.  
-TorchServe – Co-developed by AWS & PyTorch team, for PyTorch models.  
-Cloud-managed: AWS SageMaker Endpoints, Azure ML Endpoints, Google Vertex AI Prediction, Databricks Model Serving.  
-
+### Model Serving 
 “FastAPI is a Python web framework for building APIs.  It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.  
 
-Why FastAPI   
-It is fast and  Handles many requests with low latency.   
-It Validates and  Stops bad data before reaching the model.  
-Auto docs → /docs Swagger UI makes testing easy.  
-It integrates & Works well with  Docker + Kubernetes.  
+**Kserve  VS  FastAPI** 
+- Built-in (scale to zero) Autoscaling         ->      You manage it yourself
+- Automatic Health Checks(readiness/liveness)  ->      You write them manually
+- Built-in Canary/A-B Testing  				   ->      You build it yourself
+- Protocol Standard v1/v2 inference protocol   ->      You define your own endpoints
+- Deployment Kubernetes-native                 ->      Run anywhere (Docker, VM, local)
+
 
 
 KServe is an open-source model serving platform that runs on Kubernetes. It is used to automate deploy, serving, and inference.  
