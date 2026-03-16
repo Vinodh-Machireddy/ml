@@ -1,38 +1,34 @@
 # Kserve (Model Inference Platform)
 
-Core Components:
+Core Components:  
 
-InferenceService
-InferenceGraph
-Predictor
-Transformer
-Explainer
+InferenceService  
+InferenceGraph  
+Predictor    
+Transformer  
+Explainer  
 
-Infrastructure Components:
+Infrastructure Components:  
 
-KServe Controller
-Ingress Gateway (Istio / Kourier)
-Knative Serving
-ModelMesh
+KServe Controller  
+Ingress Gateway (Istio / Kourier)  
+Knative Serving  
+ModelMesh  
 
-Storage Components:
+Storage Components:  
+Storage Initializer  
 
-Storage Initializer
+Serving Runtimes:  
+ClusterServingRuntime  
+ServingRuntime  
 
-Serving Runtimes:
+Monitoring & Logging:  
+Logger  
+Batcher  
 
-ClusterServingRuntime
-ServingRuntime
-
-Monitoring & Logging:
-
-Logger
-Batcher
-
-Networking:
-
-Istio / Kourier
-Cert Manager
+Networking:  
+Istio / Kourier  
+Cert Manager  
 
 ### Model Serving 
 - It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.
@@ -95,11 +91,68 @@ A standard inference protocol (v1 and v2/Open Inference Protocol)
 Think of it as: one model = one InferenceService.  
 
 ### InferenceGraph (Inference Pipeline)
-This lets you chain multiple models or steps together into a DAG (Directed Acyclic Graph). It's used when a single model isn't enough and you need a workflow, for example:  
-Preprocessing → Model → Postprocessing  
-Model A output feeds into Model B  
-Ensemble: run multiple models in parallel and combine results  
-Conditional routing: send traffic to different models based on some logic   
+InferenceGraph lets you connect multiple models together into a workflow (DAG — Directed Acyclic Graph) where the output of one step feeds into the next.  
+It's used when a single model isn't enough and you need a workflow.  
+
+**4 Types of Nodes in InferenceGraph** 
+1. Sequence  
+	- Models run one after another  
+	- Output of model A goes into model B  
+``` Input → Model A → Model B → Model C → Output ```  
+2.  Parallel (Ensemble)
+	- Models run at the same time  
+	- All results are combined  
+``` ┌→ Model A ─┐
+Input ───┼→ Model B ──┼→ Combined Output
+         └→ Model C ─┘
+```
+3. Switch (Router)
+Based on some condition, traffic goes to different models
+```
+┌→ Condition met     → Model A
+Input ───┤
+         └→ Condition not met → Model B
+```
+4. Splitter
+Splits traffic by percentage
+```
+┌→ 80% traffic → Model A
+Input ───┤
+         └→ 20% traffic → Model B
+```
+```
+apiVersion: serving.kserve.io/v1alpha1
+kind: InferenceGraph
+metadata:
+  name: my-pipeline
+spec:
+  nodes:
+    root:
+      routerType: Sequence
+      steps:
+        - serviceName: preprocessing-service
+        - serviceName: prediction-service
+        - serviceName: postprocessing-service
+```
+
+This creates a simple pipeline:
+```
+Input → Preprocessing → Prediction → Postprocessing → Output
+```
+
+ 
+
+
+Just like InferenceService, it's one InferenceGraph appearing in two contexts.
+As a Component → What it IS
+A Kubernetes Custom Resource (CRD)
+You define it in a YAML file
+Deploys multiple models as a pipeline on Kubernetes
+
+As a Type of Inference → What it DOES
+Connects multiple models together
+Handles routing, chaining, ensemble
+Serves predictions through a multi-step workflow
 
 ### Inference checks:
 Inference checks are small tests we run after deployment (or in staging) to make sure the model loads and predicts correctly on sample input before sending traffic.  
