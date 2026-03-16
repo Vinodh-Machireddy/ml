@@ -37,12 +37,11 @@ A standard inference protocol (v1 and v2/Open Inference Protocol)
 Think of it as: one model = one InferenceService.  
 
 ### InferenceGraph (Inference Pipeline)
-This lets you chain multiple models or steps together into a DAG (Directed Acyclic Graph). It's used when a single model isn't enough and you need a workflow, for example:
-
-Preprocessing → Model → Postprocessing
-Model A output feeds into Model B
-Ensemble: run multiple models in parallel and combine results
-Conditional routing: send traffic to different models based on some logic  
+This lets you chain multiple models or steps together into a DAG (Directed Acyclic Graph). It's used when a single model isn't enough and you need a workflow, for example:  
+Preprocessing → Model → Postprocessing  
+Model A output feeds into Model B  
+Ensemble: run multiple models in parallel and combine results  
+Conditional routing: send traffic to different models based on some logic   
 
 ### Inference checks:
 Inference checks are small tests we run after deployment (or in staging) to make sure the model loads and predicts correctly on sample input before sending traffic.  
