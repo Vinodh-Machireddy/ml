@@ -173,14 +173,12 @@ if accuracy > 0.90:
 ```
 This is Automated Model Promotion Logic.  
 
-##  CI/CD integration
-### Model in Production Stage  
-- Only Production stage models are deployed.
-- CI Updates Deployment YAML
+##  integration with CI Pipeline
+-  Model in Production Stage, Only Production stage models are deployed. CI Updates Deployment YAML
 
 STEP 3 — ArgoCD Detects Change
 
-### Extra Knowledge Topics:
+### Extra Knowledge Topics:  
 **artifact**
 An artifact is any output file generated during training, testing, or pipeline execution.  
 Examples: ```plots/metrics, CSV files, images, config files, serialized models, log files.```  
@@ -195,6 +193,9 @@ joblib.dump(model, "model.pkl")   # model.pkl → model artifact
 **Artifact Store**
 Artifact Store is the storage location where all artifacts (including model artifacts) are physically saved. It's the backend storage — could be your local filesystem, Amazon S3, Azure Blob Storage, Google Cloud Storage, etc.
 
-  
+### Scripts:
+1. Register Model Script  (register_model.py) 
+2. CI Pipeline (.gitlab-ci.yml)
+3. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
 
 
