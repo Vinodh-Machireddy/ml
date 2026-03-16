@@ -1,17 +1,52 @@
 # Kserve (Model Inference Platform)
-### Model Serving 
-It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.  
 
+Core Components:
+
+InferenceService
+InferenceGraph
+Predictor
+Transformer
+Explainer
+
+Infrastructure Components:
+
+KServe Controller
+Ingress Gateway (Istio / Kourier)
+Knative Serving
+ModelMesh
+
+Storage Components:
+
+Storage Initializer
+
+Serving Runtimes:
+
+ClusterServingRuntime
+ServingRuntime
+
+Monitoring & Logging:
+
+Logger
+Batcher
+
+Networking:
+
+Istio / Kourier
+Cert Manager
+
+### Model Serving 
+- It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.
+
+**KServe**
 KServe is an open-source model serving platform that runs on Kubernetes. It is used to automate deploy, serving, and inference.  
 It Support All Frameworks: Scikit-Learn, TensorFlow, PyTorch, XGBoost  
 - Scale-to-Zero is a specialised server-less capability that automatically scales your model's computational resources down to zero replicas when there is no incoming request traffic.
 
-Why Kserve:  
-Because manually deploying ML models in VM’s and Kubernetes is difficult.  
-KServe makes it easy with one YAML file.  
+**Why Kserve:**  
+- Because manually deploying ML models in VM’s and Kubernetes is difficult. KServe makes it easy with one YAML file.  
 
-KServe Architecture:  
-KServe runs on top of Kubernetes and mainly has three layers:  
+**KServe Architecture:**   
+- KServe runs on top of Kubernetes and mainly has three layers  
 
 **Kserve  VS  FastAPI** 
 ```  
