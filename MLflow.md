@@ -63,13 +63,13 @@ ALB / Ingress → Access MLflow UI
 🔹 Step 9: Manage via ArgoCD (GitOps)  
 
 ## Configure Backend Store with PostgreSQL (RDS)  
- Backend Store: The database used to store experiment tracking information(metadata). This backend store contains metadata.  
-```
-Backend Store = Database  
-Metadata = Data stored inside that database  
-```
+ Backend Store: The database used to store experiment tracking information. This backend store contains metadata.  
+
+> Backend Store = Database  
+  Metadata = Data stored inside that database
+
 Metadata means: "Data about data"  
-In MLflow, metadata includes: ```Experiment name, Run ID, Parameters, Metrics, Tags, Model version info, Timestamp``` All this is metadata.  
+In MLflow, metadata includes: ```Experiment name, Run ID, Parameters, Metrics, Tags, info, Timestamp, Model name, version, stage ``` All this is metadata.  
 
 Step 1️⃣ Create RDS PostgreSQL  
 Example DB details:  
