@@ -46,8 +46,16 @@ Conditional routing: send traffic to different models based on some logic
 
 ### Inference checks:
 Inference checks are small tests we run after deployment (or in staging) to make sure the model loads and predicts correctly on sample input before sending traffic.  
+**Health Checks (Probes)**
+Readiness Probe — Is the model loaded and ready to accept requests?  
+Liveness Probe — Is the serving container still alive and healthy?  
+
+**Input/Output Validation**
+Checking if the incoming request has the correct data format, shape, and type  
+Validating that model output is as expected  
+
 ### Inference code:
-This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:  
+This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:   
 - preprocess() — Transform raw input into the format the model expects  
 - predict() — Run the actual model inference and get the output  
 - postprocess() — Transform model output into a user-friendly response   
