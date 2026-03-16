@@ -120,6 +120,7 @@ Splits traffic by percentage
 Input ───┤
          └→ 20% traffic → Model B
 ```
+**InferenceGraph-inference**
 ```
 apiVersion: serving.kserve.io/v1alpha1
 kind: InferenceGraph
@@ -139,17 +140,13 @@ This creates a simple pipeline:
 ```
 Input → Preprocessing → Prediction → Postprocessing → Output
 ```
-
- 
-
-
-Just like InferenceService, it's one InferenceGraph appearing in two contexts.
-As a Component → What it IS
+**Just like InferenceService, it's one InferenceGraph appearing in two contexts.**
+1. As a Component → What it IS
 A Kubernetes Custom Resource (CRD)
 You define it in a YAML file
 Deploys multiple models as a pipeline on Kubernetes
 
-As a Type of Inference → What it DOES
+2. As a Type of Inference → What it DOES
 Connects multiple models together
 Handles routing, chaining, ensemble
 Serves predictions through a multi-step workflow
