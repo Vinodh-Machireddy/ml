@@ -173,26 +173,24 @@ if accuracy > 0.90:
 ```
 This is Automated Model Promotion Logic.  
 
-###  CI/CD integration
+##  CI/CD integration
 ### Model in Production Stage  
 - Only Production stage models are deployed.
 - CI Updates Deployment YAML
 
 STEP 3 — ArgoCD Detects Change
 
+### Extra Knowledge Topics:
 **artifact**
 An artifact is any output file generated during training, testing, or pipeline execution.  
 Examples: ```plots/metrics, CSV files, images, config files, serialized models, log files.```  
 
 **Model Artifact (Specific Artifact)**
 A model artifact is the saved trained model file. It contains everything required to load the model later and perform inference.  
+Examples: model.pkl, model.joblib, model.pt, model.h5, model.onnx.  
 ```
-Examples: model.pkl, model.joblib, model.pt, model.h5, model.onnx.
-
 import joblib
-joblib.dump(model, "model.pkl")
-
-model.pkl → model artifact
+joblib.dump(model, "model.pkl")   # model.pkl → model artifact
 ```
 **Artifact Store**
 Artifact Store is the storage location where all artifacts (including model artifacts) are physically saved. It's the backend storage — could be your local filesystem, Amazon S3, Azure Blob Storage, Google Cloud Storage, etc.
