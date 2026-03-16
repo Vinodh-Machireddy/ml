@@ -1,11 +1,3 @@
-# MLFlow
-MLflow is an open-source platform for managing the end-to-end machine learning lifecycle.   
-It provides four core components:   
-1. Tracking (logging parameters, metrics, and artifacts from experiments)
-2. Projects (packaging ML code in a reproducible format)
-3. Models (a standard format for packaging and deploying models across different serving environments)
-4. Model Registry (a centralized store for managing model versions, stages, and annotations).
-   > Widely used for Tracking and Model Registry.
 
 ## What is Experiment Tracking?
 When Data Scientist trains a model, they try many things(Different algorithms, hyperparameters, feature sets, datasets, evaluation metrics), we record every ML experiment details properly.  If we don’t track properly:  
@@ -22,11 +14,14 @@ When Data Scientist trains a model, they try many things(Different algorithms, h
 - Timestamp
 - Who ran the experiment
 ## What is MLflow?
-MLflow is an open-source platform used to manage the ML lifecycle. it mainly has 4 components:  
-- Tracking → Log parameters, metrics, artifacts  
-- Projects → Package ML code  
-- Models → Standard model format  
-- Model Registry → Manage model versions and stages  
+MLflow is an open-source platform for managing the end-to-end machine learning lifecycle.   
+It provides four core components:   
+1. Tracking (logging parameters, metrics, and artifacts from experiments)
+2. Projects (packaging ML code in a reproducible format)
+3. Models (a standard format for packaging and deploying models across different serving environments)
+4. Model Registry (a centralized store for managing model versions, stages, and annotations).
+   > Widely used for Tracking and Model Registry.
+
 
 ## Who is Responsible? DS or MLOps?
 ✅ Data Scientist Responsibility:
