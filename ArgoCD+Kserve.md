@@ -1,4 +1,27 @@
 # Kserve (Model Inference Platform)
+### Model Serving 
+It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.  
+
+KServe is an open-source model serving platform that runs on Kubernetes. It is used to automate deploy, serving, and inference.  
+It Support All Frameworks: Scikit-Learn, TensorFlow, PyTorch, XGBoost  
+- Scale-to-Zero is a specialised server-less capability that automatically scales your model's computational resources down to zero replicas when there is no incoming request traffic.
+
+Why Kserve:  
+Because manually deploying ML models in VM’s and Kubernetes is difficult.  
+KServe makes it easy with one YAML file.  
+
+KServe Architecture:  
+KServe runs on top of Kubernetes and mainly has three layers:  
+
+**Kserve  VS  FastAPI** 
+```  
+- Built-in (scale to zero) Autoscaling         ->      You manage it yourself
+- Automatic Health Checks(readiness/liveness)  ->      You write them manually
+- Built-in Canary/A-B Testing  				   ->      You build it yourself
+- Built-in Model Versioning                    ->      You handle it yourself
+- Protocol Standard v1/v2 inference protocol   ->      You define your own endpoints
+- Deployment Kubernetes-native                 ->      Run anywhere (Docker, VM, local)
+```  
 
 ## Inference
 Inference means using a trained model make predictions on new/ unseen data.  
@@ -63,93 +86,13 @@ This is the actual code that runs when a prediction request comes in. In KServe,
 Endpoint is the deployed model’s API address where applications send requests to get predictions.  
 endpoint is a network-accessible URL (e.g., https://mycompany.com/predict)  
 
-### Model Serving System  
-Def: Model Serving Systems are platforms that take trained machine learning models and make them available for real-time or batch predictions in production, we can manage deployment, scalability, Multi-Model Management, versioning, monitoring, and security.  
-
-### Model Serving 
-“FastAPI is a Python web framework for building APIs.  It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.  
-
-**Kserve  VS  FastAPI** 
-- Built-in (scale to zero) Autoscaling         ->      You manage it yourself
-- Automatic Health Checks(readiness/liveness)  ->      You write them manually
-- Built-in Canary/A-B Testing  				   ->      You build it yourself
-- Protocol Standard v1/v2 inference protocol   ->      You define your own endpoints
-- Deployment Kubernetes-native                 ->      Run anywhere (Docker, VM, local)
-
-
-
-KServe is an open-source model serving platform that runs on Kubernetes. It is used to automate deploy, serving, and inference.  
-It Support All Frameworks: Scikit-Learn, TensorFlow, PyTorch, XGBoost  
-- Scale-to-Zero is a specialised server-less capability that automatically scales your model's computational resources down to zero replicas when there is no incoming request traffic.  
-
-
-Why Kserve:  
-Because manually deploying ML models in VM’s and Kubernetes is difficult.  
-KServe makes it easy with one YAML file.  
-
-KServe Architecture:  
-KServe runs on top of Kubernetes and mainly has three layers:  
-
-Installation:  
-```
-1. kind create cluster --name=kserve-demo-intent  
-2. kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
-	- kubectl get pods -n cert-manager
-3. Install KServe CRDs
-kubectl create namespace kserve
-
-helm install kserve-crd oci://ghcr.io/kserve/charts/kserve-crd \
-  --version v0.16.0 \
-  -n kserve \
-  --wait
-
-4. Install KServe controller:
-helm install kserve oci://ghcr.io/kserve/charts/kserve \
-  --version v0.16.0 \
-  -n kserve \
-  --set kserve.controller.deploymentMode=RawDeployment \
-  --wait
-
-5.Create an InferenceService to Deploy the Intent Classifier mode:
-kubectl create namespace intent
-```
-```
-cat <<EOF | kubectl apply -n intent -f -
-apiVersion: serving.kserve.io/v1beta1
-kind: InferenceService
-metadata:
-  name: intent-classifier
-spec:
-  predictor:
-    model:
-      modelFormat:
-        name: sklearn
-      storageUri: https://github.com/Vinodh-Machireddy/MLOps-Project/releases/download/v1.1/intent_model.pkl
-      resources:
-        requests:
-          cpu: "100m"
-          memory: "512Mi"
-        limits:
-          cpu: "1"
-          memory: "1Gi"
-EOF
-
+### Install and Verify
 Verify: kubectl get inferenceservice intent-classifier -n intent
  kubectl get inferenceservices sklearn-iris -n kserve-test #inference status
  kubectl logs kserve-controller-manager-7f7b6d54df-fhskf -n kserve
  Kubectl get horizontalpodautoscalers.autoscaling -n intent
  Kubectl get svc -n intent
 
-6. Determine the ingress IP and ports
- kubectl get svc istio-ingressgateway -n istio-system
-			or
-  Port-forward to access the model
- kubectl  port-forward svc/intent-classifier-predictor 8080:80 -n intent --address 0.0.0.0
-7. Inference the Model
-curl -s -X POST http://localhost:8080/v1/models/intent-classifier:predict \
-  -H "Content-Type: application/json" \
-  -d '{"instances":["I want to cancel my subscription"]}' | jq
-```  
 # KSERVE COMPONENTS
 ## 1. Deploy InferenceService CRD
 	 kubectl apply -f ev-battery-inferenceservice.yaml  
