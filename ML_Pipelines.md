@@ -521,7 +521,9 @@ Your main ML lifecycle CI consumes the Training Image at step 8, it does not bui
 
 The pipeline gate passed ✅. The model proved it meets the recall threshold. Now it needs to be formally registered — given a name, a version number, and stored in a central catalog that the entire organization can reference.  
 
-> **pipelines/register_model.py** — The Registration Script  
+> **Scripts:**
+> 1. Register Model Script  (register_model.py) 
+> 2. CI Pipeline (.gitlab-ci.yml)
    
 ### Step 10: Model Promotion (Staging → Production)
 The model is in Staging ✅. This step is the final human + automated gate before a model is officially declared Production and inference infrastructure is built around it.  
@@ -541,8 +543,8 @@ Gate 2 — Human Approval (Step 10)
   APPROVED → transition to Production
   REJECTED → stays in Staging, pipeline stops
 ```
-
-> **NOTE** pipelines/promote_model.py — The Promotion Script  
+> **Scripts:**
+> 1. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging 
 
 ## Step 11: Build Inference Docker Image
 The model is now officially Production ✅. Step 11 packages everything needed to serve predictions — the model, its dependencies, and a REST API — into a single portable Docker image.  
