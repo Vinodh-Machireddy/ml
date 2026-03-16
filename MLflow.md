@@ -63,7 +63,7 @@ ALB / Ingress → Access MLflow UI
 🔹 Step 9: Manage via ArgoCD (GitOps)  
 
 ## Configure Backend Store with PostgreSQL (RDS)  
- Backend Store: The database used to store experiment tracking information. This backend store contains metadata.  
+ Backend Store: The database used to store experiment tracking information(metadata). This backend store contains metadata.  
 ```
 Backend Store = Database  
 Metadata = Data stored inside that database  
