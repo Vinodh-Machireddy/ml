@@ -81,14 +81,16 @@ Used when predictions are time-critical, Instant predictions (seconds).
 
 ### InferenceService
 It serves a single model behind an endpoint and handles the full lifecycle, including:
+it InferenceService acts as a core Component of kserve for deployment and acts as a Inference Type for serving predictions.
+```
+InferenceService vs InferenceGraph  
+Single model    ->     Multiple models
+Simple request → responseComplex workflow/pipeline  
+Straightforward prediction    ->  Chaining, routing, ensemble  
+No concept of nodes    ->    Has Sequence, Parallel, Switch, Splitter  
+SimpleMore  ->  complex
+```  
 
-Model serving (predict, explain)  
-Autoscaling (scale to zero and back up)  
-Canary rollouts and A/B testing between model versions  
-Support for multiple serving runtimes like TensorFlow, PyTorch, Scikit-learn, XGBoost, Triton, etc.  
-A standard inference protocol (v1 and v2/Open Inference Protocol)  
-
-Think of it as: one model = one InferenceService.  
 
 ### InferenceGraph (Inference Pipeline)
 InferenceGraph lets you connect multiple models together into a workflow (DAG — Directed Acyclic Graph) where the output of one step feeds into the next.  
@@ -135,21 +137,20 @@ spec:
         - serviceName: prediction-service
         - serviceName: postprocessing-service
 ```
+This creates a simple pipeline:```Input → Preprocessing → Prediction → Postprocessing → Output```  
 
-This creates a simple pipeline:
-```
-Input → Preprocessing → Prediction → Postprocessing → Output
-```
+> **You just define the pipeline structure — which models, what order, what routing type.**  
+
 **Just like InferenceService, it's one InferenceGraph appearing in two contexts.**
 1. As a Component → What it IS
-A Kubernetes Custom Resource (CRD)
-You define it in a YAML file
-Deploys multiple models as a pipeline on Kubernetes
+	. A Kubernetes Custom Resource (CRD)
+	. You define it in a YAML file
+	. Deploys multiple models as a pipeline on Kubernetes
 
 2. As a Type of Inference → What it DOES
-Connects multiple models together
-Handles routing, chaining, ensemble
-Serves predictions through a multi-step workflow
+	. Connects multiple models together  
+	. Handles routing, chaining, ensemble  
+	. Serves predictions through a multi-step workflow  
 
 ### Inference checks:
 Inference checks are small tests we run after deployment (or in staging) to make sure the model loads and predicts correctly on sample input before sending traffic.  
