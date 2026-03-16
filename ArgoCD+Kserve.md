@@ -1,43 +1,55 @@
-# Model Inference Platform(Kserve):
+# Kserve (Model Inference Platform)
 
-Inference  
+## Inference
 Inference means using a trained model make predictions on new/ unseen data.  
-Training = learning patterns from data (adjusting weights).  
-Inference = using those learned patterns to predict outcomes.  
-1. Batch Inference (Predict on a dataset at once, offline jobs)  
-
+- Training = learning patterns from data (adjusting weights).  
+- Inference = using those learned patterns to predict outcomes.
+```
+KServe Inference
+├── InferenceService (single model)
+│   ├── Real-time inference
+│   └── Batch inference
+│
+└── InferenceGraph (pipeline / multi-model)
+    ├── Real-time inference
+    └── Batch inference
+```  
+### 1. Batch Inference (Predict on a dataset at once, offline)  
 In batch mode, you take a large dataset (like CSV of 1 lakh records, or folder of 10,000 images).  
 Run the trained model on the entire dataset at once.  
 Save predictions to a file, database, or data warehouse.  
 Used when predictions are not time-sensitive,  Periodic jobs (daily, weekly).  
 
-2. Real-Time Inference (API-based)  
+### 2. Real-Time Inference (API-based)  
 In real-time mode, the model gives predictions immediately whenever a request comes.  
 You expose the model as an API endpoint (using FastAPI, Flask, or KServe).  
 Used when predictions are time-critical, Instant predictions (seconds).  
 
-Inference Code This is the core logic (usually Python code) that loads the trained model and runs predictions on new/unseen data. 
-```
-import joblib  
-model = joblib.load(“traffic_sign_model.pkl") # load model  
-def predict(input_data):  #This predict() is the inference function
-    return model.predict(input_data)
-print(predict([5.1, 3.5, 1.4, 0.2]))  # Output: Predicted class
-```  
-Inference Service  
-A specific microservice or API that runs your inference code.  
-Example: A FastAPI app exposing /predict or a KServe InferenceService resource.  
-Focus is only on serving one trained model (or one pipeline of models).  
+### InferenceService
+It serves a single model behind an endpoint and handles the full lifecycle, including:
 
-Inference Pipeline  
-This is when we chain multiple inference steps together to handle more complex tasks. Instead of just calling the model we call model pipeline.  
-Step 1: Preprocess → Resize image to 224x224 pixels, normalize colors.  
-Step 2: Run Model A → Object detection model finds region with traffic sign.  
-Step 3: Run Model B → Classification model predicts “Speed Limit 60”.  
-Step 4: Postprocess → Convert model output (class ID 12) → Human-readable label (“Speed Limit 60”).  
-Useful for large systems (like self-driving cars, fraud detection, healthcare pipelines).  
+Model serving (predict, explain)  
+Autoscaling (scale to zero and back up)  
+Canary rollouts and A/B testing between model versions  
+Support for multiple serving runtimes like TensorFlow, PyTorch, Scikit-learn, XGBoost, Triton, etc.  
+A standard inference protocol (v1 and v2/Open Inference Protocol)  
 
+Think of it as: one model = one InferenceService.  
+
+### InferenceGraph (Inference Pipeline)
+This lets you chain multiple models or steps together into a DAG (Directed Acyclic Graph). It's used when a single model isn't enough and you need a workflow, for example:
+
+Preprocessing → Model → Postprocessing
+Model A output feeds into Model B
+Ensemble: run multiple models in parallel and combine results
+Conditional routing: send traffic to different models based on some logic  
+
+### Inference checks:
 Inference checks are small tests we run after deployment (or in staging) to make sure the model loads and predicts correctly on sample input before sending traffic.  
+### Inference code:
+The actual logic that runs the prediction  
+
+
 			
 Endpoint is the deployed model’s API address where applications send requests to get predictions.  
 endpoint is a network-accessible URL (e.g., https://mycompany.com/predict)  
