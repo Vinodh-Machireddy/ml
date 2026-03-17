@@ -296,12 +296,77 @@ SOC         = 40%		SOC = 38, 40, 42
 ChargeRate  = Fast		ChargeRate = Normal, Fast   
 				
 ## 6 Knative Serving
-Knative is a Kubernetes-based platform that makes applications serverless.  
-Normally in Kubernetes: Pods always run, Even if no user traffic it leads to Wastes CPU & memory  
-With Knative: You don’t need to keep pods running all the time  
-Scale to zero: No traffic → pods scale to 0  
-Auto scaling: Traffic comes → pods start automatically  #You pay resources only when used  
-Traffic split: Knative can send 80% traffic to v1 and 20% to v2.   
+Knative is a Kubernetes-based platform, KServe uses Knative for serverless model serving. It handles autoscaling, including the most important feature — **scale to zero.** that makes serverless model serving.  
+```
+Without Knative Serving:  
+Normally in Kubernetes: Pods always run, Even if no user traffic it leads to Wastes CPU & memory  💸  
+With Knative:  
+
+With Knative Serving:  
+You don’t need to keep pods running all the time 
+No traffic → Pod shuts down (scale to zero) → Saves money 💰  
+New request → Pod starts automatically → Serves prediction  
+Heavy traffic → More pods created → Handles load  
+```
+**What Knative Serving Does for KServe (How it Works)**  
+**1. Scale to Zero**
+```
+No requests for 5 minutes
+     │
+     ▼
+Knative shuts down model pod
+     │
+     ▼
+New request arrives
+     │
+     ▼
+Knative starts pod again (cold start)
+     │
+     ▼
+Prediction served
+```
+**2. Autoscaling (Scale Up/Down)**
+```
+10 requests/sec  → 1 pod running
+100 requests/sec → Knative adds more pods
+500 requests/sec → Knative scales to 10 pods
+Back to 10 req/s → Knative scales down to 1 pod
+0 requests       → Knative scales to 0 pods
+```
+**3. Traffic Routing**
+```
+Model v1 (90% traffic) ──┐
+                          ├── Knative routes traffic
+Model v2 (10% traffic) ──┘
+```
+**4. Revision Management**
+```
+Every time you update model → Knative creates a new revision
+├── Revision 1: model-v1
+├── Revision 2: model-v2
+└── Revision 3: model-v3
+
+You can route traffic to any revision
+```
+> **How KServe and Knative Work Together:** apply InferenceService YAML -> KServe Controller reads it -> KServe tells Knative: "Create a serverless service for this model" .  
+
+**Cold Start Problem:**  The one downside of scale to zero:  
+```
+Pod is at zero
+     │
+     ▼
+New request arrives
+     │
+     ▼
+Knative starts pod (takes 5-30 seconds) ← COLD START
+     │
+     ▼
+Prediction served (delayed)
+
+After first request:
+Next requests are instant (pod is warm now)
+```
+> **KServe Without Knative:** we can deploy with HPA but cannot achive scale to zero. atleast one pod runs continuosily. 
 
 ## 7 Istio ingress gateway
 Istio Ingress Gateway is a secure traffic entry point that receives external requests and routes them to the correct service inside Kubernetes.  
@@ -309,7 +374,7 @@ Istio Ingress Gateway is a secure traffic entry point that receives external req
 	- load balancing: Distributes requests fairly across pods:  
 	- it provides mTLS (Mutual Transport Layer Security) encryption secure communication  
 
-## HOW YOU DEPLOY THE MODEL?
+## HOW YOU DEPLOY THE MODEL? 
 We deploy the model in Kubernetes cluster using kserve. First, we create an InferenceService CRD. KServe controller continuously watches new InferenceService Once it detects, it starts validating model framework, transformer present?, explainer present?, resource limits, storage path.  KServe now asks Knative to create Serving resources like autoscaling, traffic split etc…  
 The request first enters through Istio Ingress Gateway which handles secure routing & traffic management. Pods starts creating Predictor pod loads model from S3, transformer preprocesses request, and explainer handles explainability.   
 
