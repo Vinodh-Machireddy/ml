@@ -80,21 +80,29 @@ You expose the model as an API endpoint (using FastAPI, Flask, or KServe).
 Used when predictions are time-critical, Instant predictions (seconds).  
 
 ### InferenceService
-It serves a single model behind an endpoint and handles the full lifecycle, including:
-it InferenceService acts as a core Component of kserve for deployment and acts as a Inference Type for serving predictions.
-```
-InferenceService vs InferenceGraph  
-Single model    ->     Multiple models
-Simple request → responseComplex workflow/pipeline  
-Straightforward prediction    ->  Chaining, routing, ensemble  
-No concept of nodes    ->    Has Sequence, Parallel, Switch, Splitter  
-SimpleMore  ->  complex
-```  
+**As Inference Type:**  
+InferenceService serves a single model behind one endpoint. It follows a simple request-response pattern where a client sends input, the model processes it through preprocess → predict → postprocess, and returns the prediction. It supports both real-time and batch inference modes.  
+**As Deployment:**
+InferenceService is a Kubernetes Custom Resource (CRD). You write a YAML file specifying your model location, serving runtime, and resources. When you apply this YAML, KServe automatically deploys your model on the Kubernetes cluster, exposes an endpoint, handles autoscaling, health checks, version management, and traffic routing.  
 
+> **NOTE** InferenceService YAML → Does 2 Jobs   
+	. Deploys the model on Kubernetes   
+	. Serves predictions through an endpoint   
+
+**InferenceService vs InferenceGraph**
+``` 
+Single model    			->     Multiple models
+Simple request 				->	   responseComplex workflow/pipeline  
+Straightforward prediction  ->     Chaining, routing, ensemble  
+No concept of nodes    		->     Has Sequence, Parallel, Switch, Splitter  
+SimpleMore                  ->     complex
+```
 
 ### InferenceGraph (Inference Pipeline)
-InferenceGraph lets you connect multiple models together into a workflow (DAG — Directed Acyclic Graph) where the output of one step feeds into the next.  
-It's used when a single model isn't enough and you need a workflow.  
+**As Inference Type:** 
+InferenceGraph serves multiple models connected together as a pipeline. It supports four routing patterns — Sequence, Ensemble, Switch, and Splitter. Each step in the graph can be an InferenceService. It is used when a single model cannot handle the complete task and you need chaining, parallel execution, or conditional routing.  
+**As Deployment:**    
+InferenceGraph is also a Kubernetes CRD. You write a YAML file defining the pipeline structure, nodes, and routing logic. However, each individual model must be deployed as an InferenceService first. Then the InferenceGraph connects them together.  
 
 **4 Types of Nodes in InferenceGraph** 
 1. Sequence  
@@ -141,16 +149,9 @@ This creates a simple pipeline:```Input → Preprocessing → Prediction → Pos
 
 > **You just define the pipeline structure — which models, what order, what routing type.**  
 
-**Just like InferenceService, it's one InferenceGraph appearing in two contexts.**
-1. As a Component → What it IS
-	. A Kubernetes Custom Resource (CRD)
-	. You define it in a YAML file
-	. Deploys multiple models as a pipeline on Kubernetes
-
-2. As a Type of Inference → What it DOES
-	. Connects multiple models together  
-	. Handles routing, chaining, ensemble  
-	. Serves predictions through a multi-step workflow  
+> **NOTE** InferenceGraph YAML → Does Only 1 Job
+	. Connects already deployed InferenceServices together as a pipeline
+	. Deploys models → NO, it does NOT deploy any model
 
 ### Inference checks:
 Inference checks are small tests we run after deployment (or in staging) to make sure the model loads and predicts correctly on sample input before sending traffic.  
