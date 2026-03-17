@@ -184,63 +184,6 @@ Kubernetes by default understands only standard objects like: pods, services, de
 CRD = Teaching Kubernetes a new “object type”.  
 Just like Kubernetes knows pods, services, deployments. Now it also knows: InferenceService.  
 
-Command: kubectl apply -f model.yaml  
-```
-apiVersion: serving.kserve.io/v1beta1
-kind: InferenceService
-metadata:
-  name: ev-battery-fault-classifier
-  namespace: ev-battery
-  annotations:
-    autoscaling.knative.dev/minScale: "1"
-    autoscaling.knative.dev/maxScale: "6"
-    autoscaling.knative.dev/target: “10"
-
-spec:
-  predictor:
-    model:
-      runtime: kserve-sklearnserver
-      modelFormat:
-        name: sklearn
-      storageUri: s3://ev-ml-models/battery-fault/v1/
-      resources:
-        requests:
-          cpu: "500m"
-          memory: "1Gi"
-        limits:
-          cpu: "2"
-          memory: “2Gi"
-
-  transformer:
-    containers:
-      - name: battery-preprocess
-        image: your-org/ev-battery-transformer:latest
-        resources:
-          requests:
-            cpu: "500m"
-            memory: "512Mi"
-          limits:
-            cpu: "2"
-            memory: "1Gi"
-
-explainer:
-    alibi:
-      type: AnchorTabular
-      storageUri: s3://ev-ml-models/battery-fault/explainer/
-      resources:
-        requests:
-          cpu: "500m"
-          memory: "1Gi"
-        limits:
-          cpu: "2"
-          memory: "2Gi"
-
-  traffic:
-    - percent: 80
-      revisionName: ev-battery-fault-classifier-predictor-default
-    - percent: 20
-      revisionName: ev-battery-fault-classifier-v2
-```  
 ## 2. Kserve Controller
 Runs inside Kubernetes.  
 Role:  
@@ -272,7 +215,6 @@ This is where model actually runs.  In KServe, a Predictor is the component that
 5. Server Startup (main)  
 	. Initialize and start the KServe model server  
 
-
 **Built-in Predictor**
 . KServe knows how to load and run predict() automatically. But it does basic preprocessing only — like converting JSON to tensor format. It only does format    conversion. It assumes your input data is already clean and ready. It does NOT touch or transform the actual data values.  
 . It does not handle custom preprocessing or postprocessing.  
@@ -281,12 +223,12 @@ This is where model actually runs.  In KServe, a Predictor is the component that
 . When KServe's built-in runtimes don't support your model or You have complex business logic , you write your own inference code and package it as a Docker container.  
 . It handles dirty, raw, real-world data that needs cleaning and transformation before format conversion.  
 
-**Step 1: Write Inference Code**
+**Step 1: Write Inference Code** 
 **Step 2: Write Dockerfile**
 **Step 3: Build and Push Docker Image**
 **Step 4: Deploy Using InferenceService YAML**
 **Step 5: Apply and Test**
-> Deploy, heck status, Test prediction
+> Deploy, Check status, Test prediction
 
 ## 4 Transformer
 In KServe, a Transformer is the component that prepares the input data before it reaches the model (and can also post-process output).  
@@ -351,5 +293,9 @@ The request first enters through Istio Ingress Gateway which handles secure rout
 
 Traffic flows: Client → Istio → Knative → Transformer → Predictor → Explainer → Client.  
 Knative handles autoscaling and Istio handles secure routing & traffic management.  
+
+**Scripts**
+1. Inference_code.py
+2. InferenceService_Deployment.yaml
 
 
