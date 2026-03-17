@@ -258,11 +258,20 @@ This is where model actually runs.  In KServe, a Predictor is the component that
 . returns prediction output  
 > Every InferenceService must have a Predictor. Without it, there is no model serving.
 
-### Inference code:
-This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:   
-- preprocess() — Transform raw input into the format the model expects  
-- predict() — Run the actual model inference and get the output  
-- postprocess() — Transform model output into a user-friendly response   
+ **Inference code:**
+ This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:   
+1. Model Loading (load)  
+	. Load model file from storage into memory  
+	. Load any dependencies like tokenizer, scaler, label encoder  
+2. Preprocessing (preprocess)  
+	. Transform raw input into model-ready format  
+3. Prediction (predict)  
+	. Run the actual model inference and get the output  
+4. Postprocessing (postprocess)  
+	. Transform model output into user-friendly response  
+5. Server Startup (main)  
+	. Initialize and start the KServe model server  
+
 
 **Built-in Predictor**
 . KServe knows how to load and run predict() automatically. But it does basic preprocessing only — like converting JSON to tensor format. It only does format    conversion. It assumes your input data is already clean and ready. It does NOT touch or transform the actual data values.  
