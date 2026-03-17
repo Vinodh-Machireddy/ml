@@ -173,18 +173,11 @@ This is the actual code that runs when a prediction request comes in. In KServe,
 Endpoint is the deployed model’s API address where applications send requests to get predictions.  
 endpoint is a network-accessible URL (e.g., https://mycompany.com/predict)  
 
-### Install and Verify
-Verify: kubectl get inferenceservice intent-classifier -n intent
- kubectl get inferenceservices sklearn-iris -n kserve-test #inference status
- kubectl logs kserve-controller-manager-7f7b6d54df-fhskf -n kserve
- Kubectl get horizontalpodautoscalers.autoscaling -n intent
- Kubectl get svc -n intent
-
 # KSERVE COMPONENTS
 ## 1. Deploy InferenceService CRD
 	 kubectl apply -f ev-battery-inferenceservice.yaml  
 This is Core Heart of KServe. Instead of managing pods manually, you just define a YAML file.  Main purpose is to deploy ml model in kubernetes cluster.  
-nside it, you mention:  
+Inside it, you mention:  
 Model format (sklearn, pytorch, tf, xgboost etc.)  
 Storage location  
 Resources (CPU / RAM)  
