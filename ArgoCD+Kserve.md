@@ -231,11 +231,28 @@ This is where model actually runs.  In KServe, a Predictor is the component that
 > Deploy, Check status, Test prediction
 
 ## 4 Transformer
-In KServe, a Transformer is the component that prepares the input data before it reaches the model (and can also post-process output).  
-It sits before the Predictor and makes sure the model receives data in the exact format it expects.  
+Transformer is an optional component inside an InferenceService. It sits between the client and the predictor to handle preprocessing and postprocessing.  
+**Why Transformer When Custom Predictor Already Does Preprocessing?**  
+	.  Custom Predictor → Preprocessing + Prediction all in one container
+	.  Transformer → Preprocessing in a separate container, Prediction in another  
+**How It Works**
+```
+Without Transformer:
+Client → Predictor (preprocess + predict + postprocess) → Client
 
-Pre-processing input: Cleaning raw data, Image resizing, Check missing values, Check data types, Reject bad requests early. This protects the model.  
-Post-processing Output(After prediction):  Map class IDs → human labels  
+With Transformer:
+Client → Transformer (preprocess) → Predictor (predict) → Transformer (postprocess) → Client
+```
+
+> Pre-processing input: Cleaning raw data, Image resizing, Check missing values, Check data types, Reject bad requests early. This protects the model.  
+> Post-processing Output(After prediction):  Map class IDs → human labels  
+
+**When to Use Transformer**
+Preprocessing is heavy and needs separate scaling  
+Multiple models share the same preprocessing logic  
+Different teams manage preprocessing and prediction  
+
+> Transformer = Separate container for preprocessing and postprocessing, keeping predictor focused only on prediction.
 
 ## 5 Explainer(Model Explainability)
 An Explainer is a component that provides human-understandable reasons for a machine learning model’s prediction by identifying which input features influenced the output and how.  
