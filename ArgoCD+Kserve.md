@@ -232,26 +232,31 @@ This is where model actually runs.  In KServe, a Predictor is the component that
 
 ## 4 Transformer
 Transformer is an optional component inside an InferenceService. It sits between the client and the predictor to handle preprocessing and postprocessing.  
-**Why Transformer When Custom Predictor Already Does Preprocessing?**  
-	.  Custom Predictor → Preprocessing + Prediction all in one container
-	.  Transformer → Preprocessing in a separate container, Prediction in another  
-**How It Works**
-```
-Without Transformer:
-Client → Predictor (preprocess + predict + postprocess) → Client
+Preprocessing() and postprocess() run in transformer container only.  
 
-With Transformer:
-Client → Transformer (preprocess) → Predictor (predict) → Transformer (postprocess) → Client
-```
+**When to Use Transformer**  
+Reason 1: Heavy Preprocessing  
+- Imagine image preprocessing takes 10 seconds   
+- Model prediction takes 2 seconds   
+**Without Transformer:** One container handles both → If preprocessing is slow, everything is slow. You can't scale them separately. 
+**With Transformer:**
+Preprocessing container → Scale to 10 pods (because it's heavy)  
+Prediction container    → Scale to 3 pods (because it's light)  
+Each scales independently based on its own load.  
+
+Reason 2: Reuse Same Preprocessing 
+- One Transformer shared across Model A, B, C. Update once → all models get updated preprocessing.
+
+Reason 3: Different Teams  
+Team A manages Transformer container → preprocessing  
+Team B manages Predictor container   → model  
+No conflicts. Each team deploys independently.  
+
+Reason 4: Update Without Redeploying Model  
+- if you do Changes in  preprocessing → Redeploy only Transformer container not Model container.  Model container stays untouched (safe, no risk)  
 
 > Pre-processing input: Cleaning raw data, Image resizing, Check missing values, Check data types, Reject bad requests early. This protects the model.  
 > Post-processing Output(After prediction):  Map class IDs → human labels  
-
-**When to Use Transformer**
-Preprocessing is heavy and needs separate scaling  
-Multiple models share the same preprocessing logic  
-Different teams manage preprocessing and prediction  
-
 > Transformer = Separate container for preprocessing and postprocessing, keeping predictor focused only on prediction.
 
 ## 5 Explainer(Model Explainability)
