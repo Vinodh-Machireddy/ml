@@ -163,11 +163,6 @@ Liveness Probe — Is the serving container still alive and healthy?
 Checking if the incoming request has the correct data format, shape, and type  
 Validating that model output is as expected  
 
-### Inference code:
-This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:   
-- preprocess() — Transform raw input into the format the model expects  
-- predict() — Run the actual model inference and get the output  
-- postprocess() — Transform model output into a user-friendly response   
 
 ### Endpoint			
 Endpoint is the deployed model’s API address where applications send requests to get predictions.  
@@ -257,12 +252,32 @@ Watches model health, scaling, lifecycle
 Basically controller = manager of KServe  
 
 ## 3 Predictor
-This is where model actually runs.  
-In KServe, a Predictor is the component that actually runs your machine learning model and produces predictions.  
-loads the trained model  
-runs inference  
-returns prediction output  
-Without Predictor → no model serving.  
+This is where model actually runs.  In KServe, a Predictor is the component that actually runs your machine learning model and produces predictions.  
+. loads the trained model  
+. runs inference  
+. returns prediction output  
+> Every InferenceService must have a Predictor. Without it, there is no model serving.
+
+### Inference code:
+This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:   
+- preprocess() — Transform raw input into the format the model expects  
+- predict() — Run the actual model inference and get the output  
+- postprocess() — Transform model output into a user-friendly response   
+
+**Built-in Predictor**
+. KServe knows how to load and run predict() automatically. But it does basic preprocessing only — like converting JSON to tensor format. It only does format    conversion. It assumes your input data is already clean and ready. It does NOT touch or transform the actual data values.  
+. It does not handle custom preprocessing or postprocessing.  
+
+**Custom Predictor**
+. When KServe's built-in runtimes don't support your model or You have complex business logic , you write your own inference code and package it as a Docker container.  
+. It handles dirty, raw, real-world data that needs cleaning and transformation before format conversion.  
+
+**Step 1: Write Inference Code**
+**Step 2: Write Dockerfile**
+**Step 3: Build and Push Docker Image**
+**Step 4: Deploy Using InferenceService YAML**
+**Step 5: Apply and Test**
+> Deploy, heck status, Test prediction
 
 ## 4 Transformer
 In KServe, a Transformer is the component that prepares the input data before it reaches the model (and can also post-process output).  
