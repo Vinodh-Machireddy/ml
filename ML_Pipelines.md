@@ -1561,6 +1561,14 @@ Production: /predict endpoint serving
             model.pkl from MLflow v3
             zero downtime ✅
 ```
+**Scripts:**  
+**1.   .py files**  
+Inference_code.py for custom predictor  
+update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
+**2.   .yaml files**  
+InferenceService_Deployment.yaml --> main model deployment yaml file  
+argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
+
   </details> 
  
   <details>
