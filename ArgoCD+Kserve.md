@@ -200,6 +200,8 @@ This is where model actually runs.  In KServe, a Predictor is the component that
 . runs inference  
 . returns prediction output  
 > Every InferenceService must have a Predictor. Without it, there is no model serving.
+> **Traffic flow for prediction:**  
+Client → Istio Ingress Gateway → Knative → Transformer (preprocess) → Predictor → Transformer (postprocess) → Client
 
  **Inference code:**
  This is the actual code that runs when a prediction request comes in. In KServe, it typically involves three key methods in a custom model server:   
@@ -294,6 +296,23 @@ Temperature = 72°C              Temp = 70, 71, 72, 73, 74
 Voltage     = 3.9V		Voltage = 3.8, 3.9  
 SOC         = 40%		SOC = 38, 40, 42  
 ChargeRate  = Fast		ChargeRate = Normal, Fast   
+
+Explainer is separate endpoint (/explainer), because it is slow, heavy, and not needed for every request. Keeping it separate keeps predictions fast.  
+**Request Flow (/explain):** Client → Istio → Knative → Explainer → Client  
+```
+Predictor:  Takes 100 milliseconds  (fast)
+Explainer:  Takes 5-30 SECONDS      (very slow)
+
+If combined:
+Every prediction request waits 5-30 seconds
+even when user just wants a quick answer ❌
+
+If separate:
+/predict → 100ms fast response ✅
+/explain → 5-30 sec only when user ASKS for it ✅
+```
+> **Traffic flow for explanation (separate endpoint):**
+Client → Istio Ingress Gateway → Knative → Explainer → Client
 				
 ## 6 Knative Serving
 Knative is a Kubernetes-based platform, KServe uses Knative for serverless model serving. It handles autoscaling, including the most important feature — **scale to zero.** that makes serverless model serving.  
@@ -424,16 +443,92 @@ Istio Ingress Gateway
 └── No → Reject request (401/403)
 ```
 
+**HOW DO YOU DEPLOY THE MODEL?**
+We deploy the model in a Kubernetes cluster using KServe. First, we create an InferenceService CRD YAML which defines the predictor, and optionally a transformer and explainer. Once we apply this YAML, the KServe Controller, which continuously watches for new InferenceService resources, detects it and starts validating — model framework, storage path, resource limits, whether transformer or explainer is present.
+After validation, KServe asks Knative Serving to create serverless resources which handle autoscaling, scale to zero, and revision management. It also configures Istio Ingress Gateway for secure routing, TLS termination, and traffic management like canary rollouts.
+Then pods start creating — the Predictor pod loads the model from storage (like S3), the Transformer pod (if configured) handles preprocessing and postprocessing, and the Explainer pod (if configured) handles model explainability on a separate endpoint.
 
-## HOW YOU DEPLOY THE MODEL? 
-We deploy the model in Kubernetes cluster using kserve. First, we create an InferenceService CRD. KServe controller continuously watches new InferenceService Once it detects, it starts validating model framework, transformer present?, explainer present?, resource limits, storage path.  KServe now asks Knative to create Serving resources like autoscaling, traffic split etc…  
-The request first enters through Istio Ingress Gateway which handles secure routing & traffic management. Pods starts creating Predictor pod loads model from S3, transformer preprocesses request, and explainer handles explainability.   
+**After InferenceService YAML Is Applied** 
+```
+Step 0: KServe
+Step 1: KServe Controller
+     │
+     ├── Detects new InferenceService YAML
+     ├── Validates configuration
+     │   ├── Model framework correct?
+     │   ├── Storage path valid?
+     │   ├── Resource limits defined?
+     │   ├── Transformer present?
+     │   └── Explainer present?
+     │
+     ├── Creates pods
+     │   ├── Predictor pod (loads model from storage)
+     │   ├── Transformer pod (if configured)
+     │   └── Explainer pod (if configured)
+     │
+     ├── Tells Knative → Handle autoscaling
+     └── Tells Istio → Handle networking
+         │
+         ▼
+Step 2: Knative Handles
+     │
+     ├── Autoscaling (scale up/down)
+     ├── Scale to zero
+     ├── Cold start (waking up from zero)
+     └── Revision management (model versions)
+         │
+         ▼
+Step 3: Istio Handles
+     │
+     ├── Creates endpoint URL
+     ├── Secure routing (TLS/HTTPS)
+     ├── Traffic routing (which model)
+     ├── Traffic splitting (which version)
+     ├── Load balancing (which pod)
+     └── Authentication & Authorization
+         │
+         ▼
+Model is READY to serve predictions
+```
 
-Traffic flows: Client → Istio → Knative → Transformer → Predictor → Explainer → Client.  
-Knative handles autoscaling and Istio handles secure routing & traffic management.  
 
 **Scripts**
 1. Inference_code.py
 2. InferenceService_Deployment.yaml
 
+
+
+
+# ArgoCD
+ArgoCD is a GitOps continuous delivery tool for Kubernetes. It automates the deployment of your YAML files to the Kubernetes cluster.  
+
+**Without ArgoCD**
+```
+You manually deploy every time:
+
+kubectl apply -f inferenceservice.yaml     ← You run this manually
+kubectl apply -f inferencegraph.yaml       ← You run this manually
+kubectl apply -f transformer.yaml          ← You run this manually
+
+Every change → You run commands manually ❌
+```
+**With ArgoCD**
+```
+You push YAML to Git → ArgoCD automatically deploys to Kubernetes
+
+git push (updated YAML) → ArgoCD detects → Deploys automatically ✅
+
+No manual kubectl commands needed
+```
+
+**How It Works**
+```
+Step 1: You push YAML to GitHub
+Step 2: ArgoCD watches GitHub repo
+Step 3: ArgoCD detects change
+Step 4: ArgoCD applies YAML to Kubernetes cluster
+Step 5: KServe Controller detects new InferenceService
+Step 6: KServe deploys the model (creates pods, knative, istio)
+```
+> ArgoCD automates YAML delivery from Git to Kubernetes. KServe takes over from there to deploy the model.
 
