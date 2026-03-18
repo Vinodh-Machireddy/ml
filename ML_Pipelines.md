@@ -1703,19 +1703,19 @@ Drift Detector CronJob runs
 </details>  
 
 **Scripts:**  
-> **1.   .py files** 
-> 1. Register Model Script  (register_model.py)
-> 2. download_model.py — Pull Model from MLflow Before Build
-> 4. pipelines/submit_pipeline.py
-> 5. pipelines/kfp_pipeline.py
-> 6. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
-> 7. Inference_code.py for custom predictor
-> 8. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
+> **.py files** 
+> 1. download_model.py — Pull Model from MLflow Before Build
+> 2. pipelines/submit_pipeline.py
+> 3. pipelines/kfp_pipeline.py
+> 4. Register Model Script  (register_model.py)
+> 5. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
+> 6. Inference_code.py for custom predictor(CD)
+> 7. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
 
- **2.   .yaml files**  
->    CI Pipeline (.gitlab-ci.yml)
->    InferenceService_Deployment.yaml --> main model deployment yaml file
->    argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
+> **.yaml files**  
+> 1. CI Pipeline (.gitlab-ci.yml)
+> 2. InferenceService_Deployment.yaml --> main model deployment yaml file
+> 3. argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
 
 
 
