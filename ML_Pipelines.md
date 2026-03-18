@@ -1710,7 +1710,7 @@ Drift Detector CronJob runs
 > 4. pipeline/kfp_pipeline.py8KFP pipeline definition
 > 5. scripts/register_model.py — registers the trained model in MLflow Registry
 > 6. scripts/promote_model.py — transitions model stage from Staging → Production
-> 7. Inference_code.py for custom predictor(CD)
+> 7. app/inference_code.py  ->  for custom predictor(CD)
 > 8. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
 
 > **.yaml files**  
