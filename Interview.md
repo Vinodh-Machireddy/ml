@@ -196,13 +196,13 @@ And we help the teams to enable resource requests and limits on each pod, so tha
 SELF:
 -----
 - My name is Vinodh Machireddy.
-- I’m from Andhra Pradesh, Bharath.
+- I originally from Andhra Pradesh, Bharath.
 - Currently, I’m working as a Senior MLOps Engineer at Larc Software Pvt Ltd.
-I bring 6+ years of experience in automating end-to-end ML pipelines. focusing on scalable deployments, proactive monitoring, retraining strategies, and cloud-native infrastructure.
-I’ve worked with MLflow, Kubeflow, and DVC for experiment tracking, Model Registry and versioning, used Docker and Kubernetes for containerisation and orchestration; set up monitoring Solutions with Prometheus and Grafana, and deployed ML solutions across multi-cloud platforms such as AWS, Azure, and GCP.
-My goal is to simplify the Machine Learning lifecycle, ensure reproducibility, and apply MLOps practices to deliver scalable, reliable, and cost-efficient AI solutions in production.
-That’s a quick introduction about me.
-Thanks for the opportunity!
+I bring over 7+ years of overall experience in designing, automating, and managing end-to-end machine learning lifecycle systems.
+- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS. Additionally, I have implemented end-to-end CI/CD pipelines for complete ML automation using GitHub Actions.
+- My goal is to simplify the Machine Learning lifecycle, ensure reproducibility, and apply MLOps practices to deliver scalable, reliable, and cost-efficient AI solutions in production.
+- That’s a quick introduction about me.
+- Thanks for the opportunity!
 
 
 My Day-to-Day Activities as an MLOps Engineer:
