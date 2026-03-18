@@ -540,14 +540,13 @@ Gate 2 — Human Approval (Step 10)
   APPROVED → transition to Production
   REJECTED → stays in Staging, pipeline stops
 ```
-> **Scripts:**
-> 1. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging 
+
 
 ## Step 11: Build Inference Docker Image
 The model is now officially Production ✅. Step 11 packages everything needed to serve predictions — the model, its dependencies, and a REST API — into a single portable Docker image.  
 The Workflow Step:  
 
-> **NOTE** scripts/download_model.py — Pull Model from MLflow Before Build  
+
 ## Step 12: Push Docker Image to ECR  
 The image is built and smoke-tested on the runner ✅. This final step pushes it to Amazon ECR — the central image registry where your Kubernetes/ECS inference infrastructure pulls from to actually serve predictions.  
 
@@ -1208,9 +1207,21 @@ Step 12    ECR Push + Scan          ~5  minutes
 Total (excl. human approval):       ~62 minutes  
 ```
 > **Scripts:**
-> 1. Register Model Script  (register_model.py) 
-> 2. CI Pipeline (.gitlab-ci.yml)
-> 3. 
+> **1.   .py files** 
+> 1. Register Model Script  (register_model.py)
+> 2. download_model.py — Pull Model from MLflow Before Build
+> 4. pipelines/submit_pipeline.py
+> 5. pipelines/kfp_pipeline.py
+> 6. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
+> 7. Inference_code.py for custom predictor
+> 8. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
+ **2.   .yaml files**
+>    CI Pipeline (.gitlab-ci.yml)
+>    InferenceService_Deployment.yaml --> main model deployment yaml file
+>    argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
+
+
+
   </details>  
 
   ---  
@@ -1562,13 +1573,7 @@ Production: /predict endpoint serving
             model.pkl from MLflow v3
             zero downtime ✅
 ```
-**Scripts:**  
-**1.   .py files**  
-Inference_code.py for custom predictor  
-update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
-**2.   .yaml files**  
-InferenceService_Deployment.yaml --> main model deployment yaml file  
-argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
+
 
   </details> 
  
