@@ -195,11 +195,11 @@ Client → Istio Ingress Gateway → Knative → Transformer (preprocess) → Pr
 . When KServe's built-in runtimes don't support your model or You have complex business logic , you write your own inference code and package it as a Docker container.  
 . It handles dirty, raw, real-world data that needs cleaning and transformation before format conversion.  
 
-**Step 1: Write Inference Code** 
-**Step 2: Write Dockerfile**
-**Step 3: Build and Push Docker Image**
-**Step 4: Deploy Using InferenceService YAML**
-**Step 5: Apply and Test**
+**Step 1: Write Inference Code**   
+**Step 2: Write Dockerfile**  
+**Step 3: Build and Push Docker Image**  
+**Step 4: Deploy Using InferenceService YAML**  
+**Step 5: Apply and Test**  
 > Deploy, Check status, Test prediction
 
 ## 4 Transformer
