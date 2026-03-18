@@ -1206,21 +1206,6 @@ Step 12    ECR Push + Scan          ~5  minutes
 ─────────────────────────────────────────────────
 Total (excl. human approval):       ~62 minutes  
 ```
-> **Scripts:**
-> **1.   .py files** 
-> 1. Register Model Script  (register_model.py)
-> 2. download_model.py — Pull Model from MLflow Before Build
-> 4. pipelines/submit_pipeline.py
-> 5. pipelines/kfp_pipeline.py
-> 6. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
-> 7. Inference_code.py for custom predictor
-> 8. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
- **2.   .yaml files**
->    CI Pipeline (.gitlab-ci.yml)
->    InferenceService_Deployment.yaml --> main model deployment yaml file
->    argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
-
-
 
   </details>  
 
@@ -1716,6 +1701,21 @@ Drift Detector CronJob runs
   </details> 
   
 </details>  
+
+**Scripts:**  
+> **1.   .py files** 
+> 1. Register Model Script  (register_model.py)
+> 2. download_model.py — Pull Model from MLflow Before Build
+> 4. pipelines/submit_pipeline.py
+> 5. pipelines/kfp_pipeline.py
+> 6. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
+> 7. Inference_code.py for custom predictor
+> 8. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
+
+ **2.   .yaml files**  
+>    CI Pipeline (.gitlab-ci.yml)
+>    InferenceService_Deployment.yaml --> main model deployment yaml file
+>    argocd/app.yaml --> Tells ArgoCD: "watch THIS repo, apply to THIS cluster"  
 
 
 
