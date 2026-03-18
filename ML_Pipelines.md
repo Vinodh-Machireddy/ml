@@ -521,9 +521,6 @@ Your main ML lifecycle CI consumes the Training Image at step 8, it does not bui
 
 The pipeline gate passed ✅. The model proved it meets the recall threshold. Now it needs to be formally registered — given a name, a version number, and stored in a central catalog that the entire organization can reference.  
 
-> **Scripts:**
-> 1. Register Model Script  (register_model.py) 
-> 2. CI Pipeline (.gitlab-ci.yml)
    
 ### Step 10: Model Promotion (Staging → Production)
 The model is in Staging ✅. This step is the final human + automated gate before a model is officially declared Production and inference infrastructure is built around it.  
@@ -1210,6 +1207,10 @@ Step 12    ECR Push + Scan          ~5  minutes
 ─────────────────────────────────────────────────
 Total (excl. human approval):       ~62 minutes  
 ```
+> **Scripts:**
+> 1. Register Model Script  (register_model.py) 
+> 2. CI Pipeline (.gitlab-ci.yml)
+> 3. 
   </details>  
 
   ---  
