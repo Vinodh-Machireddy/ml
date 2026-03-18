@@ -1,34 +1,4 @@
-# Kserve (Model Inference Platform)
-
-Core Components:  
-
-InferenceService  
-InferenceGraph  
-Predictor    
-Transformer  
-Explainer  
-
-Infrastructure Components:  
-
-KServe Controller  
-Ingress Gateway (Istio / Kourier)  
-Knative Serving  
-ModelMesh  
-
-Storage Components:  
-Storage Initializer  
-
-Serving Runtimes:  
-ClusterServingRuntime  
-ServingRuntime  
-
-Monitoring & Logging:  
-Logger  
-Batcher  
-
-Networking:  
-Istio / Kourier  
-Cert Manager  
+# Kserve
 
 ### Model Serving 
 - It takes input data through HTTP requests, validates it, passes it to the model, and returns predictions as JSON.
