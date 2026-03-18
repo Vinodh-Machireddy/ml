@@ -369,10 +369,61 @@ Next requests are instant (pod is warm now)
 > **KServe Without Knative:** we can deploy with HPA but cannot achive scale to zero. atleast one pod runs continuosily. 
 
 ## 7 Istio ingress gateway
-Istio Ingress Gateway is a secure traffic entry point that receives external requests and routes them to the correct service inside Kubernetes.  
-	- it Accepts External Traffic and Routes Traffic to Correct Service  
-	- load balancing: Distributes requests fairly across pods:  
-	- it provides mTLS (Mutual Transport Layer Security) encryption secure communication  
+Istio Ingress Gateway is a secure traffic entry point(entry gate) that receives external requests and routes them to the correct service inside Kubernetes.  
+**What It Does**
+1. Single Entry Point
+```
+All requests enter through ONE door
+
+Client A ──┐
+Client B ──┼──→ Istio Ingress Gateway ──→ Routes to correct model
+Client C ──┘
+```
+2. Traffic Routing — WHERE to send
+Decides which model to send the request to based on URL/path. it Accepts External Traffic and Routes Traffic to Correct Service 
+```
+Client A: /v1/models/loan-model:predict    → Loan Model Pod
+Client B: /v1/models/fraud-model:predict   → Fraud Model Pod
+Client C: /v1/models/churn-model:predict   → Churn Model Pod
+```
+> **Problem it solves:** I have multiple different models, which one should handle this request?
+
+3. Traffic Splitting — HOW MUCH to send
+- Decides what percentage of traffic goes to different versions of the same model.
+```
+All requests hit: /v1/models/loan-model:predict
+
+But Istio splits:
+├── 90% requests → Loan Model v1 (old stable version)
+└── 10% requests → Loan Model v2 (new version being tested)
+```
+> **Problem it solves:** I have two versions of the same model, how much traffic should each version get?
+
+4. Load Balancing — WHO handles it
+Decides which pod handles the request when multiple replicas of the same model version are running. Distributes requests fairly across pods
+```
+All requests hit: Loan Model v1 (3 replicas running)
+
+Istio distributes:
+├── Request 1 → Loan Model v1 - Pod 1
+├── Request 2 → Loan Model v1 - Pod 2
+└── Request 3 → Loan Model v1 - Pod 3
+```
+5. Security (TLS/HTTPS)
+it provides mTLS (Mutual Transport Layer Security) encryption secure communication  
+
+6.  Authentication & Authorization
+```
+Client sends request
+     │
+     ▼
+Istio Ingress Gateway
+├── Is this user allowed? (auth check)
+├── Does this user have correct API key?
+├── Yes → Forward to model
+└── No → Reject request (401/403)
+```
+
 
 ## HOW YOU DEPLOY THE MODEL? 
 We deploy the model in Kubernetes cluster using kserve. First, we create an InferenceService CRD. KServe controller continuously watches new InferenceService Once it detects, it starts validating model framework, transformer present?, explainer present?, resource limits, storage path.  KServe now asks Knative to create Serving resources like autoscaling, traffic split etc…  
