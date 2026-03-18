@@ -1705,12 +1705,13 @@ Drift Detector CronJob runs
 **Scripts:**  
 > **.py files** 
 > 1. download_model.py — Pull Model from MLflow Before Build
-> 2. pipelines/submit_pipeline.py
-> 3. pipelines/kfp_pipeline.py
-> 4. Register Model Script  (register_model.py)
-> 5. Promotion Script (promote_to_production.py) # This is typically triggered manually or after testing in staging
-> 6. Inference_code.py for custom predictor(CD)
-> 7. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
+> 2. pipeline/submit_pipeline.py  -> Submit & poll KFP run from CI
+> 3. pipeline/kfp_components.py  -> KFP component wrappers
+> 4. pipeline/kfp_pipeline.py8KFP pipeline definition
+> 5. scripts/register_model.py — registers the trained model in MLflow Registry
+> 6. scripts/promote_model.py — transitions model stage from Staging → Production
+> 7. Inference_code.py for custom predictor(CD)
+> 8. update.py --> file with github actions automates: Update KServe Manifest(InferenceService_Deployment.yaml)  
 
 > **.yaml files**  
 > 1. CI Pipeline (.gitlab-ci.yml)
