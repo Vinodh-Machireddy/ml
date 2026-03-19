@@ -199,8 +199,8 @@ SELF:
 - I'm originally from Andhra Pradesh, Bharath.
 - Currently, I’m working as a Senior MLOps Engineer at Larc Software Pvt Ltd.
 I bring over 7+ years of overall experience in designing, automating, and managing end-to-end machine learning lifecycle systems.
-- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS. Additionally, I have implemented end-to-end CI/CD pipelines for complete ML automation using GitHub Actions.
-- My goal is to simplify the Machine Learning lifecycle, ensure reproducibility, and apply MLOps practices to deliver scalable, reliable, and cost-efficient AI solutions in production.
+- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS.
+- At the end of the day, I just want to make sure ML models work smoothly in production
 - That’s a quick introduction about me.
 - Thanks for the opportunity!
 
