@@ -239,31 +239,19 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 
 Tell me about your project:
 ---------------------------
-1.Overall Project
-2.business use case/purpose
-3.Architecture
-4.tech stack used
-5.and Roles & Responsibility.
+1.Overall Project  
+2.business use case/purpose  
+3.Architecture  
+4.tech stack used  
+5.and Roles & Responsibility.  
 
-1. Overall Project
-I am working on Daimler Project under automotive domain, their focusing on Traffic Sign Recognition (TSR). The project is part of Advanced Driver Assistance Systems (ADAS) and aims to detect and classify traffic signs from camera input in real time.
-2. Business Use Case / Purpose
-The main purpose is to enhance driver safety and compliance.
-By recognising traffic signs such as speed limits, stop signs, or pedestrian crossings, the vehicle can alert the driver or adjust driving behaviour.
-3. Architecture
-The architecture has two main layers:
-Data & Model Layer
-Camera sensors capture road images.
-Images are preprocessed and passed through a deep learning classification model (CNN-based).
-The output is the predicted traffic sign category.
-MLOps Pipeline Layer
-Data Pipeline: Collects and versions training/validation images.
-Training Pipeline: Handles preprocessing, augmentation, training, evaluation.
-Deployment Pipeline: Packages the trained model into a container and deploys as a microservice.
-Monitoring & Retraining: Tracks accuracy, latency, drift, and triggers retraining if needed.
-4. Tech Stack Used: MLflow, DVC, Kubeflow, Docker, Kubernetes, CI/CD, Prometheus, Grafana, Trivy
 
-5. Roles & Responsibilities (as Senior MLOps Engineer)
+
+- I am working on Daimler Project which comes under automotive domain/Industry, their i am dealing with Battery Fault Classification. The project aims to classify battery cell faults in real time using sensor data from the Battery Management System (BMS). This helps detect issues like overheating, overcharging, internal short circuits, and cell degradation early — before they become safety-critical.  
+-  The main purpose is to improve EV battery safety, and extend battery lifespan.  
+
+
+7. Roles & Responsibilities (as Senior MLOps Engineer)
 Designed end-to-end ML pipelines for data preprocessing, training, deployment, and monitoring.
 Implemented model versioning and experiment tracking with MLflow and DVC.
 Containerised models with Docker and deployed on Kubernetes clusters.
