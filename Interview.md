@@ -28,28 +28,13 @@ My Day-to-Day Activities as an MLOps Engineer:
 My day starts with checking monitoring dashboards to see any overnight alerts is showing performance drop. 
 and Quick check on Kubernetes cluster health — are all model serving pods running fine?
 
-2. Versioning and Tracking
-Pull latest code (Git), review/merge PRs.
-I make sure all code, data, and models are versioned properly, so any experiment can be reproduced later.
-I use tools like Git, MLflow, or DVC to track experiments and model versions.
+2. CI, CD, CM steps
 
 3. Working with Data Scientists
-I help data scientists move their models from notebooks to production by building pipelines, writing configs, and adding tests.
+I help data scientists move their models from notebooks to production by building pipelines.
 Together we review metrics to decide if a model is good enough to promote to production.
 
-4. Deploying Models
-I package models into Docker containers and deploy them on Kubernetes clusters.
-I use safe rollout strategies like canary or A/B testing before making them live for all users.
-
-5. Monitoring and Alerts
-I monitor both system metrics (CPU, memory, latency) and model metrics (accuracy, drift, bias).
-If performance drops, I investigate the issue and decide whether to retrain the model.
-
-6. Automating Retraining
-I set up automated retraining pipelines that run when new data arrives or when a model starts drifting.
-Only better models get promoted to production automatically.
-
-8. Team Work
+4. Team Work
 I attend daily stand-ups with data scientists, QA, and cloud teams.
 We discuss ongoing issues, improvements, and after any failure, we do a post-mortem to learn from it.
 
