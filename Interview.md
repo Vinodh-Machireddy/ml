@@ -23,9 +23,10 @@ I bring over 7+ years of overall experience in designing, automating, and managi
 
 My Day-to-Day Activities as an MLOps Engineer:
 ————————————————————
-1. Checking Pipelines and Models
-Start the day by reviewing ML pipeline runs in Kubeflow/Airflow to ensure data ingestion, preprocessing, training, and deployment stages executed successfully.
-I also check monitoring dashboards to see if any production model is showing performance drop or errors.
+1. Morning — Monitoring & Health Checks
+
+My day starts with checking monitoring dashboards to see any overnight alerts is showing performance drop. 
+and Quick check on Kubernetes cluster health — are all model serving pods running fine?
 
 2. Versioning and Tracking
 Pull latest code (Git), review/merge PRs.
