@@ -1,4 +1,121 @@
-INTERVIEW
+INTERVIEW  
+
+1. self Intro
+2. My Day-to-Day Activities as an MLOps Engineer
+3. Tell me about your project
+4. Describe some real-time challenges you have faced and how you resolved them.
+5. Explain your ML pipeline in your current or previous projects
+6. Mlops Best Pratices
+7. cost-efficient
+
+
+SELF:
+-----
+- My name is Vinodh Machireddy.
+- I'm originally from Andhra Pradesh, Bharath.
+- Currently, I’m working as a Senior MLOps Engineer at Larc Software Pvt Ltd.
+I bring over 7+ years of overall experience in designing, automating, and managing end-to-end machine learning lifecycle systems.
+- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS.
+- At the end of the day, I just want to make sure ML models work smoothly in production
+- That’s a quick introduction about me.
+- Thanks for the opportunity!
+
+
+My Day-to-Day Activities as an MLOps Engineer:
+————————————————————
+1. Checking Pipelines and Models
+Start the day by reviewing ML pipeline runs in Kubeflow/Airflow to ensure data ingestion, preprocessing, training, and deployment stages executed successfully.
+I also check monitoring dashboards to see if any production model is showing performance drop or errors.
+
+2. Versioning and Tracking
+Pull latest code (Git), review/merge PRs.
+I make sure all code, data, and models are versioned properly, so any experiment can be reproduced later.
+I use tools like Git, MLflow, or DVC to track experiments and model versions.
+
+3. Working with Data Scientists
+I help data scientists move their models from notebooks to production by building pipelines, writing configs, and adding tests.
+Together we review metrics to decide if a model is good enough to promote to production.
+
+4. Deploying Models
+I package models into Docker containers and deploy them on Kubernetes clusters.
+I use safe rollout strategies like canary or A/B testing before making them live for all users.
+
+5. Monitoring and Alerts
+I monitor both system metrics (CPU, memory, latency) and model metrics (accuracy, drift, bias).
+If performance drops, I investigate the issue and decide whether to retrain the model.
+
+6. Automating Retraining
+I set up automated retraining pipelines that run when new data arrives or when a model starts drifting.
+Only better models get promoted to production automatically.
+
+8. Team Work
+I attend daily stand-ups with data scientists, QA, and cloud teams.
+We discuss ongoing issues, improvements, and after any failure, we do a post-mortem to learn from it.
+
+
+Tell me about your project:
+---------------------------
+1.Overall Project  
+2.business use case/purpose  
+3.Architecture  
+4.tech stack used  
+5.and Roles & Responsibility.  
+
+
+- I am working on Daimler Project which comes under automotive domain/Industry, their i am dealing with Battery Fault Classification. The project aims to classify battery cell faults in real time using sensor data from the Battery Management System (BMS). This helps detect issues like overheating, overcharging, internal short circuits, and cell degradation early — before they become safety-critical.  
+-  The main purpose is to improve EV battery safety, and extend battery lifespan.  
+
+
+
+CHALLENGES
+———————
+
+Model Degraded due to Hidden Feature Drift in Production
+
+We had a machine learning model running in production. For the first few months, it worked well and gave good accuracy. After some time, the predictions started becoming wrong more often.
+At first, it was not obvious because normal monitoring (like uptime, latency, schema checks) showed everything healthy. But business teams noticed that the model was missing important cases (for example, not catching fraud or misreading traffic signs).
+The tricky part was — data pipelines looked fine (no missing columns, no errors). But actually, the input data pattern had changed silently. That hidden change in the features made the model behave poorly.
+What made it tricky
+No clear alert initially – dashboards showed stable latency and throughput, only business KPIs hinted at an issue.
+Data pipeline looked “healthy” – schema matched, no missing columns. But hidden drift existed.
+
+Resolution:
+When accuracy started dropping, first I stabilised the system by adding guardrails like request validation, circuit-breaker, and fallback to the last stable model. These safety checks ensured users were not badly affected while I investigated and fixed the root cause.
+
+Deep Monitoring Analysis
+Set up feature-level drift metrics (PSI, KS test) using Evidently AI.
+Debugging the Root Cause
+
+Retraining the Model
+Pulled recent 2 months of production data with new encoding.
+
+Safe Deployment
+Used canary rollout on 10% traffic.
+
+Long-Term Fix
+Set alerting on PSI > 0.3 for top 10 features.
+
+
+1. Model Drift in Production
+Challenge:
+We had a machine learning model deployed in production. Initially, the accuracy was good, but after a few months the predictions started degrading.
+
+Resolution:
+When accuracy started dropping, first I stabilised the system by adding guardrails like request validation, circuit-breaker, and fallback to the last stable model. These safety checks ensured users were not badly affected while I investigated and fixed the root cause.
+
+Root cause: Data distribution in production had changed — the incoming features looked different compared to the data the model was originally trained.(data drift)
+
+I set up Prometheus/Grafana to track live data and system health, and MLflow to log model metrics and versions.
+
+I configured alerts so whenever drift goes above a threshold, it notifies us and triggers the retraining pipeline.
+
+The pipeline pulls fresh data → validates it → preprocesses → retrains → evaluates. If the new model is better, it’s registered in MLflow Model Registry.
+
+I used Kubernetes canary rollout: the new model first gets a small % of traffic. If it performs well, it’s promoted to full production; if not, it auto-rolls back.
+
+Now the system is self-healing: whenever drift happens, monitoring + pipeline + canary ensure models are automatically retrained and deployed safely.
+
+
 
 
 Interview Schedule:
@@ -180,132 +297,3 @@ Explain how do you create and manage kubernetes cluster?
 We use namespaces for logical isolation then we setup resource quota on namespace, so the teams are restricted to the compute power 
 And we help the teams to enable resource requests and limits on each pod, so that each pod is restricted with compute and memory power
 
-
-
-
-
-1. self
-2. My Day-to-Day Activities as an MLOps Engineer
-3. Tell me about your project
-4. Describe some real-time challenges you have faced and how you resolved them.
-5. Explain your ML pipeline in your current or previous projects
-6. Mlops Best Pratices
-7. cost-efficient
-
-
-SELF:
------
-- My name is Vinodh Machireddy.
-- I'm originally from Andhra Pradesh, Bharath.
-- Currently, I’m working as a Senior MLOps Engineer at Larc Software Pvt Ltd.
-I bring over 7+ years of overall experience in designing, automating, and managing end-to-end machine learning lifecycle systems.
-- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS.
-- At the end of the day, I just want to make sure ML models work smoothly in production
-- That’s a quick introduction about me.
-- Thanks for the opportunity!
-
-
-My Day-to-Day Activities as an MLOps Engineer:
-————————————————————
-1. Checking Pipelines and Models
-Start the day by reviewing ML pipeline runs in Kubeflow/Airflow to ensure data ingestion, preprocessing, training, and deployment stages executed successfully.
-I also check monitoring dashboards to see if any production model is showing performance drop or errors.
-
-2. Versioning and Tracking
-Pull latest code (Git), review/merge PRs.
-I make sure all code, data, and models are versioned properly, so any experiment can be reproduced later.
-I use tools like Git, MLflow, or DVC to track experiments and model versions.
-
-3. Working with Data Scientists
-I help data scientists move their models from notebooks to production by building pipelines, writing configs, and adding tests.
-Together we review metrics to decide if a model is good enough to promote to production.
-
-4. Deploying Models
-I package models into Docker containers and deploy them on Kubernetes clusters.
-I use safe rollout strategies like canary or A/B testing before making them live for all users.
-
-5. Monitoring and Alerts
-I monitor both system metrics (CPU, memory, latency) and model metrics (accuracy, drift, bias).
-If performance drops, I investigate the issue and decide whether to retrain the model.
-
-6. Automating Retraining
-I set up automated retraining pipelines that run when new data arrives or when a model starts drifting.
-Only better models get promoted to production automatically.
-
-8. Team Work
-I attend daily stand-ups with data scientists, QA, and cloud teams.
-We discuss ongoing issues, improvements, and after any failure, we do a post-mortem to learn from it.
-
-
-Tell me about your project:
----------------------------
-1.Overall Project  
-2.business use case/purpose  
-3.Architecture  
-4.tech stack used  
-5.and Roles & Responsibility.  
-
-
-
-- I am working on Daimler Project which comes under automotive domain/Industry, their i am dealing with Battery Fault Classification. The project aims to classify battery cell faults in real time using sensor data from the Battery Management System (BMS). This helps detect issues like overheating, overcharging, internal short circuits, and cell degradation early — before they become safety-critical.  
--  The main purpose is to improve EV battery safety, and extend battery lifespan.  
-
-
-7. Roles & Responsibilities (as Senior MLOps Engineer)
-Designed end-to-end ML pipelines for data preprocessing, training, deployment, and monitoring.
-Implemented model versioning and experiment tracking with MLflow and DVC.
-Containerised models with Docker and deployed on Kubernetes clusters.
-Set up real-time monitoring dashboards and alerts for model accuracy, latency, and drift.
-Automated retraining workflows when new data or drift was detected.
-Collaborated with data scientists to productionize research models into production pipelines.
-Ensured reproducibility, security, and reliability of ML workflows across environments.
-
-
-
-CHALLENGES
-———————
-
-Model Degraded due to Hidden Feature Drift in Production
-
-We had a machine learning model running in production. For the first few months, it worked well and gave good accuracy. After some time, the predictions started becoming wrong more often.
-At first, it was not obvious because normal monitoring (like uptime, latency, schema checks) showed everything healthy. But business teams noticed that the model was missing important cases (for example, not catching fraud or misreading traffic signs).
-The tricky part was — data pipelines looked fine (no missing columns, no errors). But actually, the input data pattern had changed silently. That hidden change in the features made the model behave poorly.
-What made it tricky
-No clear alert initially – dashboards showed stable latency and throughput, only business KPIs hinted at an issue.
-Data pipeline looked “healthy” – schema matched, no missing columns. But hidden drift existed.
-
-Resolution:
-When accuracy started dropping, first I stabilised the system by adding guardrails like request validation, circuit-breaker, and fallback to the last stable model. These safety checks ensured users were not badly affected while I investigated and fixed the root cause.
-
-Deep Monitoring Analysis
-Set up feature-level drift metrics (PSI, KS test) using Evidently AI.
-Debugging the Root Cause
-
-Retraining the Model
-Pulled recent 2 months of production data with new encoding.
-
-Safe Deployment
-Used canary rollout on 10% traffic.
-
-Long-Term Fix
-Set alerting on PSI > 0.3 for top 10 features.
-
-
-1. Model Drift in Production
-Challenge:
-We had a machine learning model deployed in production. Initially, the accuracy was good, but after a few months the predictions started degrading.
-
-Resolution:
-When accuracy started dropping, first I stabilised the system by adding guardrails like request validation, circuit-breaker, and fallback to the last stable model. These safety checks ensured users were not badly affected while I investigated and fixed the root cause.
-
-Root cause: Data distribution in production had changed — the incoming features looked different compared to the data the model was originally trained.(data drift)
-
-I set up Prometheus/Grafana to track live data and system health, and MLflow to log model metrics and versions.
-
-I configured alerts so whenever drift goes above a threshold, it notifies us and triggers the retraining pipeline.
-
-The pipeline pulls fresh data → validates it → preprocesses → retrains → evaluates. If the new model is better, it’s registered in MLflow Model Registry.
-
-I used Kubernetes canary rollout: the new model first gets a small % of traffic. If it performs well, it’s promoted to full production; if not, it auto-rolls back.
-
-Now the system is self-healing: whenever drift happens, monitoring + pipeline + canary ensure models are automatically retrained and deployed safely.
