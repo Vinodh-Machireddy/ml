@@ -1025,3 +1025,9 @@ Use F1 when:
 - You care about both FP and FN  
 - You want single metric for model selection  
 
+
+**scripts**
+node-cpu-alert.yaml  
+Alertmanager_config.yaml  
+
+
