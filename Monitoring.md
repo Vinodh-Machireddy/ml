@@ -77,7 +77,7 @@ Node 3 ──→ node-exporter pod ──→ exposes :9100/metrics
 
 **What metrics it exposes:**  
 ```
-K8s Object        Example Metrics                      What it tells you
+**K8s Object**        **Example Metrics**             **What it tells you** 
 CPU      -  node_cpu_seconds_total          -  How much CPU time is used vs idle
 Memory   -  node_memory_MemAvailable_bytes  - How much RAM is free on the node
 Disk     -  node_filesystem_avail_bytes     - How much disk space is left
@@ -87,7 +87,7 @@ Disk     -  node_filesystem_avail_bytes     - How much disk space is left
 What it is: A single service that talks to the Kubernetes API server and converts Kubernetes object states into Prometheus metrics.  
 **What metrics it exposes:**  
 ```
-K8s Object               Example Metrics                             What it tells you  
+**K8s Object**              **Example Metrics**                         **What it tells you**  
 Pod             kube_pod_status_phase{phase="Running"}         Is the pod running, pending, or failed?
 Pod             kube_pod_container_status_restarts_total       How many times has this container restarted? 
 Deployment      kube_deployment_status_replicas_available      How many replicas are actually available? 
