@@ -411,13 +411,38 @@ Warning:
 ```Always use for: duration```
 
 ## 3. Model Serving Layer (KServe)
-most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.
+most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.  
 
-Core metrics:
-revision_request_count
-revision_request_latencies
-Response codes
-Autoscaling events  
+KServe uses KNative Serving under the hood. When you deploy an InferenceService, KNative automatically adds a queue-proxy sidecar container alongside your model container in every pod.  
+```
+┌─────────────── KServe Pod ───────────────┐
+│                                           │
+│  ┌─────────────┐    ┌──────────────────┐  │
+│  │  Your Model  │    │   Queue-Proxy    │  │
+│  │  Container   │◄──►│   (Sidecar)      │  │
+│  │              │    │                  │  │
+│  │  - Predictor │    │  - Receives all  │  │
+│  │  - or        │    │    requests first│  │
+│  │  - Transformer    │  - Measures      │  │
+│  │              │    │    latency       │  │
+│  │              │    │  - Counts        │  │
+│  │              │    │    requests      │  │
+│  │              │    │  - Exposes :9091 │  │
+│  └─────────────┘    └──────────────────┘  │
+│                                           │
+└───────────────────────────────────────────┘
+                    │
+                    ▼
+            Prometheus scrapes :9091
+```
+```
+revision_request_count       Total number of prediction requests received       Counter 
+revision_request_latencies   How long each prediction took (in ms)              Histogram
+revision_response_count      Total responses sent back                          Counter
+```
+
+> **How Prometheus Discovers KServe Pods**
+Prometheus doesn't manually know about every KServe pod. It uses ServiceMonitor or PodMonitor CRDs (from Prometheus Operator) to auto-discover pods that expose metrics.
 
 Important:
 Use p95 and p99 latency, not average.  
