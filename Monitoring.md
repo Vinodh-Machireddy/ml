@@ -58,10 +58,10 @@ Prometheus uses configured service discovery mechanisms to:
 This ensures monitoring stays accurate even when infrastructure changes.
 
 ### Exporters:
-- collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.  
-For Kubernetes cluster monitoring: 1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics 
-For Web Servers: nginx_exporter, apache_exporter   
-For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
+- collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.
+- For Kubernetes cluster monitoring: 1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics  
+- For Web Servers: nginx_exporter, apache_exporter   
+- For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
 
 #### 1. Node Exporter: (system-level metrics from the OS)
 Node Exporter collects hardware and operating system metrics from a server (node) and exposes them for Prometheus to scrape.  
