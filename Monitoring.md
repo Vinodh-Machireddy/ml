@@ -1,13 +1,3 @@
-# INTERVIEW TARGET
-1. Ml Pipelines : Kubeflow Pipelines
-2. Experiment Tracking + Model Registry: Mlflow 
-3. Deployment and serving : ArgoCD + Kserve
-4. Monitoring and alerting : Prometheus & Grafana
-5. Ci/cd Pipelines : GitHub Actions
-6. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization, Security (AWS Secrets Manager)
-
-# Production Ready Tech Stack: 
-```Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.```
 
 <div align="center"> 
  
