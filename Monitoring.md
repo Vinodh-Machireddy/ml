@@ -64,12 +64,37 @@ This ensures monitoring stays accurate even when infrastructure changes.
 - For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
 
 #### 1. Node Exporter: (system-level metrics from the OS)
-Node Exporter collects hardware and operating system metrics from a server (node) and exposes them for Prometheus to scrape.  
-It Collects: CPU usage, Memory usage, Disk space & disk I/O, Network traffic, File system usage, Load average, System uptime
+What it is: A lightweight agent that runs on every node in the cluster and exposes hardware and OS-level metrics of that node.  
+How it runs: As a DaemonSet — meaning Kubernetes automatically places one node-exporter pod on every node. If you have 5 nodes, you get 5 node-exporter pods.  
+```
+Node 1 ──→ node-exporter pod ──→ exposes :9100/metrics
+Node 2 ──→ node-exporter pod ──→ exposes :9100/metrics
+Node 3 ──→ node-exporter pod ──→ exposes :9100/metrics
+                                        │
+                                        ▼
+                                   Prometheus scrapes all
+```
+
+**What metrics it exposes:**  
+```
+K8s Object        Example Metrics                      What it tells you
+CPU      -  node_cpu_seconds_total          -  How much CPU time is used vs idle
+Memory   -  node_memory_MemAvailable_bytes  - How much RAM is free on the node
+Disk     -  node_filesystem_avail_bytes     - How much disk space is left
+```  
 
 #### 2. Kube State Metrics (Kubernetes object-level metrics to Prometheus.)  
-It tells the current state of Kubernetes objects, not resource usage.  
-It collects:Pods (Running, Pending, Failed), Deployments (Desired vs Available replicas), ReplicaSets, StatefulSets, DaemonSets, Jobs & CronJobs, HPA (min/max replicas, current replicas), Nodes (Ready/NotReady status), PersistentVolumeClaims.  
+What it is: A single service that talks to the Kubernetes API server and converts Kubernetes object states into Prometheus metrics.  
+**What metrics it exposes:**  
+```
+K8s Object               Example Metrics                             What it tells you  
+Pod             kube_pod_status_phase{phase="Running"}         Is the pod running, pending, or failed?
+Pod             kube_pod_container_status_restarts_total       How many times has this container restarted? 
+Deployment      kube_deployment_status_replicas_available      How many replicas are actually available? 
+Deployment      kube_deployment_spec_replicas                  How many replicas were requested? 
+Node            kube_node_status_condition{condition="Ready"}  Is the node in Ready state?
+```
+
 
 #### 3. cAdvisor (container-level resource usage metrics)  
 cAdvisor monitors how much CPU, memory, and disk each container is using.
