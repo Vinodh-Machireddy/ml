@@ -563,6 +563,8 @@ Is p99 > 500ms?
 ```
 > **"p" means percentile.** The number after "p" tells you what percentage of people had a BETTER experience than this value.
 > "p99 latency means 99% of requests are served within that time. We use percentiles instead of averages because averages hide tail latency — one slow request can make the average misleading, but p99 clearly shows the worst-case experience for real users."
+> ``` p99 captures tail latency — the experience of 1 in 100 requests. ```
+> ```p99 under 100–200ms is generally considered good. Under 50ms is excellent.```
 
 
 
