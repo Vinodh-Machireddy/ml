@@ -411,9 +411,14 @@ Warning:
 ```Always use for: duration```
 
 ## 3. Model Serving Layer (KServe)
-most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.  
-
-KServe uses KNative Serving under the hood. When you deploy an InferenceService, KNative automatically adds a queue-proxy sidecar container alongside your model container in every pod.  
+  When your EV Battery model is deployed an InferenceService on KServe and serving predictions, you want to answer these questions:  
+```
+1. How many prediction requests are coming?
+2. How fast is the model responding?
+3. Are any requests failing?
+4. Is the model overloaded?
+```
+To answer these, you need numbers (metrics). Someone has to count and measure every request. That "someone" is the queue-proxy sidecar. When you deploy an InferenceService on KServe, KNative automatically adds a **queue-proxy sidecar** container alongside your model container in every pod. 
 ```
 ┌─────────────── KServe Pod ───────────────┐
 │                                           │
@@ -433,44 +438,123 @@ KServe uses KNative Serving under the hood. When you deploy an InferenceService,
 └───────────────────────────────────────────┘
                     │
                     ▼
-            Prometheus scrapes :9091
+            Prometheus scrapes :9091  
 ```
+**What Does Queue-Proxy Do?**
+Every prediction request goes through queue-proxy FIRST, then reaches your model. Queue-proxy sits in the middle and records everything:
+```
+Client sends request
+        │
+        ▼
+  Queue-Proxy receives it
+        │
+        ├── Records: "Request received at 10:00:01.000"
+        ├── Records: "Request count + 1"
+        │
+        ▼
+  Forwards to Your Model Container
+        │
+        ▼
+  Model returns prediction
+        │
+        ▼
+  Queue-Proxy receives response
+        │
+        ├── Records: "Response sent at 10:00:01.045"
+        ├── Calculates: "Latency = 45ms"
+        ├── Records: "Response code = 200 (success)"
+        │
+        ▼
+  Client gets response
+```
+**Where Does Queue-Proxy Store These Numbers?**
+Queue-proxy does NOT send these numbers anywhere on its own. It just holds them in memory and exposes them on a URL: ``` http://pod-ip:9091/metrics```  
+**Who Reads These Numbers? PROMETHEUS**
+Prometheus is a tool that visits the queue-proxy URL every 15 seconds and copies the numbers into its own database.
+```
+Every 15 seconds:
+Prometheus ──HTTP GET──→ http://kserve-pod:9091/metrics
+                              │
+                              ▼
+                    Queue-Proxy responds with:
+                    "request_count = 4523"
+                    "latency_bucket_50ms = 3800"
+                    "error_count = 12"
+                              │
+                              ▼
+                    Prometheus saves these numbers
+                    with timestamp: 10:00:15
+```
+> This "visiting and copying" is called scraping. Prometheus scrapes metrics from queue-proxy every 15 seconds.
+
+**This is where Prometheus Operator and ServiceMonitor come in.** 
+**Problem:** Your cluster might have 50 pods. Prometheus can't visit all of them. It needs to know "which pods have metrics worth scraping?"  
+**Solution:** You create a ServiceMonitor — a YAML file that tells Prometheus "scrape pods with THIS label":  ServiceMonitor tells Prometheus where to look.  
+```
+# servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kserve-monitor
+spec:
+  selector:
+    matchLabels:
+      serving.knative.dev/service: "ev-battery-classifier"
+  endpoints:
+    - port: http-usermetric
+      path: /metrics
+      interval: 15s
+```
+**How Do We SEE These Numbers? GRAFANA**
+Prometheus stores numbers, but it has no good visual dashboard. **Grafana** connects to Prometheus and shows beautiful graphs.  
+```
+Prometheus (database of numbers)
+        │
+        ▼
+Grafana (asks Prometheus using PromQL)
+        │
+        ▼
+Dashboard with graphs and panels
+```
+**Example Grafana query:** You want to see "requests per second" on a graph:  
+```
+rate(revision_request_count[5m])
+```
+
+This asks Prometheus: "How fast is request_count growing over the last 5 minutes?" — which gives you requests per second.  
+```
+Grafana Dashboard:
+┌─────────────────────────────────────┐
+│  Requests Per Second                │
+│                                     │
+│  15 ┤         ╭──╮                  │
+│  10 ┤    ╭────╯  ╰──╮              │
+│   5 ┤───╯           ╰───           │
+│   0 ┤                               │
+│     └──────────────────────────      │
+│     10:00  10:15  10:30  10:45      │
+└─────────────────────────────────────┘
+```
+**How Do We Get ALERTS? ALERTMANAGER**
+You don't want to stare at dashboards 24/7. So you define rules — "if this number crosses this threshold, alert me":
+```
+- alert: ModelLatencyHigh
+  expr: histogram_quantile(0.99, rate(revision_request_latencies_bucket[5m])) > 500
+  for: 5m
+```
+
+
+
+
 ```
 revision_request_count       Total number of prediction requests received       Counter 
 revision_request_latencies   How long each prediction took (in ms)              Histogram
 revision_response_count      Total responses sent back                          Counter
 ```
 
-> **How Prometheus Discovers KServe Pods**
-Prometheus doesn't manually know about every KServe pod. It uses ServiceMonitor or PodMonitor CRDs (from Prometheus Operator) to auto-discover pods that expose metrics.
 
-Important:
-Use p95 and p99 latency, not average.  
+> most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.  
 
-Example logic:
-If p95 latency > 500ms for 5 mins → Warning
-If error rate > 5% → Critical  
-
-### revision_request_count
-Shows incoming traffic rate.  
-PromQL: ```sum(rate(revision_request_count[5m]))```  
-If traffic suddenly drops to 0 for 5 mins → possible outage.
-
-### revision_request_latencies
-PromQL: ```histogram_quantile(0.95, sum(rate(revision_request_latencies_bucket[5m])) by (le))```  
-This gives 95th percentile latency.
-
-Alert:  
-If p95 > 500ms for 5 minutes → Warning  
-If p95 > 1s → Critical  
-This ensures SLA protection.  
-
-### Error Rate Monitoring
-Error rate query:```sum(rate(revision_request_count{response_code!~"2.."}[5m]))
-                  /
-                  sum(rate(revision_request_count[5m]))
-                 ```  
-If error rate > 5% → Critical alert.
 
 ## 4. ML-Specific Layer
 This layer monitors model behavior, not infrastructure or pods.  
