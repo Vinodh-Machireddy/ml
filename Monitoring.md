@@ -592,12 +592,11 @@ Everything looks PERFECT from infrastructure side.
 
 BUT...  
 
-The model is predicting "healthy battery" for 98% of requests.
-In reality, 30% of those batteries have thermal risk.
-The model is SILENTLY giving WRONG predictions.
-No alert fired. No error. No crash.
+The model is predicting "healthy battery" for 98% of requests.  
+In reality, 30% of those batteries have thermal risk.  
+The model is SILENTLY giving WRONG predictions.  
+No alert fired. No error. No crash.  
 > This is the scariest problem in ML — the system is healthy but the model is wrong. Infrastructure monitoring cannot catch this. You need ML-specific monitoring.
-
 
 **Monitor:**
 1. Data Drift (Feature Distribution Monitoring)
@@ -620,12 +619,10 @@ PRODUCTION DATA (what model receives today):
   - Temperature range: -10°C to 15°C  ← shifted DOWN! (winter season)
   - Battery age: 3 to 8 years         ← shifted UP! (older fleet)
 ```
-
 **Why it happens:**
 - Seasonal changes (summer → winter)
 - New battery hardware model introduced
 - Different driving conditions (highway vs city)
-
 
 ### Step 1 — Log Prediction Data to S3
 Before you can detect drift, you need the raw data. Every time a prediction request comes to KServe, the Transformer logs the input features to S3.  
@@ -703,9 +700,9 @@ SOLUTION:
 After this push, Pushgateway holds these metrics: Prometheus Scrapes Pushgateway. This happens **automatically** because when you installed Pushgateway with `serviceMonitor.enabled=true`, a ServiceMonitor was created: You don't need to do anything for this step. It's automatic.  
 
 ### Step 3 — Wire Everything as a KFP Pipeline  (@dsl.pipeline)   
-### Step 4 - submit_monitoring_pipeline.py submit pipeline to kubeflow to run every 6 hours.
+### Step 4 - submit pipeline(submit_monitoring_pipeline.py) to kubeflow to run every 6 hours.  
 
-### Step 3 — Grafana Dashboard
+### Step 5 — Grafana Dashboard
  Now Grafana can query Prometheus and show drift metrics.  
 
 ### Step 4 — Alertmanager checks rules 
@@ -717,6 +714,8 @@ PSI Threshold:
 0.1 - 0.25           Moderate drift                Investigate, monitor closely
 > 0.25               Significant drift             Trigger retraining pipeline
 ```
+
+
 
 
 KServe Transformer logs data to S3 on EVERY request (real-time)
@@ -1298,7 +1297,7 @@ Use F1 when:
 **scripts**
 node-cpu-alert.yaml  
 Alertmanager_config.yaml  
-transformer.py — deployed as KServe Transformer component  
+transformer.py — log prediction data to s3 
 component_pull_production_data.py  #component1
 component_pull_reference_data.py  #component2
 component_detect_drift.py  #component3
