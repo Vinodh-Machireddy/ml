@@ -570,7 +570,7 @@ Is p99 > 500ms?
   
 
 
-## 4. ML-Specific Monitoring Layer
+# 4. ML-Specific Monitoring Layer
 This layer monitors model behavior, not infrastructure or pods.  
 
 - Infra tells you system health.  
@@ -606,7 +606,7 @@ No alert fired. No error. No crash.
 4. Model Confidence Score Monitoring
 5. Model Performance Monitoring (Accuracy Degradation)
 
-**1. Data Drift**
+## 1. Data Drift
 What it means: The data coming to your model in production looks different from the data it was trained on.
 EV Battery example:  
 ```
@@ -627,11 +627,100 @@ PRODUCTION DATA (what model receives today):
 - Different driving conditions (highway vs city)
 
 
+### Step 1 — Log Prediction Data to S3
+Before you can detect drift, you need the raw data. Every time a prediction request comes to KServe, the Transformer logs the input features to S3.  
+Why Transformer and not Predictor?  
+```
+Client ──request──→ Transformer ──→ Predictor ──→ Transformer ──→ Client
+                    (preprocess)    (model)       (postprocess)
+
+Transformer sees BOTH:
+- Raw input features (before prediction)
+- Model output (after prediction)
+
+So Transformer is the best place to log.
+```
+
+### Step 2 — KFP Monitoring Pipeline Pulls Data 
+Now a scheduled KFP pipeline runs every 6 hours. Its first job is to pull the logged data from S3 and convert it into a pandas DataFrame.  
+
+#### Component 1: Pull Reference Data (Training Data via DVC)
+
+To detect drift, Evidently needs **two datasets**: 
+```
+Reference data = what the model was trained on (the "normal" data)
+Current data   = what the model is receiving now (production data)
+
+Evidently compares these two and says "are they similar or different?"
+```
+#### Component 2: Pull reference data via DVC 
+
+#### Component 3: Run Evidently drift Detection report
+Now the core part — Evidently compares these two datasets.
+
+**What Evidently does internally:**
+```
+For each feature (voltage, temperature, current, battery_age, soc):
+
+1. Take reference data distribution:
+   voltage reference: mean=388, std=15, range=[350, 420]
+
+2. Take production data distribution:
+   voltage production: mean=340, std=25, range=[280, 400]
+
+3. Apply statistical test (PSI by default):
+   PSI = Σ (P_prod - P_ref) × ln(P_prod / P_ref)
+   
+   PSI for voltage = 0.32
+   
+4. Compare PSI against threshold:
+   PSI < 0.1  → No drift
+   PSI 0.1-0.25 → Moderate drift
+   PSI > 0.25 → Significant drift ← voltage is HERE!
+   
+5. Repeat for every feature
+```  
+
+#### Component 4: Push drift Scores metrics to Prometheus via Pushgateway
+
+Now you have drift scores. You need to get them into Prometheus so Grafana can display them and Alertmanager can alert on them.
+
+**Why Pushgateway?**
+```
+PROBLEM:
+  Prometheus works by PULLING (scraping) metrics from running pods.
+  But KFP pipeline pod runs for 5 minutes and DIES.
+  Prometheus cannot scrape a dead pod.
+
+SOLUTION:
+  Pipeline pod PUSHES metrics to Pushgateway.
+  Pushgateway is ALWAYS running.
+  Prometheus scrapes Pushgateway.
+```
+
+**First — Install Pushgateway on your cluster:** This creates a Pushgateway pod in the `monitoring` namespace with a ServiceMonitor so Prometheus automatically scrapes it.
+
+After this push, Pushgateway holds these metrics: Prometheus Scrapes Pushgateway. This happens **automatically** because when you installed Pushgateway with `serviceMonitor.enabled=true`, a ServiceMonitor was created: You don't need to do anything for this step. It's automatic.  
+
+### Step 3 — Wire Everything as a KFP Pipeline  (@dsl.pipeline)   
+### Step 4 - submit_monitoring_pipeline.py submit pipeline to kubeflow to run every 6 hours.
+
+### Step 3 — Grafana Dashboard
+ Now Grafana can query Prometheus and show drift metrics.  
+
+### Step 4 — Alertmanager checks rules 
+Slack: "Data drift detected! voltage PSI=0.32, temperature PSI=0.45"  
+PSI Threshold:  
+```  
+**PSI Value**    **Interpretation**                  **Action** 
+< 0.1                No drift                      No action needed
+0.1 - 0.25           Moderate drift                Investigate, monitor closely
+> 0.25               Significant drift             Trigger retraining pipeline
+```
+
 
 KServe Transformer logs data to S3 on EVERY request (real-time)
 KFP Monitoring Pipeline READS that data from S3 every 6 hours
-
-
 
 KFP Monitoring Pipeline:
   - @dsl.component → pull_data, pull_reference, detect_drift, push_metrics
@@ -1209,5 +1298,11 @@ Use F1 when:
 **scripts**
 node-cpu-alert.yaml  
 Alertmanager_config.yaml  
+transformer.py — deployed as KServe Transformer component  
+component_pull_production_data.py  #component1
+component_pull_reference_data.py  #component2
+component_detect_drift.py  #component3
+component_push_to_prometheus.py  #component4
+submit_monitoring_pipeline.py #Schedule it to run every 6 hours:  
 
 
