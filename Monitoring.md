@@ -411,6 +411,8 @@ Warning:
 ```Always use for: duration```
 
 ## 3. Model Serving Layer (KServe)
+>  is most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.
+
   When your EV Battery model is deployed an InferenceService on KServe and serving predictions, you want to answer these questions:  
 ```
 1. How many prediction requests are coming?
@@ -565,53 +567,58 @@ Is p99 > 500ms?
 > "p99 latency means 99% of requests are served within that time. We use percentiles instead of averages because averages hide tail latency — one slow request can make the average misleading, but p99 clearly shows the worst-case experience for real users."
 > ``` p99 captures tail latency — the experience of 1 in 100 requests. ```
 > ```p99 under 100–200ms is generally considered good. Under 50ms is excellent.```
+  
 
 
-
-
-```
-revision_request_count       Total number of prediction requests received       Counter 
-revision_request_latencies   How long each prediction took (in ms)              Histogram
-revision_response_count      Total responses sent back                          Counter
-```
-
-
-> most important layer for MLOps. This is where real business impact happens. If this layer fails → users are affected immediately.  
-
-
-## 4. ML-Specific Layer
+## 4. ML-Specific Monitoring Layer
 This layer monitors model behavior, not infrastructure or pods.  
 
-Infra tells you system health.  
-Platform tells you workload health.  
-Serving tells you request health.  
-ML layer tells you model quality health.  
+- Infra tells you system health.  
+- Platform tells you workload health.  
+- Serving tells you request health.  
+- ML layer tells you model quality health.  
 
-Monitor:
-- Feature distribution
-- Prediction distribution
-- Drift detection
-- Model Confidence score
-- Accuracy drop/degradation  
+**Why Do We Need ML-Specific Monitoring?**  
+Your EV Battery model is deployed on KServe.  
+Prometheus says:  
+  - Pod is running         ✅
+  - CPU usage normal       ✅
+  - Memory usage normal    ✅
+  - Latency p99 = 80ms    ✅
+  - Error rate = 0%        ✅
+  - All 3 replicas ready   ✅
 
-It is a shared responsibility. But implementation ownership is usually MLOps.  
- Model quality in production = MLOps + Data Science collaboration.  
+Everything looks PERFECT from infrastructure side.  
 
-Data Scientist:  
-Defines evaluation metrics  
-Provides baseline thresholds  
+BUT...  
 
-MLOps Engineer:  
-Implements logging  
-Builds dashboards  
-Creates alert rules  
-Monitors degradation  
+The model is predicting "healthy battery" for 98% of requests.
+In reality, 30% of those batteries have thermal risk.
+The model is SILENTLY giving WRONG predictions.
+No alert fired. No error. No crash.
+> This is the scariest problem in ML — the system is healthy but the model is wrong. Infrastructure monitoring cannot catch this. You need ML-specific monitoring.
 
-predictor.py  
-Model loading  
-Model logic (predict)  
-Monitoring logic (metrics)  
-Response formatting  
+
+**Monitor:**
+1. Data Drift (Feature Distribution Monitoring)
+2. Prediction Drift (Output Distribution Monitoring)
+3. Data Quality Monitoring
+4. Model Confidence Score Monitoring
+5. Model Performance Monitoring (Accuracy Degradation)
+
+
+
+
+
+
+> It is a shared responsibility. But implementation ownership is usually MLOps.  
+> Model quality in production = MLOps + Data Science collaboration.  
+> Data Scientist:  Defines evaluation metrics  and Provides baseline thresholds . 
+> MLOps Engineer:  Implements logging,  Builds dashboards,  Creates alert rules,  Monitors degradation  
+
+
+
+
 
 ### 1. Prediction distribution
 Prediction distribution represents how model outputs are distributed across classes or value ranges in production over a given time window.   
