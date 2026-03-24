@@ -729,10 +729,68 @@ Step 3: After PR is merged → ArgoCD deploys -> ArgoCD watches main branch -> A
 > Data Scientist:  Defines evaluation metrics  and Provides baseline thresholds . 
 > MLOps Engineer:  Implements logging,  Builds dashboards,  Creates alert rules,  Monitors degradation  
 
+## 2. prediction Drift:
+The model’s output (predictions) is changing over time compared to what it used to produce earlier. 
+Compare Historical Predictions (Last 30 Days — Reference) vs Current Predictions (Last 6 Hours — Today)
 
+**classes:** Your EV Battery model is a classification model. it predicts ONE of these answers: These 4 possible answers are called classes. 
+```
+Class 1: "healthy"
+Class 2: "thermal_risk"
+Class 3: "overvoltage"
+Class 4: "degradation"
+```
+**What is "Class Distribution"?**
+Class distribution means how many predictions fall into each class over a period of time.  
+```
+healthy:       6,000 predictions → 60%
+thermal_risk:  2,000 predictions → 20%
+overvoltage:   1,500 predictions → 15%
+degradation:     500 predictions →  5%
+                                  ─────
+                          Total = 100%
 
+This is the CLASS DISTRIBUTION:
+  healthy = 60%, thermal_risk = 20%, overvoltage = 15%, degradation = 5%
+```
+**What is "Class Distribution SHIFT"?**
+It means the percentages changed significantly compared to before.  
+```
+LAST 30 DAYS (normal):
+  healthy:       ████████████████████████████████  60%
+  thermal_risk:  ██████████                        20%
+  overvoltage:   ███████                           15%
+  degradation:   ██                                 5%
 
+LAST 6 HOURS (shifted):
+  healthy:       ███████████████████████████████████████████████  95%
+  thermal_risk:  █                                                2%
+  overvoltage:   █                                                2%
+  degradation:   ░                                                1%
 
+The distribution has SHIFTED!
+"healthy" jumped from 60% to 95%
+All other classes almost disappeared
+```
+> This shift is the problem. The model is suddenly predicting "healthy" for almost every battery. This is abnormal.
+
+**What is Confidence?**
+Every time your model makes a prediction, it doesn't just say the class — it also says how sure it is. This "sureness" is called confidence score (or probability).  ```  
+Model receives battery data and returns:
+
+{
+    "prediction": "thermal_risk",    ← the answer (class)
+    "confidence": 0.92               ← how sure the model is (0 to 1)
+}  
+```
+Confidence is always between 0 and 1:
+```
+confidence = 0.0 → model is COMPLETELY UNSURE (random guess)
+confidence = 0.5 → model is CONFUSED (50-50, coin flip)
+confidence = 0.8 → model is FAIRLY SURE
+confidence = 0.95 → model is VERY SURE
+confidence = 1.0 → model is 100% CERTAIN  
+```
 
 
 
