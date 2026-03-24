@@ -606,6 +606,27 @@ No alert fired. No error. No crash.
 4. Model Confidence Score Monitoring
 5. Model Performance Monitoring (Accuracy Degradation)
 
+**1. Data Drift**
+What it means: The data coming to your model in production looks different from the data it was trained on.
+EV Battery example:  
+```
+TRAINING DATA (what model learned from):
+  - Voltage range: 350V to 420V
+  - Temperature range: 20°C to 45°C
+  - Battery age: 0 to 5 years
+
+PRODUCTION DATA (what model receives today):
+  - Voltage range: 280V to 380V       ← shifted DOWN!
+  - Temperature range: -10°C to 15°C  ← shifted DOWN! (winter season)
+  - Battery age: 3 to 8 years         ← shifted UP! (older fleet)
+```
+
+**Why it happens:**
+- Seasonal changes (summer → winter)
+- New battery hardware model introduced
+- Different driving conditions (highway vs city)
+
+
 
 
 
@@ -615,10 +636,6 @@ No alert fired. No error. No crash.
 > Model quality in production = MLOps + Data Science collaboration.  
 > Data Scientist:  Defines evaluation metrics  and Provides baseline thresholds . 
 > MLOps Engineer:  Implements logging,  Builds dashboards,  Creates alert rules,  Monitors degradation  
-
-
-
-
 
 ### 1. Prediction distribution
 Prediction distribution represents how model outputs are distributed across classes or value ranges in production over a given time window.   
