@@ -714,8 +714,10 @@ PSI Threshold:
 0.1 - 0.25           Moderate drift                Investigate, monitor closely
 > 0.25               Significant drift             Trigger retraining pipeline
 ```
-
-
+### Step 5 GitHub Actions runs retraining Pipeline.  
+Step 1: Alertmanager sends webhook to GitHub  
+Step 2: GitHub Actions workflow listens for repository_dispatch  
+Step 3: After PR is merged → ArgoCD deploys -> ArgoCD watches main branch -> ArgoCD detects change and sync 
 
 
 KServe Transformer logs data to S3 on EVERY request (real-time)
@@ -1297,11 +1299,10 @@ Use F1 when:
 **scripts**
 node-cpu-alert.yaml  
 Alertmanager_config.yaml  
+
 transformer.py — log prediction data to s3 
-component_pull_production_data.py  #component1
-component_pull_reference_data.py  #component2
-component_detect_drift.py  #component3
-component_push_to_prometheus.py  #component4
-submit_monitoring_pipeline.py #Schedule it to run every 6 hours:  
+pipeline_monitoring.py    # Wire all 4 components as a KFP Pipeline
+submit_monitoring_pipeline.py # Schedule it to run every 6 hours:  
+retrain_trigger_server.py (updated for GitHub) 
 
 
