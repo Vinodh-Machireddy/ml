@@ -628,6 +628,30 @@ PRODUCTION DATA (what model receives today):
 
 
 
+KServe Transformer logs data to S3 on EVERY request (real-time)
+KFP Monitoring Pipeline READS that data from S3 every 6 hours
+
+
+
+KFP Monitoring Pipeline:
+  - @dsl.component → pull_data, pull_reference, detect_drift, push_metrics
+  - @dsl.pipeline  → wires components together
+
+# File structure for monitoring pipeline:
+
+monitoring/
+├── components/
+│   ├── pull_production_data.py      ← @dsl.component
+│   ├── pull_reference_data.py       ← @dsl.component
+│   ├── detect_drift.py              ← @dsl.component
+│   ├── push_to_prometheus.py        ← @dsl.component
+│   └── trigger_retraining.py        ← @dsl.component
+│
+├── pipeline/
+│   └── monitoring_pipeline.py       ← @dsl.pipeline (imports components)
+│
+└── submit_monitoring_pipeline.py    ← compiles + submits to KFP  
+
 
 
 
