@@ -773,15 +773,24 @@ All other classes almost disappeared
 ```
 > This shift is the problem. The model is suddenly predicting "healthy" for almost every battery. This is abnormal.
 
-**What is Confidence?**
-Every time your model makes a prediction, it doesn't just say the class — it also says how sure it is. This "sureness" is called confidence score (or probability).  ```  
-Model receives battery data and returns:
+**Statistical tests: Evidently(PSI, KS, Chi-square)**   
+Evidently is a Python library(pip install evidently) that automatically selects the best statistical test for drift detection based on column type and dataset size — **KS test** for numeric columns, **Chi-square** for categorical columns, by default. we can override also when we need specific test. I override with PSI for all columns because it provides consistent scoring across both data types, making cross-feature comparison and alerting straightforward. You don't calculate **PSI** manually. Evidently does it automatically.  
 
-{
-    "prediction": "thermal_risk",    ← the answer (class)
-    "confidence": 0.92               ← how sure the model is (0 to 1)
-}  
+> CONTINUOUS = numbered columns that including decimals
+> CATEGORICAL = labels/categories 
+
+
+**What is Confidence Score?**  
+When you train a classification model, the model doesn't just predict a class. It predicts probabilities for ALL classes. The highest probability becomes the confidence score.  
 ```
+Statistical tests (PSI, KS, Chi-square) → detect DRIFT
+Model's predict function              → produces CONFIDENCE SCORE
+
+Final output:
+  prediction:  "healthy"    ← class with highest probability
+  confidence:   0.92        ← that highest probability value
+```
+
 Confidence is always between 0 and 1:
 ```
 confidence = 0.0 → model is COMPLETELY UNSURE (random guess)
@@ -790,9 +799,6 @@ confidence = 0.8 → model is FAIRLY SURE
 confidence = 0.95 → model is VERY SURE
 confidence = 1.0 → model is 100% CERTAIN  
 ```
-
-You don't calculate PSI manually. Evidently does it automatically.  
-
 
 
 
