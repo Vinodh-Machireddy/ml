@@ -723,7 +723,6 @@ Step 1: Alertmanager sends webhook to GitHub
 Step 2: GitHub Actions workflow listens for repository_dispatch  
 Step 3: After PR is merged → ArgoCD deploys -> ArgoCD watches main branch -> ArgoCD detects change and sync 
 
-
 > It is a shared responsibility. But implementation ownership is usually MLOps.  
 > Model quality in production = MLOps + Data Science collaboration.  
 > Data Scientist:  Defines evaluation metrics  and Provides baseline thresholds . 
@@ -791,6 +790,17 @@ confidence = 0.8 → model is FAIRLY SURE
 confidence = 0.95 → model is VERY SURE
 confidence = 1.0 → model is 100% CERTAIN  
 ```
+
+You don't calculate PSI manually. Evidently does it automatically.  
+
+
+
+
+
+
+
+
+
 
 
 
