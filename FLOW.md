@@ -9,6 +9,7 @@
 7. Monitoring & Observability (Prometheus + Grafana) — drift detection, alerting (YOUR territory)
 8. Retraining Strategy — when and how retraining is triggered (YOUR territory)
 
+> **Team Flow:** Platform Engineering → Data Engineering → Data Science → MLOps Engineering
 
 **as a Senior MLOps Engineer.** my job is not to build the model from scratch — we have data scientists for that. My responsibility starts from the point where we need to productionize that model. That means — how do we take this model from a Jupyter notebook, build a proper training pipeline around it, package it, deploy it to production, serve it in real time, monitor it, and retrain it.   
 
@@ -23,11 +24,17 @@ The raw telemetry data lands in S3 via the ingestion pipeline from platform engi
 
 My work starts from S3 onwards. My KFP pipeline picks up data from this processed S3 path as its input. we take this notebook and turn it into a production-grade, automated, repeatable, auditable training pipeline. 
 
+"So the first major thing I did was, I decomposed the monolithic Jupyter notebook into a Kubeflow Pipeline — KFP."  
+```
+Step 1: Data Ingestion                         → one container
+Step 2: Data Validation                        → one container  
+Step 3: Preprocessing & Feature Engineering    → one container
+Step 4: Model Training                         → one container
+Step 5: Model Evaluation                       → one container
+Step 6: Model Registration                     → one container
+```
 
 
+"Now why KFP specifically? Because our infrastructure is on Kubernetes (EKS on AWS), and KFP runs natively on Kubernetes. Each step of the pipeline runs as a separate container inside a Kubernetes pod. That gives us isolation, scalability, and reproducibility out of the box."
 
 
-
-"I decomposed the monolithic notebook into individual pipeline components..."
-
-> **Team Flow:** Platform Engineering → Data Engineering → Data Science → MLOps Engineering
