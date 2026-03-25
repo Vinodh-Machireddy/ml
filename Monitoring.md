@@ -800,7 +800,34 @@ confidence = 0.95 → model is VERY SURE
 confidence = 1.0 → model is 100% CERTAIN  
 ```
 
-
+## 2. Concept Drift:
+Compare prediction vs ground truth  
+```
+STEP 1: KServe serves predictions (real-time)                    │
+│    Model predicts: "healthy" (confidence: 0.89)                   │
+│    Transformer logs to S3: prediction + features + request_id     │
+│                                                                   │
+│  STEP 2: Ground truth arrives LATER (days/weeks)                  │
+│    External system pushes actual labels to S3                     │
+│    actual_label: "thermal_risk" for request_id: bat-4521          │
+│                                                                   │
+│  STEP 3: KFP Concept Drift Pipeline (runs weekly)                 │
+│    ├── Component 1: Pull predictions from S3                      │
+│    ├── Component 2: Pull ground truth from S3                     │
+│    ├── Component 3: JOIN on request_id                            │
+│    │   ├── Calculate F1, accuracy, precision, recall              │
+│    │   ├── Calculate per-class F1                                 │
+│    │   ├── Generate confusion matrix                              │
+│    │   └── Compare with baseline from MLflow                      │
+│    ├── Component 4: Log performance to MLflow (history)           │
+│    ├── Component 5: Push metrics to Pushgateway → Prometheus      │
+│    └── Component 6: If F1 dropped > 5% → trigger retraining      │
+│                                                                   │
+│  STEP 4: Alertmanager                                             │
+│    Alert: "F1 dropped from 0.93 to 0.75 — concept drift!"        │
+│    → Slack notification                                           │
+│    → Trigger retraining via GitHub Actions
+```
 
 
 
