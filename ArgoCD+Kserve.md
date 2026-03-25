@@ -462,6 +462,40 @@ Model is READY to serve predictions
 ```
 
 
+Deployment Strategies:
+
+Shadow Deployment/Dark Launch:
+- The new model runs in parallel with the current production model.
+- It gets the same live input data, but its predictions are not shown to users (only logged).
+Users still see results from the old stable model(Champion Model).
+Both outputs are stored in logs/metrics DB.
+Later, you compare shadow vs champion
+Why : To test new model performance, predictions with old model  on real production data without risk.
+Blue-Green deployment
+Blue-Green deployment is a safe release strategy where you keep two separate but identical environments:
+Blue = current production (old stable model)
+Green = new version (new model)
+At any time, only one (Blue or Green) serves user traffic.
+To switch, you just change the traffic routing from Blue → Green.
+Why: To deploy new models safely without disturbing running users. To allow instant rollback if something goes wrong.
+
+Canary Deployment
+Canary Deployment means releasing a new model slowly to a small part of traffic/users first.
+Start with maybe 5–10% of requests going to the new model.
+Rest 90–95% still go to the old stable model.
+If new model works fine gradually increase traffic until 100%.
+If new model performs badly → rollback immediately to the old model.
+Why: To reduce risk when deploying new ML models. To check performance on real production users without impacting everyone.
+
+A/B Deployment
+A/B Deployment (also called A/B Testing or Champion–Challenger) means you run two models in production at the same time.
+Group A (users) see predictions from the old model (Champion).
+Group B (users) see predictions from the new model (Challenger).
+Why: To safely test new models on a subset of users before rolling out fully.
+
+
+
+
 **Scripts**
 1. Inference_code.py
 2. InferenceService_Deployment.yaml
