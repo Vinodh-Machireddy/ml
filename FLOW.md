@@ -38,14 +38,26 @@ My work starts from S3 onwards. My KFP pipeline picks up data from this processe
 "So the first major thing I did was, I decomposed the monolithic Jupyter notebook into a Kubeflow Pipeline — KFP."  
 
 **It has 6 stages, and each stage is a separate Python component packaged as a Docker container:**
-```  
-Step 1: Data Ingestion                         → one container
-Step 2: Data Validation                        → one container  
-Step 3: Preprocessing & Feature Engineering    → one container
-Step 4: Model Training                         → one container
-Step 5: Model Evaluation                       → one container
-Step 6: Model Registration                     → one container
+Each pipeline stage is a separate Python file under a components folder. This gives us modularity — each component can be developed, tested, and maintained independently. The pipeline definition file imports all components and chains them together, passing outputs from one step as inputs to the next.  
+
+**The pipeline.py imports and chains them:**   
 ```
+from components.data_ingestion import data_ingestion
+from components.data_validation import data_validation
+from components.preprocessing import preprocessing
+from components.model_training import model_training
+from components.model_evaluation import model_evaluation
+from components.model_registration import model_registration
+
+@dsl.pipeline(name="bms-training-pipeline")
+def training_pipeline(git_commit: str = "latest"):
+    step1 = data_ingestion(git_commit=git_commit)
+    step2 = data_validation(data=step1.output)
+    step3 = preprocessing(data=step2.output)
+    step4 = model_training(data=step3.output)
+    step5 = model_evaluation(mlflow_run_id=step4.output)
+    step6 = model_registration(mlflow_run_id=step5.output)
+```  
 ### Stage 1 — Data Ingestion:  
 This step simply pulls that data into the pipeline from s3. And here's the important part — the S3 path is not hardcoded. It's passed as a **pipeline parameter,** so I can point the same pipeline to different data versions without changing any code.  
 ```
@@ -104,7 +116,6 @@ S3:          log_model, log_artifact, log_artifacts
 Once Your training Code runs → MLflow Server(API layer which calls) → PostgreSQL (to store metadata)
                              → S3 (artifacts)
 ```  
-
 
 
 
