@@ -119,7 +119,7 @@ register_model()   → creates a pointer to that S3 path (happens during registr
                    → assigns version number (v1, v2, v3... auto-incremented)
                    → sets stage = "Staging"
 ```
-#### The Promotion Flow:
+#### The Promotion Flow:  
 When a new model version lands in Staging, three things happen:  
 
 **First** — the team gets a notification — a Slack alert or email saying 'Model v5 is in Staging with F1 weighted 0.96, per-class metrics are XYZ'. This is triggered by a GitHub Actions workflow that listens for registry events.
@@ -129,6 +129,16 @@ When a new model version lands in Staging, three things happen:
 **Third** — if everything looks good, we approve the promotion. This is done by updating the model stage from Staging to Production."
 
 "Now the moment a model version is promoted to Production in MLflow registry — that's not the end. That's actually the trigger for deployment. A webhook or a CI job detects this stage change, updates the model version in the deployment manifest in GitHub, and ArgoCD picks up the change and deploys the new model to the KServe inference endpoint. So the registry promotion is the handshake between MLflow and ArgoCD — MLflow says 'this model is ready', ArgoCD says 'I'll deploy it'."
+```  
+Manual promotion    → separate script (scripts/promote_model.py)
+                    → human reviews and decides
+                    → triggered via GitHub Actions workflow_dispatch
+
+Automated promotion → inside pipeline registration step (Stage 6) (model_registration.py component)
+                    → compares new model vs current production model
+                    → promotes only if new model is better
+                    → no human involved, fully automatic
+```
 
 
 
