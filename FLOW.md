@@ -80,16 +80,39 @@ I took the data scientist's training code as-is and wrapped it inside a KFP comp
 - After training, the model is evaluated against the test set — which was held out and never seen during training. This step computes the final metrics and also checks against predefined thresholds. For example, we have a rule — if F1 score for any fault class drops below 0.85, the model is not promoted.
 - his is a quality gate. If the model passes, the pipeline moves to the next step. If it fails, the pipeline stops, metrics are logged in MLflow, and the team is notified to investigate.
 
+### Stage 6 — Model Registration:
+
+when you Registration the model, This does **NOT re-upload** to S3. The model is already in S3 from `log_model`.
+
+1. **Creates a pointer** in the Model Registry saying "Version 3 of bms-fault-classifier → points to `s3://daimler-bms/mlflow-artifacts/run_7a3b.../artifacts/xgboost-bms/`"
+2. **Tags it** with version number 
+3. **Sets stage** to "Staging"
+
+log_model()        → uploads model to S3              (happens during training)
+register_model()   → creates a pointer to that S3 path (happens during registration)
+                   → assigns version number (v1, v2, v3... auto-incremented)
+                   → sets stage = "Staging"
 
 
-When you call `log_model` or `log_artifact`, MLflow **internally uploads** the file to S3. You never write `boto3.upload_file(...)`. MLflow handles it because you already told it "artifacts go to S3" during server setup.
+
+When you call `log_model` or `log_artifact`, in training code. MLflow **internally uploads** the file to S3. You never write `boto3.upload_file(...)`. MLflow handles it because you already told it "artifacts go to S3" during MLflow server setup.
+
+When I call **log_param or log_metric** in the training code, the MLflow client library sends an HTTP request to the MLflow tracking server. The server then stores that information in its PostgreSQL backend.
+
+The MLFlow architecture:
+```
+Once Your training Code runs → MLflow Server(API layer which calls) → PostgreSQL (to store metadata)
+                             → S3 (artifacts)
+```  
+```  
+PostgreSQL:  set_experiment, log_param(s), log_metric(s), set_tag(s), register_model
+S3:          log_model, log_artifact, log_artifacts
+```
+
+> Each run gets its own folder in S3. Everything is organized automatically.  
 
 
-
-
-
-
-
+                          
 **Scripts** 
 python file:  mlops engineer add MLflow logging code inside the training step  for `log_param`, `log_metric`, `log_model`, log_artifact.
 
