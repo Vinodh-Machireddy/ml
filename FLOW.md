@@ -25,11 +25,19 @@ The raw telemetry data lands in S3 via the ingestion pipeline from platform engi
 - A Jupyter notebook — with the full training code, preprocessing logic, feature engineering, model training, and evaluation.  
 - A requirements file — the Python dependencies.  
 - The training dataset in S3 — versioned with DVC.
+  > When the data scientist saves train.parquet to S3, they also run: dvc add `data/train.parquet` which does two things: 
+    > 1. It **uploads** the actual large file to S3
+    > 2. It creates a **tiny pointer file** called `train.parquet.dvc` in git
+    > 3. Now you will not lost the link between code and data, for reproduce old Model versions (v1, v2, v3,v4...).
 
 My work starts from S3 onwards. My KFP pipeline picks up data from this processed S3 path as its input. we take this notebook and turn it into a production-grade, automated, repeatable, auditable training pipeline.  
 
-## 3. Training Pipeline (KFP)
+## 3. Training Pipeline (KFP)  
+**why KFP specifically?** Because our infrastructure is on Kubernetes (EKS on AWS), and KFP runs natively on Kubernetes. Each step of the pipeline runs as a separate container inside a Kubernetes pod. That gives us isolation, scalability, and reproducibility out of the box.
+ 
 "So the first major thing I did was, I decomposed the monolithic Jupyter notebook into a Kubeflow Pipeline — KFP."  
+
+**It has 6 stages, and each stage is a separate Python component packaged as a Docker container:**
 ```  
 Step 1: Data Ingestion                         → one container
 Step 2: Data Validation                        → one container  
@@ -37,7 +45,9 @@ Step 3: Preprocessing & Feature Engineering    → one container
 Step 4: Model Training                         → one container
 Step 5: Model Evaluation                       → one container
 Step 6: Model Registration                     → one container
-```  
-"Now why KFP specifically? Because our infrastructure is on Kubernetes (EKS on AWS), and KFP runs natively on Kubernetes. Each step of the pipeline runs as a separate container inside a Kubernetes pod. That gives us isolation, scalability, and reproducibility out of the box."
+```
+### Stage 1 — Data Ingestion:  
+This step simply pulls that data into the pipeline from s3. And here's the important part — the S3 path is not hardcoded. It's passed as a **pipeline parameter,** so I can point the same pipeline to different data versions without changing any code.  
+
 
 
