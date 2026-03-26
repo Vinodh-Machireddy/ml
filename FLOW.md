@@ -82,6 +82,14 @@ I took the data scientist's training code as-is and wrapped it inside a KFP comp
 
 
 
+When you call `log_model` or `log_artifact`, MLflow **internally uploads** the file to S3. You never write `boto3.upload_file(...)`. MLflow handles it because you already told it "artifacts go to S3" during server setup.
+
+
+
+
+
+
+
 **Scripts** 
 python file:  mlops engineer add MLflow logging code inside the training step  for `log_param`, `log_metric`, `log_model`, log_artifact.
 
