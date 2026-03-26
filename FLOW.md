@@ -57,14 +57,33 @@ def training_pipeline(
 ):
 ```
 **What happens when KFP pipeline triggers:**  
+it asks us to pass commit id during run time. once we pass, then it runs below 3 command internally. and get matching data from s3. 
 ```  
 1. git clone https://github.com/daimler/bms-ml.git     ← get the repo
 2. git checkout abc123  (if specific version)          ← go to that point
 3. dvc pull                                            ← reads .dvc pointer file & downloads matching data from S3   
 4. Data is now available inside the container          ← ready for next step
    > Step 2: Data Validation (receives data from Step 1) --> Step 3: Preprocessing --> ..... and so on                       
-   > This step runs internally when KFP pipeline triggers. it asks us to pass commit id during run time. 
+  
 ```
+**KFP Triggering Ways:**  
+**CLI:** kfp run submit --pipeline bms-training-pipeline --param git_commit=abc123  
+**GitHub Actions (production):** params: { "git_commit": "${{ github.sha }}" }   # ← no human involved at all
+
+### Stage 2 — Data Validation: 
+### Stage 3 — Preprocessing & Feature Engineering:
+### Stage 4 — Model Training:
+**mlops add MLflow logging code inside the training step**
+I took the data scientist's training code as-is and wrapped it inside a KFP component. The core training logic remains unchanged. What I added around it is the MLflow integration — `log_param`, `log_metric`, `log_model`, log_artifact. Every single training run gets a unique MLflow run ID. which gets passed to the next pipeline step for evaluation and registry. `with mlflow.start_run() as run:` Everything inside this block gets tracked.  
+
+### Stage 5 — Model Evaluation:
+- After training, the model is evaluated against the test set — which was held out and never seen during training. This step computes the final metrics and also checks against predefined thresholds. For example, we have a rule — if F1 score for any fault class drops below 0.85, the model is not promoted.
+- his is a quality gate. If the model passes, the pipeline moves to the next step. If it fails, the pipeline stops, metrics are logged in MLflow, and the team is notified to investigate.
+
+
+
+**Scripts** 
+python file:  mlops engineer add MLflow logging code inside the training step  for `log_param`, `log_metric`, `log_model`, log_artifact.
 
 
 
