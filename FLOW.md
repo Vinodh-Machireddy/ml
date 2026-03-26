@@ -92,22 +92,17 @@ I took the data scientist's training code as-is and wrapped it inside a KFP comp
 - After training, the model is evaluated against the test set — which was held out and never seen during training. This step computes the final metrics and also checks against predefined thresholds. For example, we have a rule — if F1 score for any fault class drops below 0.85, the model is not promoted.
 - his is a quality gate. If the model passes, the pipeline moves to the next step. If it fails, the pipeline stops, metrics are logged in MLflow, and the team is notified to investigate.
 
-### Stage 6 — Model Registration:
+### Step 4: Experiment Tracking & Model Registry (MLflow):
+####  Experiment Tracking:  
+In our setup, MLflow is deployed on Kubernetes (EKS) as a centralized tracking server. It has two backends — PostgreSQL for storing metadata like parameters, metrics, tags, and run information — and S3 for storing heavy artifacts like trained model files and evaluation reports. MLflow itself doesn't store anything — it's an API layer that routes data to the right backend.
 
-when you Registration the model, This does **NOT re-upload** to S3. The model is already in S3 from `log_model`.
-
-log_model()        → uploads model to S3              (happens during training)
-register_model()   → creates a pointer to that S3 path (happens during registration)
-                   → assigns version number (v1, v2, v3... auto-incremented)
-                   → sets stage = "Staging"
-
-When you call `log_model` or `log_artifact`, in training code. MLflow **internally uploads** the file to S3. You never write `boto3.upload_file(...)`. MLflow handles it because you already told it "artifacts go to S3" during MLflow server setup.  
+When you call **`log_model` or `log_artifact`,** in training code. MLflow uploads the model file to S3. MLflow handles it because you already told it "artifacts go to S3" during MLflow server setup.  
 > Each run gets its own folder in S3. Everything is organized automatically.  
 
-When I call **log_param or log_metric** in the training code, the MLflow client library sends an HTTP request to the MLflow tracking server. The server then stores that information in its PostgreSQL backend.  
+When I call **log_param or log_metric** in the training code, The server then stores that information in its PostgreSQL backend.  
 
 ```  
-PostgreSQL:  set_experiment, log_param(s), log_metric(s), set_tag(s), register_model
+PostgreSQL:  log_param(), log_metric(), set_tag(), etc 
 S3:          log_model, log_artifact, log_artifacts
 ```
 
@@ -116,6 +111,26 @@ S3:          log_model, log_artifact, log_artifacts
 Once Your training Code runs → MLflow Server(API layer which calls) → PostgreSQL (to store metadata)
                              → S3 (artifacts)
 ```  
+#### Model Registry:
+Once a model clears the evaluation quality gates — for example, F1 score per class must be above 0.85 — the pipeline's registration step calls mlflow.register_model().  MLflow auto-increments the version number — v1, v2, v3 and so on. And the initial stage is always set to Staging.
+```  
+log_model()        → uploads model to S3              (happens during training)
+register_model()   → creates a pointer to that S3 path (happens during registration)
+                   → assigns version number (v1, v2, v3... auto-incremented)
+                   → sets stage = "Staging"
+```
+#### The Promotion Flow:
+When a new model version lands in Staging, three things happen:  
+
+**First** — the team gets a notification — a Slack alert or email saying 'Model v5 is in Staging with F1 weighted 0.96, per-class metrics are XYZ'. This is triggered by a GitHub Actions workflow that listens for registry events.
+
+**Second** — the data science team and I review the model. We look at the MLflow UI — compare the new model's metrics against the current production model side by side. MLflow UI makes this very easy — you select two runs and it shows a comparison table. We check — did accuracy improve? Did any class-level F1 drop? Is there any sign of overfitting?"
+
+**Third** — if everything looks good, we approve the promotion. This is done by updating the model stage from Staging to Production."
+
+"Now the moment a model version is promoted to Production in MLflow registry — that's not the end. That's actually the trigger for deployment. A webhook or a CI job detects this stage change, updates the model version in the deployment manifest in GitHub, and ArgoCD picks up the change and deploys the new model to the KServe inference endpoint. So the registry promotion is the handshake between MLflow and ArgoCD — MLflow says 'this model is ready', ArgoCD says 'I'll deploy it'."
+
+
 
 
 
@@ -123,6 +138,8 @@ Once Your training Code runs → MLflow Server(API layer which calls) → Postgr
                           
 **Scripts** 
 python file:  mlops engineer add MLflow logging code inside the training step  for `log_param`, `log_metric`, `log_model`, log_artifact.
+promote_model.py              ← manual promotion script 
+rollback_model.py             ← rollback if something goes wrong  
 
 
 
