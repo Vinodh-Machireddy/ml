@@ -22,9 +22,9 @@ The raw telemetry data lands in S3 via the ingestion pipeline from platform engi
 > so, s3 contains raw data, processed data, model artifacts, etc...    
 
 ### I received three essentially things from Data Scientists 
-- A Jupyter notebook — with the full training code, preprocessing logic, feature engineering, model training, and evaluation.  
-- A requirements file — the Python dependencies.  
-- The training dataset in S3 — versioned with DVC.
+- A monolithic Jupyter notebook — with the full training code, preprocessing logic, feature engineering, model training, and evaluation.  (the original experiment)
+- A requirements file — Python dependencies (xgboost, pandas, etc.)  
+- The training dataset in S3 — versioned with DVC.    # DVC pointer file (NOT actual data)
   > When the data scientist saves train.parquet to S3, they also run: dvc add `data/train.parquet` which does two things: 
     > 1. It **uploads** the actual large file to S3
     > 2. It creates a **tiny pointer file** called `train.parquet.dvc` in git
@@ -48,6 +48,25 @@ Step 6: Model Registration                     → one container
 ```
 ### Stage 1 — Data Ingestion:  
 This step simply pulls that data into the pipeline from s3. And here's the important part — the S3 path is not hardcoded. It's passed as a **pipeline parameter,** so I can point the same pipeline to different data versions without changing any code.  
+```
+# Pipeline definition
+@dsl.pipeline(name="bms-training-pipeline")
+def training_pipeline(
+    s3_data_path: str,    # ← this is the parameter
+    model_name: str
+):
+```
+**What happens when KFP pipeline triggers:**  
+```  
+1. git clone https://github.com/daimler/bms-ml.git     ← get the repo
+2. git checkout abc123  (if specific version)          ← go to that point
+3. dvc pull                                            ← reads .dvc pointer file & downloads matching data from S3   
+4. Data is now available inside the container          ← ready for next step
+   > Step 2: Data Validation (receives data from Step 1) --> Step 3: Preprocessing --> ..... and so on                       
+   > This step runs internally when KFP pipeline triggers. it asks us to pass commit id during run time. 
+```
+
+
 
 
 
