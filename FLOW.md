@@ -155,7 +155,7 @@ Repo 2: github.com/daimler/bms-deployment/    ← deployment manifests (Kubernet
 ```
 
 **When ML Code changes:** The DS pushes ML Code to a feature branch and raises a Pull Request (PR) to main. The moment the PR is created, GitHub Actions kicks off the CI pipeline. and execute all stages and  CI finishes its job by updating Repo 2 deployment manifest with new image tag. CD starts its job by detecting that update. That's how they connect.   
-```ML code changes        → triggers retraining pipeline    → produces new model → deploy```
+```ML code changes/DVC Data pointers Changes        → triggers retraining pipeline    → produces new model → deploy```
 
 **When infra code changes:** — Repo 2 is edited DIRECTLY: No Repo 1, ci pipeline involved. No Docker build. No new image tag. Because you're just changing config values like replica count, not the actual application code.  
 ```Infrastructure changes  → directly updates Repo 2 manifest → ArgoCD deploys (no training)```  
@@ -180,6 +180,48 @@ When a new model is promoted to Production in MLflow, a webhook fires and trigge
     ├── does: pull model → build → push → update Repo 2
     └── image tag: model version number  
 ```  
+
+
+
+Pipeline 1 (ci-pipeline.yml)            → CI (Continuous Integration)
+Pipeline 2 (training-pipeline.yml)      → CT (Continuous Training)
+Pipeline 3 (model-deploy-pipeline.yml)  → CD (Continuous Deployment/Delivery)
+
+
+
+Pipeline 1 (CI) builds training image → pushes to ECR
+                                            │
+                                            ▼
+Pipeline 2 (CT) triggers KFP → KFP pulls SAME image from ECR
+                                            │
+                                            ▼
+                              KFP creates containers using that image
+                                            │
+                              ┌──────────────┼──────────────┐
+                              ▼              ▼              ▼
+                         Step 1          Step 2          Step 3
+                         Data Ingestion  Validation      Preprocessing
+                         (container)     (container)     (container)
+                              │              │              │
+                              └──── all using SAME Docker image from ECR ────┘  
+
+                              
+
+
+
+Repo 1 contains:
+├── KFP pipeline definition (pipeline.py)
+├── KFP components (components/*.py)
+├── Dockerfile (for training image)
+└── GitHub Actions workflows
+
+Repo 2 contains:
+├── KServe manifest (serving deployment)     ← only Pipeline 3 updates this
+├── MLflow server manifest
+└── Monitoring manifests
+
+
+
 
 
 
