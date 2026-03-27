@@ -155,18 +155,33 @@ Repo 2: github.com/daimler/bms-deployment/    ← deployment manifests (Kubernet
 ```
 
 **When ML Code changes:** The DS pushes ML Code to a feature branch and raises a Pull Request (PR) to main. The moment the PR is created, GitHub Actions kicks off the CI pipeline. and execute all stages and  CI finishes its job by updating Repo 2 deployment manifest with new image tag. CD starts its job by detecting that update. That's how they connect.   
+```ML code changes        → triggers retraining pipeline    → produces new model → deploy```
 
-**When infra changes:** — Repo 2 is edited DIRECTLY: No Repo 1 involved. No Docker build. No new image tag. Because you're just changing config values like replica count, not the actual application code:  
+**When infra code changes:** — Repo 2 is edited DIRECTLY: No Repo 1, ci pipeline involved. No Docker build. No new image tag. Because you're just changing config values like replica count, not the actual application code.  
+```Infrastructure changes  → directly updates Repo 2 manifest → ArgoCD deploys (no training)```  
+
+
+
+GitHub Actions handles CI — linting, testing, Docker build, ECR push, and manifest update. ArgoCD handles CD — it watches the deployment repo and syncs any change to the Kubernetes cluster. Code changes and model changes both flow through this same pipeline. Git is the single source of truth. No manual deployments. Full audit trail."  
+
+
+### SCENARIO 2: Model Change — Model Promotion triggers deployment
+When a new model is promoted to Production in MLflow, a webhook fires and triggers a separate GitHub Actions workflow — not the code CI, but a model deployment workflow. This workflow fetches the new model version from MLflow, builds a new Docker serving image with the model baked in, pushes it to ECR, and updates the deployment manifest in Repo 2 with the new image tag. ArgoCD picks up the change and deploys the new KServe endpoint. So whether it's a code change or a model change, the flow always converges at the same point — Repo 2 is updated, ArgoCD syncs. One consistent deployment path.
 
 ```
-ML code change:
-  Repo 1 (code change) → CI builds image → updates Repo 2 (new image tag) → ArgoCD deploys
-
-Infra change:
-  Repo 2 (direct edit) → ArgoCD deploys
-  Repo 1 NOT touched at all
+he two workflows in Repo 1:
 ```
-
+.github/workflows/
+├── ci-pipeline.yml              
+│   ├── triggers on: push to main
+│   ├── does: lint → test → build → push → update Repo 2
+│   └── image tag: git commit hash
+│
+└── model-deploy-pipeline.yml    
+    ├── triggers on: MLflow webhook (model promoted)
+    ├── does: pull model → build → push → update Repo 2
+    └── image tag: model version number  
+```
 
 
 
