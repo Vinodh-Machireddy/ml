@@ -189,21 +189,6 @@ Pipeline 3 (model-deploy-pipeline.yml)  → CD (Continuous Deployment/Delivery)
 
 
 
-Pipeline 1 (CI) builds training image → pushes to ECR
-                                            │
-                                            ▼
-Pipeline 2 (CT) triggers KFP → KFP pulls SAME image from ECR
-                                            │
-                                            ▼
-                              KFP creates containers using that image
-                                            │
-                              ┌──────────────┼──────────────┐
-                              ▼              ▼              ▼
-                         Step 1          Step 2          Step 3
-                         Data Ingestion  Validation      Preprocessing
-                         (container)     (container)     (container)
-                              │              │              │
-                              └──── all using SAME Docker image from ECR ────┘  
 
                               
 
@@ -222,8 +207,11 @@ Repo 2 contains:
 
 
 
-
-
+## CI/CD
+triggering types:  
+ci triggers when a code chage on PR or push/merge to main branch
+ct triggers when a New Data Trigger, schedule , drift trigger
+CD Pipeline Trigger — “When deployment state changes”
 
 
                           
