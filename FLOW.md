@@ -168,30 +168,18 @@ GitHub Actions handles CI — linting, testing, Docker build, ECR push, and mani
 ### SCENARIO 2: Model Change — Model Promotion triggers deployment
 When a new model is promoted to Production in MLflow, a webhook fires and triggers a separate GitHub Actions workflow — not the code CI, but a model deployment workflow. This workflow fetches the new model version from MLflow, builds a new Docker serving image with the model baked in, pushes it to ECR, and updates the deployment manifest in Repo 2 with the new image tag. ArgoCD picks up the change and deploys the new KServe endpoint. So whether it's a code change or a model change, the flow always converges at the same point — Repo 2 is updated, ArgoCD syncs. One consistent deployment path.
 
-```  
-.github/workflows/
-├── ci-pipeline.yml              
-│   ├── triggers on: push to main
-│   ├── does: lint → test → build → push → update Repo 2
-│   └── image tag: git commit hash
-│
-└── model-deploy-pipeline.yml    
-    ├── triggers on: MLflow webhook (model promoted)
-    ├── does: pull model → build → push → update Repo 2
-    └── image tag: model version number  
-```  
 
-
-
-Pipeline 1 (ci-pipeline.yml)            → CI (Continuous Integration)
-Pipeline 2 (training-pipeline.yml)      → CT (Continuous Training)
-Pipeline 3 (model-deploy-pipeline.yml)  → CD (Continuous Deployment/Delivery)
-
-
-
+## CI/CD
+triggering types:  
+ci triggers when a code chage on PR or push/merge to main branch
+ct triggers when a New Data Trigger, schedule , drift trigger
+CD Pipeline Trigger — “When deployment state changes”
 
                               
-
+.github/workflows/
+├── ci-pipeline.yml                → CI (Continuous Integration)
+├── training-pipeline.yml          → CT (Continuous Training)
+├── model-deploy-pipeline.yml      → CD (Continuous Deployment/Delivery)
 
 
 Repo 1 contains:
@@ -207,11 +195,7 @@ Repo 2 contains:
 
 
 
-## CI/CD
-triggering types:  
-ci triggers when a code chage on PR or push/merge to main branch
-ct triggers when a New Data Trigger, schedule , drift trigger
-CD Pipeline Trigger — “When deployment state changes”
+
 
 
                           
