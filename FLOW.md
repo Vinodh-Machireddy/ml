@@ -140,6 +140,32 @@ Automated promotion → inside pipeline registration step (Stage 6) (model_regis
                     → no human involved, fully automatic
 ```
 
+## Step 5: CI/CD Pipeline (GitHub Actions + ArgoCD + DVC)
+
+
+**In our project, deployment can be triggered by two scenarios:**
+```  
+Scenario 1: CODE changes    →  i. DS pushes new ML code like (training & preprocessing logic, feature eng, changes hyperparameters.) 
+                               ii. infra changes like (increase replicas, autoscaling config (min/max pods), change memory/CPU limits for serving pods.
+Scenario 2: MODEL changes   → new model version promoted to Production in MLflow registry
+```
+```  
+Repo 1: github.com/daimler/bms-ml/           ← application code (pipeline, components)
+Repo 2: github.com/daimler/bms-deployment/    ← deployment manifests (Kubernetes YAML)  
+```
+
+**When ML Code changes:** The DS pushes ML Code to a feature branch and raises a Pull Request (PR) to main. The moment the PR is created, GitHub Actions kicks off the CI pipeline. and execute all stages and  CI finishes its job by updating Repo 2 deployment manifest with new image tag. CD starts its job by detecting that update. That's how they connect.   
+
+**When infra changes:** — Repo 2 is edited DIRECTLY: No Repo 1 involved. No Docker build. No new image tag. Because you're just changing config values like replica count, not the actual application code:  
+
+```
+ML code change:
+  Repo 1 (code change) → CI builds image → updates Repo 2 (new image tag) → ArgoCD deploys
+
+Infra change:
+  Repo 2 (direct edit) → ArgoCD deploys
+  Repo 1 NOT touched at all
+```
 
 
 
