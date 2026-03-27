@@ -160,16 +160,13 @@ Repo 2: github.com/daimler/bms-deployment/    ← deployment manifests (Kubernet
 **When infra code changes:** — Repo 2 is edited DIRECTLY: No Repo 1, ci pipeline involved. No Docker build. No new image tag. Because you're just changing config values like replica count, not the actual application code.  
 ```Infrastructure changes  → directly updates Repo 2 manifest → ArgoCD deploys (no training)```  
 
-
-
 GitHub Actions handles CI — linting, testing, Docker build, ECR push, and manifest update. ArgoCD handles CD — it watches the deployment repo and syncs any change to the Kubernetes cluster. Code changes and model changes both flow through this same pipeline. Git is the single source of truth. No manual deployments. Full audit trail."  
-
 
 ### SCENARIO 2: Model Change — Model Promotion triggers deployment
 When a new model is promoted to Production in MLflow, a webhook fires and triggers a separate GitHub Actions workflow — not the code CI, but a model deployment workflow. This workflow fetches the new model version from MLflow, builds a new Docker serving image with the model baked in, pushes it to ECR, and updates the deployment manifest in Repo 2 with the new image tag. ArgoCD picks up the change and deploys the new KServe endpoint. So whether it's a code change or a model change, the flow always converges at the same point — Repo 2 is updated, ArgoCD syncs. One consistent deployment path.
 
 
-triggering types:  
+**triggering types:**  
 ci triggers when a code chage on PR or push/merge to main branch
 ct triggers when a New Data Trigger, schedule , drift trigger
 CD Pipeline Trigger — “When deployment state changes”
@@ -181,23 +178,7 @@ CD Pipeline Trigger — “When deployment state changes”
 ├── model-deploy-pipeline.yml      → CD (Continuous Deployment/Delivery)
 
 
-```
-Pipeline 1 (CI):
-  lint → test → build training image → push to ECR ✅ (DONE)
-                                           │
-                                           │ image available in ECR
-                                           ▼
-Pipeline 2 (CT):
-  trigger KFP → KFP pulls "latest" image from ECR → train → evaluate → register → promote
-                                                                              │
-                                                                    MLflow webhook fires
-                                                                              │
-                                                                              ▼
-Pipeline 3 (CD):
-  get model from MLflow → build SERVING image → push to ECR → update Repo 2 → ArgoCD deploys ✅
-```
-
-CI Pipeline (ci-pipeline.yml):  
+**CI Pipeline (ci-pipeline.yml):**  
 ```
 push to main
     ↓
@@ -207,7 +188,7 @@ push to main
 4. Build training Docker image
 5. Push training image to ECR
 ```
-CT Pipeline (training-pipeline.yml):  
+**CT Pipeline (training-pipeline.yml):** 
 ```
 CI pipeline success
     ↓
@@ -222,19 +203,10 @@ CI pipeline success
         7. Register model to MLflow Model Registry
         8. Promote model to "Staging" / "Production" in MLflow
     │
-9. MLflow webhook fires → Lambda → GitHub dispatch
+
 ```
-CD Pipeline (model-deploy-pipeline.yml):  
-```
-repository_dispatch event (model-promoted)
-    ↓
-1. Checkout Repo 2 (GitOps config repo)
-2. Get model URI from MLflow (via client_payload or MLflow API)
-3. Update InferenceService YAML with new model URI
-4. Commit + push updated YAML to Repo 2
-5. ArgoCD detects diff in Repo 2
-6. ArgoCD applies InferenceService to Kubernetes (EKS)
-7. KServe pulls model from S3/MLflow and redeploys pod
+**CD Pipeline (model-deploy-pipeline.yml):** 
+
 ```
 ### Create a webhook that fires when model moves to Production  
 MLflow doesn't natively trigger GitHub Actions, so we set up an MLflow Model Registry Webhook. When the model stage transitions to Production, MLflow fires an HTTP POST to the **GitHub repository dispatch API**. This triggers our GitHub Actions workflow CD Pipeline(model-deploy-pipeline.yml) which builds the Docker image and pushes it to ECR.  
@@ -278,12 +250,44 @@ Stage 5 → Push Docker Image to ECR
 Stage 6 → Update K8s Manifest with new image tag → Push to Git
 Stage 7 → ArgoCD detects Git change → Deploys to EKS automatically
 
+**What ArgoCD does internally during sync:**
+```  
+ArgoCD Sync Process:
+      │
+      ▼
+Pull latest inference.yaml from Git
+      │
+      ▼
+Compare with current cluster state
+      │
+      ▼
+Generate kubectl apply commands:
+  kubectl apply -f inference.yaml -n ml-production
+      │
+      ▼
+Kubernetes API receives new InferenceService spec
+      │
+      ▼
+KServe controller detects InferenceService changed
+      │
+      ▼
+Begins rolling update (Step 4)
+```
+KServe Deploys Model Pod 
+## 6. Model Serving (KServe) 
+The Prediction Endpoint After Deployment: KServe exposes standard endpoint: 
 
-
-
-## 6. Model Serving (KServe)
+Canary Deployment 
+Rollback
 ## 7. Monitoring & Observability
 ## 8. Retraining Strategy
+
+
+
+
+
+
+
 
 
                           
