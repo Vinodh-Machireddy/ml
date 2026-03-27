@@ -236,6 +236,51 @@ repository_dispatch event (model-promoted)
 6. ArgoCD applies InferenceService to Kubernetes (EKS)
 7. KServe pulls model from S3/MLflow and redeploys pod
 ```
+### Create a webhook that fires when model moves to Production  
+MLflow doesn't natively trigger GitHub Actions, so we set up an MLflow Model Registry Webhook. When the model stage transitions to Production, MLflow fires an HTTP POST to the **GitHub repository dispatch API**. This triggers our GitHub Actions workflow CD Pipeline(model-deploy-pipeline.yml) which builds the Docker image and pushes it to ECR.  
+
+```
+client.create_registry_webhook(
+    events=["MODEL_VERSION_TRANSITIONED_TO_PRODUCTION"],
+    http_url_spec={
+        "url": "https://api.github.com/repos/<org>/<repo>/dispatches",
+        "secret": "your-secret-token",
+        "authorization": f"token {GITHUB_PAT}"
+    }
+)
+```
+
+GitHub Actions side — listens for this event:  
+
+```
+# .github/workflows/model-deploy-pipeline.yml  
+on:
+  repository_dispatch:
+    types: [model-promoted-to-production]   ** <-- webhook fires this**
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t my-model .
+         - name: Push to ECR
+           ...
+         - name: Update K8s Manifest
+           ... 
+```  
+Stage 1 → Checkout Code from GitHub
+Stage 2 → Connect to AWS
+Stage 3 → Login to ECR
+Stage 4 → Build Docker Image (model + dependencies packaged)
+Stage 5 → Push Docker Image to ECR
+Stage 6 → Update K8s Manifest with new image tag → Push to Git
+Stage 7 → ArgoCD detects Git change → Deploys to EKS automatically
+
+
+
+
 ## 6. Model Serving (KServe)
 ## 7. Monitoring & Observability
 ## 8. Retraining Strategy
