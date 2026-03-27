@@ -236,7 +236,9 @@ repository_dispatch event (model-promoted)
 6. ArgoCD applies InferenceService to Kubernetes (EKS)
 7. KServe pulls model from S3/MLflow and redeploys pod
 ```
-
+## 6. Model Serving (KServe)
+## 7. Monitoring & Observability
+## 8. Retraining Strategy
 
 
                           
