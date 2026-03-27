@@ -169,7 +169,6 @@ GitHub Actions handles CI — linting, testing, Docker build, ECR push, and mani
 When a new model is promoted to Production in MLflow, a webhook fires and triggers a separate GitHub Actions workflow — not the code CI, but a model deployment workflow. This workflow fetches the new model version from MLflow, builds a new Docker serving image with the model baked in, pushes it to ECR, and updates the deployment manifest in Repo 2 with the new image tag. ArgoCD picks up the change and deploys the new KServe endpoint. So whether it's a code change or a model change, the flow always converges at the same point — Repo 2 is updated, ArgoCD syncs. One consistent deployment path.
 
 
-## CI/CD
 triggering types:  
 ci triggers when a code chage on PR or push/merge to main branch
 ct triggers when a New Data Trigger, schedule , drift trigger
@@ -182,19 +181,61 @@ CD Pipeline Trigger — “When deployment state changes”
 ├── model-deploy-pipeline.yml      → CD (Continuous Deployment/Delivery)
 
 
-Repo 1 contains:
-├── KFP pipeline definition (pipeline.py)
-├── KFP components (components/*.py)
-├── Dockerfile (for training image)
-└── GitHub Actions workflows
+```
+Pipeline 1 (CI):
+  lint → test → build training image → push to ECR ✅ (DONE)
+                                           │
+                                           │ image available in ECR
+                                           ▼
+Pipeline 2 (CT):
+  trigger KFP → KFP pulls "latest" image from ECR → train → evaluate → register → promote
+                                                                              │
+                                                                    MLflow webhook fires
+                                                                              │
+                                                                              ▼
+Pipeline 3 (CD):
+  get model from MLflow → build SERVING image → push to ECR → update Repo 2 → ArgoCD deploys ✅
+```
 
-Repo 2 contains:
-├── KServe manifest (serving deployment)     ← only Pipeline 3 updates this
-├── MLflow server manifest
-└── Monitoring manifests
-
-
-
+CI Pipeline (ci-pipeline.yml):  
+```
+push to main
+    ↓
+1. Checkout code
+2. Lint (flake8 / ruff)
+3. Unit tests (pytest)
+4. Build training Docker image
+5. Push training image to ECR
+```
+CT Pipeline (training-pipeline.yml):  
+```
+CI pipeline success
+    ↓
+1. Checkout code
+2. Trigger KFP pipeline (via KFP SDK / REST API)
+    │
+    └── Inside KFP (these are KFP component steps):
+        3. Data validation (Great Expectations)
+        4. Feature engineering (preprocessing)
+        5. Model training (XGBoost)
+        6. Model evaluation (accuracy, F1, confusion matrix)
+        7. Register model to MLflow Model Registry
+        8. Promote model to "Staging" / "Production" in MLflow
+    │
+9. MLflow webhook fires → Lambda → GitHub dispatch
+```
+CD Pipeline (model-deploy-pipeline.yml):  
+```
+repository_dispatch event (model-promoted)
+    ↓
+1. Checkout Repo 2 (GitOps config repo)
+2. Get model URI from MLflow (via client_payload or MLflow API)
+3. Update InferenceService YAML with new model URI
+4. Commit + push updated YAML to Repo 2
+5. ArgoCD detects diff in Repo 2
+6. ArgoCD applies InferenceService to Kubernetes (EKS)
+7. KServe pulls model from S3/MLflow and redeploys pod
+```
 
 
 
