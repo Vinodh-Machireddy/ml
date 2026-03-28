@@ -207,7 +207,6 @@ CI pipeline success
 ```
 **CD Pipeline (model-deploy-pipeline.yml):** 
 
-```
 ### Create a webhook that fires when model moves to Production  
 MLflow doesn't natively trigger GitHub Actions, so we set up an MLflow Model Registry Webhook. When the model stage transitions to Production, MLflow fires an HTTP POST to the **GitHub repository dispatch API**. This triggers our GitHub Actions workflow CD Pipeline(model-deploy-pipeline.yml) which builds the Docker image and pushes it to ECR.  
 
@@ -241,6 +240,7 @@ jobs:
            ...
          - name: Update K8s Manifest
            ... 
+```
 ```  
 Stage 1 → Checkout Code from GitHub
 Stage 2 → Connect to AWS
@@ -249,6 +249,7 @@ Stage 4 → Build Docker Image (model + dependencies packaged)
 Stage 5 → Push Docker Image to ECR
 Stage 6 → Update K8s Manifest with new image tag → Push to Git
 Stage 7 → ArgoCD detects Git change → Deploys to EKS automatically
+```
 
 **What ArgoCD does internally during sync:**
 ```  
