@@ -52,6 +52,33 @@ Tell me about your project:
 -  The main purpose is to improve EV battery safety, and extend battery lifespan.  
 
 
+# HR Round Discussion:
+**1. What are your strengths? and weaknesses?**
+Ans: my strengths and weaknesses are co-related to each other. when learning a new things, initialy i take little more time but once i understand the concept i own it and i take End-to-end ownership. 
+- Now a days in ai generation when we doing any task commenly we think is there any ai tool for this to complete. in the same way i think is there any possibility of doing automation for every task i start.
+- Strong troubleshooting mindset
+
+
+**Are you comfortable working from office / hybrid model?**
+Ans: Yes, I’m open to hybrid or work-from-office based on project and business requirements.
+
+**Are you okay with relocation?**
+Ans: No, I’m not okay with relocation.
+
+**What is your current CTC? and expectations**  
+My current fixed CTC is ₹20 LPA 
+My monthly in-hand is approximately ₹_____
+
+**What is your notice period?**  
+“My official notice period is __60_ days.”  
+If negotiable:  
+“My official notice period is ___ days, but I can try to discuss early release depending on transition planning.”(work handover is completed, they may release me earlier.)
+
+
+
+
+
+
 
 CHALLENGES
 ———————
