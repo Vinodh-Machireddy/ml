@@ -59,9 +59,20 @@ This ensures monitoring stays accurate even when infrastructure changes.
 
 ### Exporters:
 - collect info from nodes and keep in API Endpoints (/metrics) and from there prometheus scrapes(it follows pull mechanism) the metrics and store in TSDB.
-- For Kubernetes cluster monitoring: 1. Node Exporter/plugin/add-on 2. Kube State Metrics (KSM) 3. cAdvisor  4. API Server Metrics 5. kubelet metrics 6. etcd metrics  
-- For Web Servers: nginx_exporter, apache_exporter   
-- For Database: postgres_exporter, mongodb_exporter, redis_exporter ...etc  
+- For Kubernetes cluster monitoring:
+   1. Node Exporter
+   2. Kube State Metrics (KSM)
+   3. cAdvisor
+   4. Kubernetes API Server Exporter
+   5. kubelet metrics 
+   6. etcd metrics  
+- For Web Servers:
+  1. nginx_exporter
+  2. apache_exporter   
+- For Database:
+  1. postgres_exporter
+  2. mongodb_exporter
+  3. redis_exporter ...etc  
 
 #### 1. Node Exporter: (system-level metrics from the OS)
 What it is: A lightweight agent that runs on every node in the cluster and exposes hardware and OS-level metrics of that node.  
