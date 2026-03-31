@@ -52,7 +52,7 @@ Tell me about your project:
 -  The main purpose is to improve EV battery safety, and extend battery lifespan.  
 
 
-# HR Round Discussion:
+## HR Round Discussion:
 **1. What are your strengths? and weaknesses?**
 Ans: my strengths and weaknesses are co-related to each other. when learning a new things, initialy i take little more time but once i understand the concept i own it and i take End-to-end ownership. 
 - Now a days in ai generation when we doing any task commenly we think is there any ai tool for this to complete. in the same way i think is there any possibility of doing automation for every task i start.
@@ -74,10 +74,21 @@ My monthly in-hand is approximately ₹_____
 If negotiable:  
 “My official notice period is ___ days, but I can try to discuss early release depending on transition planning.”(work handover is completed, they may release me earlier.)
 
-
 **How do you handle pressure or tight deadlines?**
 I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks.
 
+**Where do you see yourself in 5 years?**
+Ans: 
+**are you currently interviewing elsewhere?**
+I have a few conversations in progress, but Infosys is my priority given the role and scale."
+
+
+## Manager Round
+
+Walk me through a project you've owned end-to-end.
+How do you handle model drift in production?  
+Tell me about a conflict with a teammate or stakeholder. How did you resolve it?  
+What makes a Senior MLOps Engineer different from a Mid-level one?  
 
 
 
