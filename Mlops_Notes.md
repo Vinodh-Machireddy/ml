@@ -941,7 +941,7 @@ Fine-Tuning:
 =========
 Transfer Learning Technics  
 Fine-Tuning?  
-Fine-tuning means taking a pre-trained model (like ResNet, MobileNet, BERT, etc.) that already learned general patterns (edges, shapes, language, etc.)  
+Fine-tuning means taking a pre-trained model (Transformer-based time-series pre-trained model like PatchTST) that already learned general patterns (edges, shapes, language, etc.)  
 You remove/freeze the last layer and replace it with a new layer for traffic sign classes.  
 Then you fine-tune on your dataset (Indian traffic sign images).  
 
@@ -960,7 +960,7 @@ Full Fine-Tuning → Unfreeze more layers, retrain them on your dataset.
 Many teams start with fixed extractor, and if results are not good, they move to progressive/full fine-tuning.  
 Steps:  
 - Load a pre-trained backbone  
-Example: ResNet50/MobileNet pre-trained on ImageNet.  
+Example: Transformer-based time-series pre-trained model like PatchTST  
 - Replace the last layer (classifier head)  
 Old head = 1000 classes → New head = your classes (e.g., 43).
 - Freeze backbone layers: Set requires_grad = False (PyTorch) or mark layers non— trainable (Keras).  
