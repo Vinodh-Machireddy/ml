@@ -75,6 +75,8 @@ If negotiable:
 “My official notice period is ___ days, but I can try to discuss early release depending on transition planning.”(work handover is completed, they may release me earlier.)
 
 
+**How do you handle pressure or tight deadlines?**
+I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks.
 
 
 
