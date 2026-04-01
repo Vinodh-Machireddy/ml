@@ -54,16 +54,15 @@ Tell me about your project:
 
 ## HR Round Discussion:
 **1. What are your strengths? and weaknesses?**
-Ans: my strengths and weaknesses are co-related to each other. when learning a new things, initialy i take little more time but once i understand the concept i own it and i take End-to-end ownership. 
-- Now a days in ai generation when we doing any task commenly we think is there any ai tool for this to complete. in the same way i think is there any possibility of doing automation for every task i start.
-- Strong troubleshooting mindset
-
+My strength and weakness are actually two sides of the same coin. 
+- When I encounter something new, I take a little more time, because I don't like surface-level understanding. That initial slowness is my weakness, once I grasp a concept fully, I take **complete end-to-end ownership** of it.
+- Another strong suit of mine is an automation-first mindset. whenever I start a new task, my first instinct is — **Can this be automated?** 
 
 **Are you comfortable working from office / hybrid model?**
 Ans: Yes, I’m open to hybrid or work-from-office based on project and business requirements.
 
 **Are you okay with relocation?**
-Ans: No, I’m not okay with relocation.
+Ans: No, I’m not okay with relocation. At the moment, I have certain personal commitments that make immediate relocation difficult. 
 
 **What is your current CTC? and expectations**  
 My current fixed CTC is ₹20 LPA 
