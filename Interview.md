@@ -62,11 +62,11 @@ My strength and weakness are actually two sides of the same coin.
 Ans: Yes, I’m open to hybrid or work-from-office based on project and business requirements.
 
 **Are you okay with relocation?**
-Ans: No, I’m not okay with relocation. At the moment, I have certain personal commitments that make immediate relocation difficult. 
+Ans: I’m not okay with relocation. At the moment, I have certain personal commitments that make immediate relocation difficult. However, I’m open to discussing this based on project requirements and timelines, and I can plan accordingly if needed.
 
 **What is your current CTC? and expectations**  
 My current fixed CTC is ₹20 LPA 
-My monthly in-hand is approximately ₹_____
+My monthly in-hand is approximately ₹1.5 lakh
 
 **What is your notice period?**  
 “My official notice period is __60_ days.”  
@@ -77,9 +77,13 @@ If negotiable:
 I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks.
 
 **Where do you see yourself in 5 years?**
-Ans: 
+Ans: based on my skill set and automation first troubleshooting mindset , definitely i will be in the architect or manager level. 
+
 **are you currently interviewing elsewhere?**
-I have a few conversations in progress, but Infosys is my priority given the role and scale."
+I have a few conversations in progress, but Infosys is my priority given the role and scale.  
+
+**Have you worked with clients directly?**
+Yes, I’ve worked in collaborative environments where interaction with cross-functional stakeholders was important, including discussing deployment requirements, release coordination, issue resolution, and production support expectations.
 
 
 ## Manager Round
