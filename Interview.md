@@ -90,6 +90,11 @@ Yes, I’ve worked in collaborative environments where interaction with cross-fu
 2. Antropic claude co-work intergation with infosys
 3. long-term growth.
 
+**why should we hire you**
+I’m not limited to one tool in mlops space . i can handle take end-to-end ownership.
+Automation first mindset
+Strong troubleshooting mindset
+
 
 ## Manager Round
 
