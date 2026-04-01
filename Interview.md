@@ -85,6 +85,11 @@ I have a few conversations in progress, but Infosys is my priority given the rol
 **Have you worked with clients directly?**
 Yes, I’ve worked in collaborative environments where interaction with cross-functional stakeholders was important, including discussing deployment requirements, release coordination, issue resolution, and production support expectations.
 
+**Why do you want to join Infosys?**
+1. opportunity to develope model from scratch
+2. Antropic claude co-work intergation with infosys
+3. long-term growth.
+
 
 ## Manager Round
 
@@ -164,7 +169,7 @@ Interview Schedule:
 Hyderabad, remote
 
 6. Why are you looking for a job change?
-It’s been 7 years working in the same org, I feel it’s the right time to take new challenges, explore new technologies, and grow further in my career.
+It’s been 7 years working in the same org, I feel it’s the right time to take new challenges, explore new technologies. not only for compenstation mainly looking for change.
 
 7. What is your total and relevant experience in MLOPS?
 My Total IT  Experience and  relevant experience both are same 6.7 years
