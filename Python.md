@@ -275,7 +275,7 @@ Reserved keywords (e.g., if, while, class, import) cannot be used as variable na
 
 							FUNCTIONS
 							==========
-In Python, functions are blocks of reusable code that perform a specific task. They make programs modular, easier to understand, and more maintainable. Python provides several built-in functions like print(), len(), type(), def() etc.
+In Python, functions are blocks of reusable code that perform a specific task. They make programs modular, easier to understand, and more maintainable. Python provides several built-in functions like print(), len(), type(), range(), input(), etc.
 
 Functions always follows 3 principles I.e 
 - Taking Input
@@ -293,6 +293,54 @@ def check_fault(score, threshold=0.8):
      
 print(addition(2, 5)) ——> invoking & printing function output
 print(check_fault(0.75, 0.7))   # OK
+
+**String Manipulation:**
+- String manipulation means cleaning, searching, or modifying that sentence.
+```  
+log = "  ERROR: Battery voltage drop at 14:32  "
+
+# 1. strip() → removes spaces from both sides
+log.strip()           # "ERROR: Battery voltage drop at 14:32"
+
+# 2. lower() → converts everything to lowercase
+log.lower()           # "  error: battery voltage drop at 14:32  "
+
+# 3. upper() → converts everything to uppercase
+log.upper()           # "  ERROR: BATTERY VOLTAGE DROP AT 14:32  "
+
+# 4. replace() → replaces a word
+log.replace("ERROR", "ALERT")   # "  ALERT: Battery voltage drop..."
+
+# 5. split() → breaks string into a list
+log.split(":")        # ["  ERROR", " Battery voltage drop at 14", "32  "]
+
+# 6. startswith() → checks beginning
+log.strip().startswith("ERROR")   # True
+
+# 7. endswith() → checks ending
+log.strip().endswith("32")        # True
+
+# 8. in → checks if word exists
+"voltage" in log      # True ✅
+"thermal" in log      # False ❌
+```
+**Chaining Methods — Do Multiple Things at Once:**  
+```
+log = "  ERROR: Battery voltage drop  "
+
+# Instead of writing 3 lines
+log = log.strip()
+log = log.lower()
+log = log.replace("error", "alert")
+
+# Write in one line ✅
+log = log.strip().lower().replace("error", "alert")
+print(log)    # "alert: battery voltage drop"
+
+# Capitalize inside f-string
+print(f"Model: {model.upper()}, Accuracy: {accuracy}")
+# Model: XGBOOST, Accuracy: 0.94
+```
 
 
 							MODULES
