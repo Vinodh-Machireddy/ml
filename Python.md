@@ -275,31 +275,24 @@ Reserved keywords (e.g., if, while, class, import) cannot be used as variable na
 
 							FUNCTIONS
 							==========
-In Python, functions are blocks of reusable code that perform a specific task. They make programs modular, easier to understand, and more maintainable.
-
-Python provides several built-in functions like print(), len(), type(), def() etc.
-
-Reusability
-Readability
-Debugging
+In Python, functions are blocks of reusable code that perform a specific task. They make programs modular, easier to understand, and more maintainable. Python provides several built-in functions like print(), len(), type(), def() etc.
 
 Functions always follows 3 principles I.e 
-Taking Input
-Execute the desired logic
-Return the Output 
+- Taking Input
+- Execute the desired logic
+- Return the Output 
 
-Best practice functions:
-——————————
 def addition(n1, n2):
     Add = n1 + n2
     return add
 
-def sub(n1, n2):
-   s = n1 - n2
-    return sub
+def check_fault(score, threshold=0.8):
+    if score < threshold:
+        return "FAULT"
+    return "OK"
      
 print(addition(2, 5)) ——> invoking & printing function output
-print(sub(2, 5))
+print(check_fault(0.75, 0.7))   # OK
 
 
 							MODULES
