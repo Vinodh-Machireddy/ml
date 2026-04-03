@@ -12,12 +12,36 @@ optuna & XGBoost - Hyperparameter Tuning
 yyaml - YAML  
 pytest - Tests  
 joblib - Model serialization  
-					
+
+## Python Core
+Variables  
+Data Types  
+Type Conversion  
+Input & Output  
+Operators  
+Strings  
+if / elif / else  
+for loop  
+while loop  
+Lists  
+Tuples  
+Sets  
+Dictionaries  
+Functions  
+Built-in Functions  
+Modules & Import  
+List Comprehensions  
+File Handling  
+Error Handling  
+
+
+
+
+
+
+
 
 Introduction
-Data Types
-KeyWords
-
 python is a dynamically typed programming language.  variables are key for any program lang bcz using variable  we can make our program dynamic.  Variables are flagship in python.
 
 Dynamically typed programming languages:
@@ -167,7 +191,6 @@ print("Integer Division:", result1)
 result3 = abs(-7)
 print("Absolute Value:", result3)
 
-
 Mapping(dict): 
 In Python, a mapping data type is a type that stores data in key-value pairs. he main mapping data type in Python is the dict (dictionary). 
 
@@ -185,44 +208,8 @@ print(student.values())         # Get all values
 print(student.items())         # Get all items (key-value pairs)
 student.clear()                 # Clear all items
 
-ec2_instances_info = [           # number of dictionaries in a list
-    {
-        "id": "instance-001",
-        "type": "t2.micro",
-    },
-    {
-        "id": "instance-002",
-        "type": "t2.medium",
-    },
-    {
-        "id": "instance-003",
-        "type": "t2.xlarge",
-    }
-]
-
-print(ec2_instances_info[1][“id"])
-
-Github API Call:
-
-import requests
-response = requests.get('https://api.github.com/repos/kubernetes/kubernetes/pulls')
-results = response.json()
-
-for i in results:
-    print(i['user']['login'])
-
-
 Boolean:
 In Python, the Boolean data type (bool) is used to represent truth values — that means something is either True or False.  Data type name : bool
-
-Boolean values are mainly used in if-else, loops, and comparisons.
-print(x > y)   # True
-
-
-if age >= 18:
-    print("Eligible to vote")
-else:
-    print("Not eligible")
 
 In Python, some values are automatically considered False in Boolean context:
 False
