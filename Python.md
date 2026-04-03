@@ -370,8 +370,8 @@ with open("results.txt", "r") as f:
 with open("results.txt", "a") as f:
     f.write("Version: 2\n")   # doesn't delete old content
 ```
-> Always use with — it closes file automatically. No tension! ✅ otherwise we need to close manually by f.close().
-> f is just a variable name that holds the opened file.  You can name it anything!
+> Always use with — it closes file automatically. No tension! ✅ otherwise we need to close manually by f.close().  
+> f is just a variable name that holds the opened file.  You can name it anything!  
 
 **Delete a File:**  # Always use try/except before deleting  
 ```  
