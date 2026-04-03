@@ -238,7 +238,6 @@ In Python, the binary data type is used to store raw binary information — that
 This type is commonly used when dealing with files, images, network data, or serial communication, where data is not human-readable.
 Python provides three built-in binary types:
 
-
 None data type:
 In Python, the None data type represents the absence of a value or nothingness.
 When do we use None?  -> To show empty or no value
@@ -253,6 +252,13 @@ If
 Else
 Elif
 
+**All are valid if conditions:**
+if score > 0.8:          # comparison
+if score == 0:           # equality check
+if n in count:           # exists check
+if "fault" in log:       # word exists check
+if is_active:            # boolean check
+if len(sensors) > 0:     # length check
 
 							Variables:
 							========
@@ -364,7 +370,7 @@ with open("results.txt", "r") as f:
     for line in f:
         print(line.strip())   # strip removes \n at end
 ```
-**Appending to a File:**
+**Appending to a File:**  
 ```
 # "a" means append mode → adds to existing file
 with open("results.txt", "a") as f:
@@ -389,9 +395,39 @@ print("Program still running!")  # this runs no matter what ✅  Error is handle
 You must always import it first before using.
 
 
+**List Comprehensions:**
+- List comprehension is a shortcut to create a new list in one line.
+```  
+scores = [0.91, 0.74, 0.88, 0.65, 0.95]
 
+# Old way — 4 lines
+faults = []
+for s in scores:
+    if s < 0.8:
+        faults.append(s)
 
+print(faults)   # [0.74, 0.65]
 
+# New way — 1 line ✅
+faults = [s for s in scores if s < 0.8]
+
+print(faults)   # [0.74, 0.65] 
+```
+
+**Whenever you want to COUNT something → use Dictionary:**
+```
+numbers = [3,4,4,5,6,7,8,9,2,2,9,9]
+
+count = {}   # empty dictionary
+
+for n in numbers:
+    if n in count:
+        count[n] += 1    # already exists → add 1
+    else:
+        count[n] = 1     # first time seen → set to 1
+
+print(count)
+```
 
 
 
