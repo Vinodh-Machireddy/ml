@@ -1,18 +1,18 @@
 
-							PYTHON
- 	python packages:
-================
-numpy - Numerical Computing
-pandas - Data Manipulation
-scikit-learn - Core ML Library
-mlflow - Experiment Tracking & Model Registry
-dvc - Data & Model Versioning
-fastapi - API for Model Serving
-optuna & XGBoost - Hyperparameter Tuning
-yyaml - YAML
-pytest - Tests
-joblib - Model serialization
-						=======
+# PYTHON
+## python packages:
+
+numpy - Numerical Computing  
+pandas - Data Manipulation  
+scikit-learn - Core ML Library  
+mlflow - Experiment Tracking & Model Registry  
+dvc - Data & Model Versioning  
+fastapi - API for Model Serving  
+optuna & XGBoost - Hyperparameter Tuning  
+yyaml - YAML  
+pytest - Tests  
+joblib - Model serialization  
+					
 
 Introduction
 Data Types
@@ -27,8 +27,8 @@ Statically Typed Languages:
 C, C++, Java, C#, Go.
 
 
-Shell Scripting  VS Python Scripting
-============================
+## Shell Scripting  VS Python Scripting
+
 - in devops mostly we use linux systems bcz windows has less security. In Windows/Mac it uses rich UI. In Linux default CLI. The main purpose of Shell Scripting is to interact with Linux systems and get information. We can write the commands one after the other or set of command in scriptFile.sh and execute.
 
 Platform-specific behavior (e.g., Bash for Linux, PowerShell for Windows).
@@ -378,19 +378,7 @@ with open("results.txt", "a") as f:
 ```
 > Always use with — it closes file automatically. No tension! ✅ otherwise we need to close manually by f.close().  
 > f is just a variable name that holds the opened file.  You can name it anything!  
-
-**Delete a File:**  # Always use try/except before deleting  
-```  
-import os
-
-try:
-    os.remove("results.txt")    # try this first # code that MIGHT cause error
-    print("File deleted!")
-except FileNotFoundError:
-    print("File not found!")    # what to do IF error happens. it passes to next step i.e "Program still running!"
-    
-print("Program still running!")  # this runs no matter what ✅  Error is handled gracefully without programm stop/crash. 
-```
+> **Delete a File:**  # Always use try/except before deleting  
 > **os:** os is a built in Python module that lets you talk to your operating system — delete files, check paths, list folders etc.
 You must always import it first before using.
 
@@ -429,9 +417,30 @@ for n in numbers:
 print(count)
 ```
 
+## Error Handling
+```  
+try:
+    score = float("abc")       # code that might cause error  bcoz cant convert abc to float
+except ValueError:
+    print("Invalid value!")     # what to do if error happens  # catches error ✅
+else:
+    print("Conversion worked!")  # runs only if NO error happened  # only runs if no error
+finally:
+    print("Always runs!")        # runs ALWAYS — error or no error # runs no matter what ✅
+```  
 
+**Common Errors You Must Know:**
+## Common Errors You Must Know
 
-
+| Error | When it happens | Example |
+|---|---|---|
+| `FileNotFoundError` | File missing | `open("abc.txt")` |
+| `ValueError` | Wrong value | `int("abc")` |
+| `ZeroDivisionError` | Divide by zero | `10/0` |
+| `KeyError` | Dict key missing | `dict["xyz"]` |
+| `IndexError` | List index wrong | `list[99]` |
+| `TypeError` | Wrong data type | `"abc" + 123` |
+| `Exception` | Catches ALL errors | use as last resort |
 
 
 
