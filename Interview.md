@@ -1,46 +1,46 @@
-INTERVIEW  
+# INTERVIEW  
 
-1. self Intro
-2. My Day-to-Day Activities as an MLOps Engineer
-3. Tell me about your project
-4. Describe some real-time challenges you have faced and how you resolved them.
-5. Explain your ML pipeline in your current or previous projects
-6. Mlops Best Pratices
-7. cost-efficient
+1. self Intro  
+2. My Day-to-Day Activities as an MLOps Engineer  
+3. Tell me about your project  
+4. Describe some real-time challenges you have faced and how you resolved them.  
+5. Explain your ML pipeline in your current or previous projects  
+6. Mlops Best Pratices  
+7. cost-efficient  
 
 
-SELF:
------
-- My name is Vinodh Machireddy.
-- I'm originally from Andhra Pradesh, Bharath.
-- Currently, I’m working as a Senior MLOps Engineer at Larc Software Pvt Ltd.
-I bring over 7+ years of overall experience in designing, automating, and managing end-to-end machine learning lifecycle systems.
-- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS.
+## SELF:  
+ 
+- My name is Vinodh Machireddy.  
+- I'm originally from Andhra Pradesh, Bharath.  
+- Currently, I’m working as a Senior MLOps Engineer at Larc Software Pvt Ltd.  
+I bring over 7+ years of overall experience in designing, automating, and managing end-to-end machine learning lifecycle systems.  
+- I’ve worked with ML pipeline orchestration using Kubeflow Pipelines, handled experiment tracking and model registry with   MLflow, and managed production-grade deployment and serving using ArgoCD and KServe. I have also set up monitoring and alerting solutions using Prometheus and Grafana, and deployed ML solutions on AWS.  
 - At the end of the day, I just want to make sure ML models work smoothly in production
-- That’s a quick introduction about me.
-- Thanks for the opportunity!
+- That’s a quick introduction about me.  
+- Thanks for the opportunity!  
 
 
-My Day-to-Day Activities as an MLOps Engineer:
-————————————————————
-1. Morning — Monitoring & Health Checks
+## My Day-to-Day Activities as an MLOps Engineer: 
+
+1. Morning — Monitoring & Health Checks  
 
 My day starts with checking monitoring dashboards to see any overnight alerts is showing performance drop. 
-and Quick check on Kubernetes cluster health — are all model serving pods running fine?
+and Quick check on Kubernetes cluster health — are all model serving pods running fine?  
 
-2. CI, CD, CM steps
+2. CI, CD, CM steps  
 
-3. Working with Data Scientists
+3. Working with Data Scientists  
 I help data scientists move their models from notebooks to production by building pipelines.
 Together we review metrics to decide if a model is good enough to promote to production.
 
 4. Team Work
 I attend daily stand-ups with data scientists, QA, and cloud teams.
-We discuss ongoing issues, improvements, and after any failure, we do a post-mortem to learn from it.
+We discuss ongoing issues, improvements, and after any failure, we do a post-mortem to learn from it.  
 
 
-Tell me about your project:
----------------------------
+## Tell me about your project:
+
 1.Overall Project  
 2.business use case/purpose  
 3.Architecture  
@@ -97,6 +97,13 @@ Strong troubleshooting mindset
 
 
 ## Manager Round
+
+ownership  
+production mindset  
+incident handling  
+stakeholder communication  
+leadership / mentoring  
+project delivery maturity  
 
 Walk me through a project you've owned end-to-end.
 How do you handle model drift in production?  
