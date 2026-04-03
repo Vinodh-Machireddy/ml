@@ -342,6 +342,66 @@ print(f"Model: {model.upper()}, Accuracy: {accuracy}")
 # Model: XGBOOST, Accuracy: 0.94
 ```
 
+## File Handling
+Think of file handling like opening a notebook, writing or reading, then closing it.  
+**Writing to a File:**
+```
+# "w" means write mode
+with open("results.txt", "w") as f:
+    f.write("Model: XGBoost\n")    # \n means new line
+    f.write("Accuracy: 0.94\n")
+```
+**Reading from a File:**
+```
+# "r" means read mode
+with open("results.txt", "r") as f:
+    content = f.read()      # reads entire file at once
+    print(content)
+```
+**Reading Line by Line:**
+```
+with open("results.txt", "r") as f:
+    for line in f:
+        print(line.strip())   # strip removes \n at end
+```
+**Appending to a File:**
+```
+# "a" means append mode → adds to existing file
+with open("results.txt", "a") as f:
+    f.write("Version: 2\n")   # doesn't delete old content
+```
+> Always use with — it closes file automatically. No tension! ✅ otherwise we need to close manually by f.close().
+> f is just a variable name that holds the opened file.  You can name it anything!
+
+**Delete a File:**  # Always use try/except before deleting  
+```  
+import os
+
+try:
+    os.remove("results.txt")    # try this first # code that MIGHT cause error
+    print("File deleted!")
+except FileNotFoundError:
+    print("File not found!")    # what to do IF error happens. it passes to next step i.e "Program still running!"
+    
+print("Program still running!")  # this runs no matter what ✅  Error is handled gracefully without programm stop/crash. 
+```
+> **os:** os is a built in Python module that lets you talk to your operating system — delete files, check paths, list folders etc.
+You must always import it first before using.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 							MODULES
 							=========
