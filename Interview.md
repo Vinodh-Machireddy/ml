@@ -125,7 +125,7 @@ Ans:
 > **ownership, architecture, production thinking, and business impact.**
 
 Tell me about a time you mentored someone or helped a teammate grow.
-Ans: entire team i mentored to understand new tool . previously we 
+Ans: entire team i mentored to understand new tool . previously we are using Fast API for modal serving now we switched to kserve on project req. i explained to team how kserve works. and intergrations with the cloud. etc
 
 
 
