@@ -105,10 +105,33 @@ stakeholder communication
 leadership / mentoring  
 project delivery maturity  
 
-Walk me through a project you've owned end-to-end.
-How do you handle model drift in production?  
-Tell me about a conflict with a teammate or stakeholder. How did you resolve it?  
-What makes a Senior MLOps Engineer different from a Mid-level one?  
+1. Walk me through a project you've owned end-to-end.
+Ans: explain daimler end to end.
+
+3. Tell me about a conflict with a teammate or stakeholder. How did you resolve it?
+Ans: we mostly collaberate with data scientis teams. 
+-  While building the ML pipeline for our battery fault classification project, there was a disagreement between me and a data scientist on the team. They wanted to retrain and deploy models manually using notebooks, while I was pushing for a fully automated CI/CD pipeline using GitHub Actions and MLflow for experiment tracking and model registry.
+- Instead of escalating or insisting,I created a shor demo and I scheduled a short demo.  I showed how the automated pipeline would actually save them time. no manual artifact uploads, automatic versioning in MLflow, and one-click promotion to staging on KServe. I also incorporated their feedback.
+
+
+4. How do you handle model drift in production?
+Ans: Already Know.
+What makes a Senior MLOps Engineer different from a Mid-level one?
+Ans:
+- A Mid-level MLOps Engineer is usually strong in implementing pipelines, deployments, and automation tasks within a defined scope. A Senior MLOps Engineer, however, is expected to take end-to-end ownership of the ML platform    
+- A senior doesn't just fix incidents — they run postmortems, identify systemic gaps, and push for long-term fixes rather than patches.
+- decision-making
+- mentor team members
+> **ownership, architecture, production thinking, and business impact.**
+
+Tell me about a time you mentored someone or helped a teammate grow.
+Ans: entire team i mentored to understand new tool . previously we 
+
+
+
+
+
+
 
 
 
