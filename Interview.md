@@ -97,14 +97,6 @@ Strong troubleshooting mindset
 
 
 ## Manager Round
-
-ownership  
-production mindset  
-incident handling  
-stakeholder communication  
-leadership / mentoring  
-project delivery maturity  
-
 1. Walk me through a project you've owned end-to-end.
 Ans: explain daimler end to end.
 
