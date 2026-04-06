@@ -121,17 +121,29 @@ Ans: entire team i mentored to understand new tool . previously we are using Fas
 
 
 
+## CHALLENGES
+**Silent Feature Drift in Production — Battery Fault Classifier**
+Situation: 
+when we working on ev battery fault classifier model which is running in production for about three months, performing well. Accuracy and latency dashboards on Grafana looked stable. But then the battery domain engineers started reporting something strange — the number of degraded classifications had quietly increased by 30% over the past few weeks. No alerts had fired. No errors in logs.  
+Why it was dangerous: This is what I call a silent failure — the model wasn't crashing, it was confidently making wrong predictions. the model is missing real faults. 
+
+**Root cause analysis:**
+1. Checked model and pipeline — No code changes, no redeployment, same XGBoost model version in MLflow. Pipeline was clean. So the problem wasn't in our system.
+2. Compared training vs live data distributions — This is where I found it. The battery supplier had made a small manufacturing change that shifted the internal resistance and temperature-under-load distributions.
+
+**Actions I took:**
+1.  Immediate fix — retrained with fresh data
+2.  we added a drift detection layer : This was the bigger lesson. I implemented a proper feature drift monitoring system:
+3.  Added prediction distribution monitoring
+4.  Established a retraining policy
+5.  Set up a simple communication channel with the battery supplier and procurement team. if Any material or process changes now get flagged to the ML team proactively.
 
 
 
 
 
 
-
-CHALLENGES
-———————
-
-Model Degraded due to Hidden Feature Drift in Production
+**Model Degraded due to Hidden Feature Drift in Production**
 
 We had a machine learning model running in production. For the first few months, it worked well and gave good accuracy. After some time, the predictions started becoming wrong more often.
 At first, it was not obvious because normal monitoring (like uptime, latency, schema checks) showed everything healthy. But business teams noticed that the model was missing important cases (for example, not catching fraud or misreading traffic signs).
