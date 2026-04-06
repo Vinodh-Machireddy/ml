@@ -119,8 +119,13 @@ Ans:
 5. Tell me about a time you mentored someone or helped a teammate grow.
 Ans: entire team i mentored to understand new tool . previously we are using Fast API for modal serving now we switched to kserve on project req. i explained to team how kserve works. and intergrations with the cloud. etc
 
+6. if we give a opportunity to handle a team how you will handle
+1. Listen and understand:
+ - Having 1-on-1s with every team member — understanding their strengths, career goals, frustrations, and what's blocking them
+2. Set clear goals and ownership
+3. Build a culture of trust, not micromanagement
 
-
+	  
 ## CHALLENGES
 **Silent Feature Drift in Production — Battery Fault Classifier**
 **Situation:** 
