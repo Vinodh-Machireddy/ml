@@ -1,14 +1,11 @@
 # INTERVIEW  
 
-1. self Intro  
-2. My Day-to-Day Activities as an MLOps Engineer  
-3. Tell me about your project  
-4. Describe some real-time challenges you have faced and how you resolved them.  
-5. Explain your ML pipeline in your current or previous projects  
-6. Mlops Best Pratices  
-7. cost-efficient  
-
-
+1. Schedule
+2. Screening
+3. Technical Rounds
+4. Manager Round
+5. HR Discussion
+   
 ## SELF:  
  
 - My name is Vinodh Machireddy.  
@@ -19,7 +16,6 @@ I bring over 7+ years of overall experience in designing, automating, and managi
 - At the end of the day, I just want to make sure ML models work smoothly in production
 - That’s a quick introduction about me.  
 - Thanks for the opportunity!  
-
 
 ## My Day-to-Day Activities as an MLOps Engineer: 
 
@@ -38,20 +34,10 @@ Together we review metrics to decide if a model is good enough to promote to pro
 I attend daily stand-ups with data scientists, QA, and cloud teams.
 We discuss ongoing issues, improvements, and after any failure, we do a post-mortem to learn from it.  
 
-
 ## Tell me about your project:
-
-1.Overall Project  
-2.business use case/purpose  
-3.Architecture  
-4.tech stack used  
-5.and Roles & Responsibility.  
-
 
 - I am working on Daimler Project which comes under automotive domain/Industry, their i am dealing with Battery Fault Classification. The project aims to classify battery cell faults in real time using sensor data from the Battery Management System (BMS). This helps detect issues like overheating, overcharging, internal short circuits, and cell degradation early — before they become safety-critical.  
 -  The main purpose is to improve EV battery safety, and extend battery lifespan.  
-
-
 
 ## Interview Schedule:
 
