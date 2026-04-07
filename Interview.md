@@ -306,5 +306,16 @@ Automation first mindset
 Strong troubleshooting mindset
 
 
+## Learnings from Interview  
+Infosys:  
+	> if we give a team how you will handle it?
+	> if team members not listining you, what would you do?
+	> How do you handle dead lines?
+	> when client is scolding/harsh/rude with you , how would you handle?
+	> day to day activities
+	> challenges
+	> once you get a new project how you handle or start it like distributing modules, sharing workload.  
+	
+	
 
 
