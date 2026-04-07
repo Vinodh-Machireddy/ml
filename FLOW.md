@@ -40,7 +40,6 @@ Scrum:      Sprint 1 → Deliver login
 ### CRISP-DM (Data scientists approach)
 Data scientists follow CRISP-DM (Cross-Industry Standard Process for Data Mining). It's the most widely used methodology in data science — like how Scrum is to software development.   
 `Data Scientist -> CRISP-DM -> Problem → Data → Validation -> Feature Eng -> Model Training → Evaluation -> Deploy(Locally)`
-`ML/MLOps Engineer -> **MLOps Level 2: CI/CD pipeline automation with GitOps-native deployment** -> Pipeline → CI/CD → Deploy → Monitor → Retrain`
 
 1. Microsoft MLOps Maturity Model (Levels 0–4) : Your company uses Azure stack (Azure ML, Azure DevOps, AKS)
 2. Uber's Michelangelo Approach : Very large company with 50+ data scientists
@@ -48,18 +47,19 @@ Data scientists follow CRISP-DM (Cross-Industry Standard Process for Data Mining
 4. Feature Store Centric Approach (Feast/Tecton) : Multiple models share the same features
 5. GitOps-Native MLOps (What You Actually Do) : Regulated industries (automotive, healthcare, finance)
 6. Google's MLOps Level 2
+   > `ML/MLOps Engineer -> **MLOps Level 2: CI/CD pipeline automation with GitOps-native deployment** -> Pipeline → CI/CD → Deploy → Monitor → Retrain`
    
 ### MLOps Level 2: CI/CD pipeline automation with GitOps-native deployment / Google's MLOps Level 2 with GitOps deployment Methodology
-Level 0 — Manual Process  
+**Level 0 — Manual Process:**  
 Everything is done by hand.  
 A data scientist writes code in a Jupyter notebook, trains a model locally, tests it manually, and hands it over to an engineer who deploys it somehow. When the model degrades, someone notices eventually and the whole process repeats manually.  
 Problem: Slow, error-prone, no reproducibility, breaks in production silently.  
 
-Level 1 — ML Pipeline Automation  
+**Level 1 — ML Pipeline Automation :** 
 Instead of manual steps, you build an automated pipeline that handles the full flow: data ingestion → validation → preprocessing → training → evaluation → deployment.  The key addition here is Continuous Training (CT) — the pipeline can retrain automatically when triggered by new data or a schedule.  
 Problem: The pipeline itself is still deployed manually. If a data scientist changes the training code, there's no CI/CD to test and deploy that pipeline change.  
 
-Level 2 — CI/CD + ML Pipeline Automation  
+**Level 2 — CI/CD + ML Pipeline Automation:**  
 This is the full picture. Level 2 adds CI/CD for the pipeline code itself, not just for the model. Every component of the ML system — data processing, training logic, serving config — is treated as software and goes through automated testing, building, and deployment.
   - Level 2 — Complete Flow Using Your Stack
 
