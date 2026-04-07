@@ -1,5 +1,12 @@
 # FLOW
 
+## Project Approach:
+“I generally explain the methodology in three layers:  
+First, from a project execution perspective, teams may use Agile or Scrum.  
+Second, from an ML development perspective, we work iteratively through experimentation, feature engineering, training, and validation.  
+Third, from an MLOps engineering perspective, our stack is best described as a pipeline-based CI/CD/CT architecture with GitOps deployment and continuous monitoring.  
+
+
 1. Project Initiation & Tech Stack
 2. What the Data Scientists hand over — brief context, just enough to show you understand the ML side
 3. Training Pipeline (KFP) — how you productionized their notebook into a repeatable pipeline (this is YOUR territory)
