@@ -19,11 +19,37 @@ First, from a project execution perspective, teams may use Agile or Scrum.
 Second, from an ML development perspective, we work iteratively through experimentation, feature engineering, training, and validation.  
 Third, from an MLOps engineering perspective, our stack is best described as a pipeline-based CI/CD/CT architecture with GitOps deployment and continuous monitoring.  
 
+### Agile Methodology
+Agile is not a single method — it's a mindset and set of principles for building software iteratively. Scrum, Kanban, and others are frameworks that implement Agile.   
+  > Agile thinking:      "Plan a little → Build a little → Get feedback → Repeat"
 
-Data scientists follow CRISP-DM (Cross-Industry Standard Process for Data Mining). It's the most widely used methodology in data science — like how Scrum is to software development.
+### Waterfall Methodology 
+It's the oldest and simplest approach — everything flows in one direction, top to bottom, like a waterfall. You complete one phase fully before moving to the next. No going back. In Waterfall, during testing, the client says: Actually, we also need UPI payments. you're stuck — going back means restarting from requirements. That's expensive and slow.  when Requirements are 100% clear and won't change then we go waterfall.  
+  > Waterfall thinking:  "Plan everything → Build everything → Deliver once"  
 
+### Scrum Methodology
+Scrum is an Agile framework where you build software in small, repeatable cycles called Sprints (usually 2 weeks). Instead of delivering everything at the end like Waterfall, you deliver a working piece every sprint.  
+```
+Scrum:      Sprint 1 → Deliver login
+            Sprint 2 → Deliver transfers
+            Sprint 3 → Deliver bill pay
+            Sprint 4 → Deliver statements
+            ...every 2 weeks, something working is delivered
+```
 
-Google’s MLOps Maturity Level 2.  
+### CRISP-DM (Data scientists approach)
+Data scientists follow CRISP-DM (Cross-Industry Standard Process for Data Mining). It's the most widely used methodology in data science — like how Scrum is to software development.   
+`Data Scientist -> CRISP-DM -> Problem → Data → Validation -> Feature Eng -> Model Training → Evaluation -> Deploy(Locally)`
+`ML/MLOps Engineer -> **MLOps Level 2: CI/CD pipeline automation with GitOps-native deployment** -> Pipeline → CI/CD → Deploy → Monitor → Retrain`
+
+1. Microsoft MLOps Maturity Model (Levels 0–4) : Your company uses Azure stack (Azure ML, Azure DevOps, AKS)
+2. Uber's Michelangelo Approach : Very large company with 50+ data scientists
+3. Netflix's Metaflow Approach  : Small-to-medium team that can't afford heavy MLOps infra
+4. Feature Store Centric Approach (Feast/Tecton) : Multiple models share the same features
+5. GitOps-Native MLOps (What You Actually Do) : Regulated industries (automotive, healthcare, finance)
+6. Google's MLOps Level 2
+   
+### MLOps Level 2: CI/CD pipeline automation with GitOps-native deployment / Google's MLOps Level 2 with GitOps deployment Methodology
 Level 0 — Manual Process  
 Everything is done by hand.  
 A data scientist writes code in a Jupyter notebook, trains a model locally, tests it manually, and hands it over to an engineer who deploys it somehow. When the model degrades, someone notices eventually and the whole process repeats manually.  
