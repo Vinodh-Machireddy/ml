@@ -1,4 +1,17 @@
-# FLOW
+# FLOW 
+
+## ML Lifecycle:  
+Business problem  
+Data collection  
+Data validation  
+Feature engineering  
+Model training  
+Experiment tracking  
+Model evaluation  
+Model registry  
+Deployment  
+Monitoring  
+Retraining  
 
 ## Project Approach:
 “I generally explain the methodology in three layers:  
