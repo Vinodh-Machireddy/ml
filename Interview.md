@@ -52,153 +52,9 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 -  The main purpose is to improve EV battery safety, and extend battery lifespan.  
 
 
-## HR Round Discussion:
-**1. What are your strengths? and weaknesses?**
-My strength and weakness are actually two sides of the same coin. 
-- When I encounter something new, I take a little more time, because I don't like surface-level understanding. That initial slowness is my weakness, once I grasp a concept fully, I take **complete end-to-end ownership** of it.
-- Another strong suit of mine is an automation-first mindset. whenever I start a new task, my first instinct is — **Can this be automated?** 
 
-**Are you comfortable working from office / hybrid model?**
-Ans: Yes, I’m open to hybrid or work-from-office based on project and business requirements.
+## Interview Schedule:
 
-**Are you okay with relocation?**
-Ans: I’m not okay with relocation. At the moment, I have certain personal commitments that make immediate relocation difficult. However, I’m open to discussing this based on project requirements and timelines, and I can plan accordingly if needed.
-
-**What is your current CTC? and expectations**  
-My current fixed CTC is ₹20 LPA 
-My monthly in-hand is approximately ₹1.5 lakh
-
-**What is your notice period?**  
-“My official notice period is __60_ days.”  
-If negotiable:  
-“My official notice period is ___ days, but I can try to discuss early release depending on transition planning.”(work handover is completed, they may release me earlier.)
-
-**How do you handle pressure or tight deadlines?**
-I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks.
-
-**Where do you see yourself in 5 years?**
-Ans: based on my skill set and automation first troubleshooting mindset , definitely i will be in the architect or manager level. 
-
-**are you currently interviewing elsewhere?**
-I have a few conversations in progress, but Infosys is my priority given the role and scale.  
-
-**Have you worked with clients directly?**
-Yes, I’ve worked in collaborative environments where interaction with cross-functional stakeholders was important, including discussing deployment requirements, release coordination, issue resolution, and production support expectations.
-
-**Why do you want to join Infosys?**
-1. opportunity to develope model from scratch
-2. Antropic claude co-work intergation with infosys
-3. long-term growth.
-
-**why should we hire you**
-I’m not limited to one tool in mlops space . i can handle take end-to-end ownership.
-Automation first mindset
-Strong troubleshooting mindset
-
-
-## Manager Round
-1. Walk me through a project you've owned end-to-end.
-Ans: explain daimler end to end.
-
-2. Tell me about a conflict with a teammate or stakeholder. How did you resolve it?
-Ans: we mostly collaberate with data scientis teams. 
--  While building the ML pipeline for our battery fault classification project, there was a disagreement between me and a data scientist on the team. They wanted to retrain and deploy models manually using notebooks, while I was pushing for a fully automated CI/CD pipeline using GitHub Actions and MLflow for experiment tracking and model registry.
-- Instead of escalating or insisting,I created a shor demo and I scheduled a short demo.  I showed how the automated pipeline would actually save them time. no manual artifact uploads, automatic versioning in MLflow, and one-click promotion to staging on KServe. I also incorporated their feedback.
-
-3. How do you handle model drift in production?
-Ans: Already Know.
-
-4. What makes a Senior MLOps Engineer different from a Mid-level one?
-Ans:
-- A Mid-level MLOps Engineer is usually strong in implementing pipelines, deployments, and automation tasks within a defined scope. A Senior MLOps Engineer, however, is expected to take end-to-end ownership of the ML platform    
-- A senior doesn't just fix incidents — they run postmortems, identify systemic gaps, and push for long-term fixes rather than patches.
-- decision-making
-- mentor team members
-> **ownership, architecture, production thinking, and business impact.**
-
-5. Tell me about a time you mentored someone or helped a teammate grow.
-Ans: entire team i mentored to understand new tool . previously we are using Fast API for modal serving now we switched to kserve on project req. i explained to team how kserve works. and intergrations with the cloud. etc
-
-6. if we give a opportunity to handle a team how you will handle
-1. Listen and understand:
- - Having 1-on-1s with every team member — understanding their strengths, career goals, frustrations, and what's blocking them
-2. Set clear goals and ownership
-3. Build a culture of trust, not micromanagement
-
-	  
-## CHALLENGES
-**Silent Feature Drift in Production — Battery Fault Classifier**
-**Situation:** 
-when we working on ev battery fault classifier model which is running in production for about three months, performing well. Accuracy and latency dashboards on Grafana looked stable. But then the battery domain engineers started reporting something strange — the number of degraded classifications had quietly increased by 30% over the past few weeks. No alerts had fired. No errors in logs.  
-Why it was dangerous: This is what I call a silent failure — the model wasn't crashing, it was confidently making wrong predictions. the model is missing real faults. 
-
-**Root cause analysis:**
-1. Deep Monitoring Analysis
-2. Checked model and pipeline — No code changes, no redeployment, same XGBoost model version in MLflow. Pipeline was clean. So the problem wasn't in our system.
-3. Compared training vs live data distributions — This is where I found it. The battery supplier had made a small manufacturing change that shifted the internal resistance and temperature-under-load distributions.
-
-**Actions I took:**
-1.  Immediate fix — retrained with fresh data
-2.  we added a drift detection layer : This was the bigger lesson. I implemented a proper feature drift monitoring system:
-3.  Added prediction distribution monitoring
-4.  Established a retraining policy
-5.  Set up a simple communication channel with the battery supplier and procurement team. if Any material or process changes now get flagged to the ML team proactively.
-
-
-
-
-
-
-**Model Degraded due to Hidden Feature Drift in Production**
-
-We had a machine learning model running in production. For the first few months, it worked well and gave good accuracy. After some time, the predictions started becoming wrong more often.
-At first, it was not obvious because normal monitoring (like uptime, latency, schema checks) showed everything healthy. But business teams noticed that the model was missing important cases (for example, not catching fraud or misreading traffic signs).
-The tricky part was — data pipelines looked fine (no missing columns, no errors). But actually, the input data pattern had changed silently. That hidden change in the features made the model behave poorly.
-What made it tricky
-No clear alert initially – dashboards showed stable latency and throughput, only business KPIs hinted at an issue.
-Data pipeline looked “healthy” – schema matched, no missing columns. But hidden drift existed.
-
-Resolution:
-When accuracy started dropping, first I stabilised the system by adding guardrails like request validation, circuit-breaker, and fallback to the last stable model. These safety checks ensured users were not badly affected while I investigated and fixed the root cause.
-
-Deep Monitoring Analysis
-Set up feature-level drift metrics (PSI, KS test) using Evidently AI.
-Debugging the Root Cause
-
-Retraining the Model
-Pulled recent 2 months of production data with new encoding.
-
-Safe Deployment
-Used canary rollout on 10% traffic.
-
-Long-Term Fix
-Set alerting on PSI > 0.3 for top 10 features.
-
-
-1. Model Drift in Production
-Challenge:
-We had a machine learning model deployed in production. Initially, the accuracy was good, but after a few months the predictions started degrading.
-
-Resolution:
-When accuracy started dropping, first I stabilised the system by adding guardrails like request validation, circuit-breaker, and fallback to the last stable model. These safety checks ensured users were not badly affected while I investigated and fixed the root cause.
-
-Root cause: Data distribution in production had changed — the incoming features looked different compared to the data the model was originally trained.(data drift)
-
-I set up Prometheus/Grafana to track live data and system health, and MLflow to log model metrics and versions.
-
-I configured alerts so whenever drift goes above a threshold, it notifies us and triggers the retraining pipeline.
-
-The pipeline pulls fresh data → validates it → preprocesses → retrains → evaluates. If the new model is better, it’s registered in MLflow Model Registry.
-
-I used Kubernetes canary rollout: the new model first gets a small % of traffic. If it performs well, it’s promoted to full production; if not, it auto-rolls back.
-
-Now the system is self-healing: whenever drift happens, monitoring + pipeline + canary ensure models are automatically retrained and deployed safely.
-
-
-
-
-Interview Schedule:
-—————————
 1. What is your current CTC (Cost to Company)? 
  20,00,000/- Lakhs
 
@@ -247,10 +103,8 @@ Feature store
 ECS VS EKS
 
 
-Screening Round:
-————————
+## Screening Round:
 1. Tell me about yourself.
-
 2. What is MLOPS?
 Machine Learning Operations
 Where we train the models with the data
@@ -334,7 +188,6 @@ How does the company measure success of ML projects in production?
 26. DS vs MLOps responsibilities
 Think of it like DS starts at problem → finishes at best model selection, then MLOps takes over for packaging → deployment → monitoring → automation, with some overlap in the middle.
 
-
 27. Monitoring vs Observability
 Definition: Collecting and tracking known metrics to check system/model health.
 Focus:
@@ -354,8 +207,7 @@ Monitoring = Thermometer → tells you the fever exists.
 Observability = Doctor → investigates symptoms to find the cause.
 
 
-Technical Rounds:
------------------
+## Technical Rounds:
 - Walk me through the end-to-end ML lifecycle and where MLOps fits in.
 - If a model’s accuracy suddenly drops in production, what’s your step-by-step approach to diagnose it?
 - In your pipeline, where would you place data validation checks and how would you automate them?
@@ -375,4 +227,98 @@ Special interview questions:
 Explain how do you create and manage kubernetes cluster?
 We use namespaces for logical isolation then we setup resource quota on namespace, so the teams are restricted to the compute power 
 And we help the teams to enable resource requests and limits on each pod, so that each pod is restricted with compute and memory power
+
+## Manager Round
+1. Walk me through a project you've owned end-to-end.
+Ans: explain daimler end to end.
+
+2. Tell me about a conflict with a teammate or stakeholder. How did you resolve it?
+Ans: we mostly collaberate with data scientis teams. 
+-  While building the ML pipeline for our battery fault classification project, there was a disagreement between me and a data scientist on the team. They wanted to retrain and deploy models manually using notebooks, while I was pushing for a fully automated CI/CD pipeline using GitHub Actions and MLflow for experiment tracking and model registry.
+- Instead of escalating or insisting,I created a shor demo and I scheduled a short demo.  I showed how the automated pipeline would actually save them time. no manual artifact uploads, automatic versioning in MLflow, and one-click promotion to staging on KServe. I also incorporated their feedback.
+
+3. How do you handle model drift in production?
+Ans: Already Know.
+
+4. What makes a Senior MLOps Engineer different from a Mid-level one?
+Ans:
+- A Mid-level MLOps Engineer is usually strong in implementing pipelines, deployments, and automation tasks within a defined scope. A Senior MLOps Engineer, however, is expected to take end-to-end ownership of the ML platform    
+- A senior doesn't just fix incidents — they run postmortems, identify systemic gaps, and push for long-term fixes rather than patches.
+- decision-making
+- mentor team members
+> **ownership, architecture, production thinking, and business impact.**
+
+5. Tell me about a time you mentored someone or helped a teammate grow.
+Ans: entire team i mentored to understand new tool . previously we are using Fast API for modal serving now we switched to kserve on project req. i explained to team how kserve works. and intergrations with the cloud. etc
+
+6. if we give a opportunity to handle a team how you will handle
+1. Listen and understand:
+ - Having 1-on-1s with every team member — understanding their strengths, career goals, frustrations, and what's blocking them
+2. Set clear goals and ownership
+3. Build a culture of trust, not micromanagement
+ 
+### CHALLENGES
+**Silent Feature Drift in Production — Battery Fault Classifier**
+**Situation:** 
+when we working on ev battery fault classifier model which is running in production for about three months, performing well. Accuracy and latency dashboards on Grafana looked stable. But then the battery domain engineers started reporting something strange — the number of degraded classifications had quietly increased by 30% over the past few weeks. No alerts had fired. No errors in logs.  
+Why it was dangerous: This is what I call a silent failure — the model wasn't crashing, it was confidently making wrong predictions. the model is missing real faults. 
+
+**Root cause analysis:**
+1. Deep Monitoring Analysis
+2. Checked model and pipeline — No code changes, no redeployment, same XGBoost model version in MLflow. Pipeline was clean. So the problem wasn't in our system.
+3. Compared training vs live data distributions — This is where I found it. The battery supplier had made a small manufacturing change that shifted the internal resistance and temperature-under-load distributions.
+
+**Actions I took:**
+1.  Immediate fix — retrained with fresh data
+2.  we added a drift detection layer : This was the bigger lesson. I implemented a proper feature drift monitoring system:
+3.  Added prediction distribution monitoring
+4.  Established a retraining policy
+5.  Set up a simple communication channel with the battery supplier and procurement team. if Any material or process changes now get flagged to the ML team proactively.
+
+
+## HR Round:
+**1. What are your strengths? and weaknesses?**
+My strength and weakness are actually two sides of the same coin. 
+- When I encounter something new, I take a little more time, because I don't like surface-level understanding. That initial slowness is my weakness, once I grasp a concept fully, I take **complete end-to-end ownership** of it.
+- Another strong suit of mine is an automation-first mindset. whenever I start a new task, my first instinct is — **Can this be automated?** 
+
+**Are you comfortable working from office / hybrid model?**
+Ans: Yes, I’m open to hybrid or work-from-office based on project and business requirements.
+
+**Are you okay with relocation?**
+Ans: I’m not okay with relocation. At the moment, I have certain personal commitments that make immediate relocation difficult. However, I’m open to discussing this based on project requirements and timelines, and I can plan accordingly if needed.
+
+**What is your current CTC? and expectations**  
+My current fixed CTC is ₹20 LPA 
+My monthly in-hand is approximately ₹1.5 lakh
+
+**What is your notice period?**  
+“My official notice period is __60_ days.”  
+If negotiable:  
+“My official notice period is ___ days, but I can try to discuss early release depending on transition planning.”(work handover is completed, they may release me earlier.)
+
+**How do you handle pressure or tight deadlines?**
+I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks.
+
+**Where do you see yourself in 5 years?**
+Ans: based on my skill set and automation first troubleshooting mindset , definitely i will be in the architect or manager level. 
+
+**are you currently interviewing elsewhere?**
+I have a few conversations in progress, but Infosys is my priority given the role and scale.  
+
+**Have you worked with clients directly?**
+Yes, I’ve worked in collaborative environments where interaction with cross-functional stakeholders was important, including discussing deployment requirements, release coordination, issue resolution, and production support expectations.
+
+**Why do you want to join Infosys?**
+1. opportunity to develope model from scratch
+2. Antropic claude co-work intergation with infosys
+3. long-term growth.
+
+**why should we hire you**
+I’m not limited to one tool in mlops space . i can handle take end-to-end ownership.
+Automation first mindset
+Strong troubleshooting mindset
+
+
+
 
