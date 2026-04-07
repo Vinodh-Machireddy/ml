@@ -13,12 +13,29 @@ Deployment
 Monitoring  
 Retraining  
 
-## Project Approach:
+## Project Approach:  
 “I generally explain the methodology in three layers:  
 First, from a project execution perspective, teams may use Agile or Scrum.  
 Second, from an ML development perspective, we work iteratively through experimentation, feature engineering, training, and validation.  
 Third, from an MLOps engineering perspective, our stack is best described as a pipeline-based CI/CD/CT architecture with GitOps deployment and continuous monitoring.  
 
+
+Data scientists follow CRISP-DM (Cross-Industry Standard Process for Data Mining). It's the most widely used methodology in data science — like how Scrum is to software development.
+
+
+Google’s MLOps Maturity Level 2.  
+Level 0 — Manual Process  
+Everything is done by hand.  
+A data scientist writes code in a Jupyter notebook, trains a model locally, tests it manually, and hands it over to an engineer who deploys it somehow. When the model degrades, someone notices eventually and the whole process repeats manually.  
+Problem: Slow, error-prone, no reproducibility, breaks in production silently.  
+
+Level 1 — ML Pipeline Automation  
+Instead of manual steps, you build an automated pipeline that handles the full flow: data ingestion → validation → preprocessing → training → evaluation → deployment.  The key addition here is Continuous Training (CT) — the pipeline can retrain automatically when triggered by new data or a schedule.  
+Problem: The pipeline itself is still deployed manually. If a data scientist changes the training code, there's no CI/CD to test and deploy that pipeline change.  
+
+Level 2 — CI/CD + ML Pipeline Automation  
+This is the full picture. Level 2 adds CI/CD for the pipeline code itself, not just for the model. Every component of the ML system — data processing, training logic, serving config — is treated as software and goes through automated testing, building, and deployment.
+  - Level 2 — Complete Flow Using Your Stack
 
 1. Project Initiation & Tech Stack
 2. What the Data Scientists hand over — brief context, just enough to show you understand the ML side
