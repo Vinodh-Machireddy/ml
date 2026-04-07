@@ -1,20 +1,6 @@
 MACHINE LEARNING:
 Machine Learning (ML) is a process / technique of teaching a computers using data, instead of writing rules manually like old programs. A computer learns patterns from past data and uses that learning to make predictions or decisions on new data. 
 
-ML Lifecycle:  
-Business problem  
-Data collection  
-Data validation  
-Feature engineering  
-Model training  
-Experiment tracking  
-Model evaluation  
-Model registry  
-Deployment  
-Monitoring  
-Retraining  
-
-
 
 Old (Traditional) way
 You write rules
