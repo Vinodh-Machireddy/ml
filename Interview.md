@@ -520,3 +520,29 @@ Option B — Add Resources (If available)
 	- one person from the platform team for 1 week, we can stay on track.
 Option C — Extend Timeline (Last resort)
 	- "If a deadline must slip, I communicate it early with a clear revised plan — not at the last minute with excuses." 
+	
+## Client frustrated
+### Step 1 — Stay Calm, Don't React  
+	-  When a client is harsh or frustrated, my first response is to stay calm and listen — I don't react, not defend, not interrupt. Their frustration is about the situation, not about me personally. 
+	
+### Step 2 — Listen and Acknowledge Their Frustration  
+	-  After they've vented, I acknowledge their frustration first before jumping to solutions.  
+	- `I completely understand your frustration, and I take this seriously. Let me make sure I understand the problem correctly...`
+	
+### Step 3 — Ask Questions to Understand the Real Problem
+Once they've calmed down, I shift the conversation from emotion to facts by asking specific questions. — when did it start, what exactly is failing, did anything change recently. This helps me find the real root cause.  
+
+### Step 4 — Provide Immediate Action + Long-Term Fix
+	-  I always provide two responses — an immediate fix to stop the pain right now, and a long-term fix so it never happens again. For example, in our battery fault project, if the model was giving false alarms, I'd immediately rollback to the previous version using ArgoCD — takes 5 minutes. Then I'd add data validation steps and Prometheus alerts to catch the root cause before it reaches production next time.  
+
+### Step 5 — Follow Up Proactively
+	-  After the crisis, I follow up proactively — share incident reports, update on preventive actions, and confirm the fixes are working.  
+
+### If Client Continus Abusive, How to set a boundary professionally:
+  	-  "I understand you're frustrated and I genuinely want to solve this problem. But I'd appreciate it if we keep this conversation professional and focused on the solution. I'm here to help, and I can do that best when we work together respectfully."   
+
+### If it continues after the boundary:
+	-  "I think we're both frustrated right now. Let me propose we take a 30-minute break and reconvene. I'll come back with a concrete action plan. Does that work?"  
+
+### If it still continues:  
+	-  I'd like to bring in my manager for this conversation so we can address your concerns at the right level. 
