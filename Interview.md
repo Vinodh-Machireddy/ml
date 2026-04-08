@@ -421,3 +421,28 @@ This answers "you OWN this end-to-end — decisions, quality, improvements, on-c
 ```
 > "Ownership gives people pride and accountability. They're not just executing tasks — they're owning a piece of the platform."
 
+### Step 5 — Regular Cadence
+"I'd establish a regular cadence — daily standups to surface blockers immediately, weekly one-on-ones with each member to build trust and address personal concerns, biweekly retrospectives for the team to improve its own process, and monthly architecture reviews to address tech debt and plan improvements.   
+```  
+Meeting              Frequency    Duration    Purpose
+
+Daily standup        Every day    15 min      Surface blockers
+Weekly 1-on-1        Every week   30 min      Build trust, grow people
+Biweekly retro       Every 2 wks  1 hour      Team improves its process
+Monthly arch review  Every month  1-2 hours   Big picture and tech debt
+```
+### Step 6 — Shield the Team
+"My job as a lead is to protect the team from distractions — unnecessary meetings, unclear requirements, last-minute scope changes. I handle the stakeholder communication so the team can focus on building."  
+
+### Step 7 — Grow the Team
+"Finally, I'd invest in their growth:"  
+```  
+→ Pair them on tasks outside their comfort zone
+→ Encourage internal tech talks (each person presents their area)
+→ Support certifications (AWS, Kubernetes, MLOps)
+→ Give credit publicly, give feedback privately
+```
+**Put It All Together — Your Crisp Answer**
+
+"If given a team, my approach would be: first understand each person — their strengths, gaps, and goals through one-on-ones. Then set clear expectations — who owns what, how we work, and what quality looks like. I'd divide the platform into clear ownership areas so each person owns a piece end-to-end rather than just executing tasks. I'd establish a regular cadence — daily standups, weekly one-on-ones, biweekly retros. My job as a lead would be to shield the team from distractions, unblock them when they're stuck, and grow them by giving stretch assignments and learning opportunities. I've been doing this informally as a senior IC for years — mentoring juniors, leading design discussions, coordinating with data science teams. A formal role would just make that official."  
+
