@@ -317,5 +317,24 @@ Infosys:
 	> once you get a new project how you handle or start it like distributing modules, sharing workload.    
 	
 	
+I haven’t had formal reporting management yet. But in my current role, Even though I've been an IC for 7+ years, I've naturally taken on informal leadership throughout my career — mentoring junior engineers, technical ownership, leading architecture discussions, and coordinating across teams with data scientists, which already requires many of the same skills.  
 
+I believe people management is an extension of ownership and communication, and I’m confident I If given a formal team, i have a plan with the structured approach where.
+
+
+**Step 1.** First, I would understand the project goal, timelines, dependencies, and expectations clearly so I can give the team the right direction.  
+
+**Step 2.** First, I'd have one-on-one conversations with every team member to understand:
+```  
+→ What are their strengths and interests?
+→ What are their skill gaps?
+→ What motivates them?
+→ What frustrates them?
+→ where they blocking  
+```
+> "For example, one person might be strong in Kubernetes but weak in ML pipelines. Another might be great at monitoring but wants to learn deployment. Understanding this helps me assign the right work to the right person."
+
+**Step 3** — Set Clear Expectations(Detailed)
+The idea is simple: if people know exactly what's expected, most problems never happen. Confusion causes 80% of team issues — not laziness, not bad attitude.  
+A. Roles — "Who owns what?"
 
