@@ -446,3 +446,16 @@ Monthly arch review  Every month  1-2 hours   Big picture and tech debt
 
 "If given a team, my approach would be: first understand each person — their strengths, gaps, and goals through one-on-ones. Then set clear expectations — who owns what, how we work, and what quality looks like. I'd divide the platform into clear ownership areas so each person owns a piece end-to-end rather than just executing tasks. I'd establish a regular cadence — daily standups, weekly one-on-ones, biweekly retros. My job as a lead would be to shield the team from distractions, unblock them when they're stuck, and grow them by giving stretch assignments and learning opportunities. I've been doing this informally as a senior IC for years — mentoring juniors, leading design discussions, coordinating with data science teams. A formal role would just make that official."  
 
+### if team members not listining you, what would you do?  
+If someone isn't listening, there's always a reason — They don't understand, disagree technically, Attitude problem, they might feel unheard, or they might be dealing with personal issues. So I'd start with a private one-on-one conversation — ask questions, listen, and understand their perspective. 
+
+If Reason 1: They Don't Understand   -  i try to explain again in detail.  
+If Reason 2: They Disagree Technically  - Your response: "Arun, I respect your opinion. Let's do this properly —  you present the case for blue-green, I'll present the case for canary, and we'll evaluate together based on our requirements.   
+If Reason 3: They Feel Unheard  - "Sneha, I realize I've been pushing back on your monitoring proposals because of deadlines,  
+If Reason 4: Personal Issues  - I just want to know , if you're okay and how I can support you."  
+If Reason 5: Genuine Attitude Problem (Rare) - Direct conversation with clear expectations.   
+If no improvement after 2 weeks:  
+	- Involve your manager / HR
+	- Put on a performance improvement plan (PIP) 
+If still no improvement:  
+	- This person may need to leave the team or role
