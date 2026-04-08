@@ -545,4 +545,62 @@ Once they've calmed down, I shift the conversation from emotion to facts by aski
 	-  "I think we're both frustrated right now. Let me propose we take a 30-minute break and reconvene. I'll come back with a concrete action plan. Does that work?"  
 
 ### If it still continues:  
-	-  I'd like to bring in my manager for this conversation so we can address your concerns at the right level. 
+	-  I'd like to bring in my manager for this conversation so we can address your concerns at the right level.  
+
+## How do you start a new project — distributing modules and sharing workload?
+### Step 1 — Understand the Full Scope First
+> "Before assigning anything, I need to understand the complete picture."
+```
+→ Meet with stakeholders / client / product team
+→ Understand the business problem and success criteria
+→ Understand the timeline and hard deadlines
+→ Identify dependencies (other teams, cloud access, data access)
+→ Identify risks early
+```
+### Step 2 — Break the Project into Modules
+> "I break the entire project into clear, independent modules that can be worked on in parallel."
+	> Module 1: Infrastructure Setup
+	> Module 2: Training Pipeline
+	> Module 3: CI/CD Pipeline
+	> Module 4: Model Serving & Deployment
+	> Module 5: Monitoring & Alerting
+
+### Step 3 — Assess Your Team
+> "Before assigning modules, I assess each person across three dimensions."
+```
+For each team member, I ask:
+
+1. STRENGTH  → What are they best at?
+2. INTEREST  → What do they WANT to work on?
+3. GROWTH    → What do they NEED to learn?
+```
+### Step 4 — Assign Modules Using the 70/20/10 Rule
+> "I use a simple rule for assignment: 70% strength, 20% growth, 10% support."
+```
+70% → Work in your STRENGTH area (delivers results, meets deadlines)
+20% → Work in your GROWTH area (learns something new, stays motivated)
+10% → Support another module (prevents single point of failure)
+```
+### Step 5 — Create a Shared Project Board
+> "Once modules are assigned, I create a visible project board so everyone knows the status of everything — not just their own module."
+
+### Step 6 — Define Dependencies and Sequence
+> "Not all modules can start at the same time. I map out what depends on what and create a timeline."
+```
+Week 1-2:   Module 1 (Infrastructure) starts FIRST
+            → Everyone else needs EKS, S3, ECR to exist
+            Karthik is the critical path
+
+Week 2-3:   Module 2 (Training Pipeline) starts
+            → Needs EKS cluster from Module 1
+            Ravi starts once Karthik delivers EKS
+
+Week 2-3:   Module 3 (CI/CD) starts IN PARALLEL
+            → Doesn't depend on infrastructure heavily
+            Priya can start immediately with GitHub Actions
+
+```
+
+
+
+
