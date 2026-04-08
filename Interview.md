@@ -315,6 +315,7 @@ Infosys:
 	> day to day activities  
 	> challenges  
 	> once you get a new project how you handle or start it like distributing modules, sharing workload.    
+	> did you face any branstroming sessions
 
 ## Team Handling	
 **You don't 've prior experience how do you handle a team?**	
@@ -459,3 +460,63 @@ If no improvement after 2 weeks:
 	- Put on a performance improvement plan (PIP) 
 If still no improvement:  
 	- This person may need to leave the team or role
+
+## Deadlines
+I never accept a deadline without first breaking the work into smaller pieces and estimating realistically.   
+
+### Phase 1 — Break It Down Before Committing  
+```
+✅ Manager: "Can you set up the full MLOps pipeline in 6 weeks?"  
+   You:     "Let me break it down and get back to you by tomorrow."  
+
+   Your breakdown:
+   ┌─────────────────────────────────┬──────────┬────────┐
+   │ Task                            │ Estimate │ Risk   │
+   ├─────────────────────────────────┼──────────┼────────┤
+   │ EKS cluster setup               │ 3 days   │ Low    │
+   │ Kubeflow installation           │ 4 days   │ Medium │
+   │ MLflow setup                    │ 2 days   │ Low    │
+   │ Training pipeline (5 steps)     │ 8 days   │ High   │
+   │ GitHub Actions CI/CD            │ 4 days   │ Low    │
+   │ KServe + ArgoCD deployment      │ 5 days   │ High   │
+   │ Prometheus + Grafana monitoring │ 5 days   │ Medium │
+   │ End-to-end testing              │ 4 days   │ Medium │
+   │ Documentation                   │ 3 days   │ Low    │
+   ├─────────────────────────────────┼──────────┼────────┤
+   │ Total                           │ 38 days  │        │
+   │ Buffer for high-risk items      │ 5 days   │        │
+   │ Total with buffer               │ 43 days  │ ~9 wks │
+   └─────────────────────────────────┴──────────┴────────┘
+
+   You: "Realistically, this needs 8-9 weeks, not 6. 
+         If 6 weeks is hard, here's what we can deliver 
+         by week 6 and what moves to week 8..."
+```
+### Phase 2 — Prioritize with MoSCoW
+"If the deadline is tight, I use MoSCoW prioritization to negotiate scope, not sacrifice quality."  
+
+MoSCoW means: 
+```
+Must Have    → Without this, the project fails
+Should Have  → Important but can be done in next phase
+Could Have   → Nice to have, skip if time is short
+Won't Have   → Explicitly out of scope for now
+```
+### Phase 3 — Track Progress Weekly (Not at the End)
+"I don't wait until the deadline to check if we're on track. I track weekly using a simple Red/Amber/Green status."   
+```
+Problems found in Week 3 → You have 3 weeks to fix them
+Problems found in Week 6 → You have 0 weeks, deadline missed
+
+Early visibility = early correction
+```
+
+### Phase 4 — When the Deadline Is Genuinely at Risk
+Despite planning, sometimes things go wrong — an unexpected infrastructure issue, a team member falls sick, a dependency is delayed. Here's how you handle it:  
+
+Option A — Reduce Scope (Preferred)
+	- I'd rather deliver 90% that works perfectly than 100%
+Option B — Add Resources (If available)
+	- one person from the platform team for 1 week, we can stay on track.
+Option C — Extend Timeline (Last resort)
+	- "If a deadline must slip, I communicate it early with a clear revised plan — not at the last minute with excuses." 
