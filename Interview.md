@@ -192,27 +192,7 @@ Simple Analogy
 Monitoring = Thermometer → tells you the fever exists.
 Observability = Doctor → investigates symptoms to find the cause.
 
-
 ## Technical Rounds:
-- Walk me through the end-to-end ML lifecycle and where MLOps fits in.
-- If a model’s accuracy suddenly drops in production, what’s your step-by-step approach to diagnose it?
-- In your pipeline, where would you place data validation checks and how would you automate them?
-- Tell me how you implemented Kubeflow Pipelines
-- Can you create a GitHub Actions / Jenkins pipeline to train, evaluate, register, and deploy a model automatically?
-- How do you deploy ML models on AWS SageMaker / Azure ML / GCP Vertex AI? Which is your preferred platform and why?
-- How would you implement blue-green or canary deployment for ML models?
-- How do you secure model endpoints in production? (Auth, API Gateway, rate limiting)
-- How do you manage model secrets (DB passwords, API keys) in pipelines?
-- What’s your approach to cost optimization for ML workloads in the cloud?
-- Your model training job that usually takes 30 mins is now taking 2 hours. How would you troubleshoot?
-- You deployed a model, but after 2 weeks, business KPIs dropped despite good accuracy. What could be wrong?
-- The data team sends you a new dataset with extra columns. How will you integrate it without breaking the pipeline?
-- How would you handle model rollback if the latest model causes bad predictions in production?
-Give me a real example where you automated a repetitive ML process and saved significant time.
-Special interview questions:
-Explain how do you create and manage kubernetes cluster?
-We use namespaces for logical isolation then we setup resource quota on namespace, so the teams are restricted to the compute power 
-And we help the teams to enable resource requests and limits on each pod, so that each pod is restricted with compute and memory power
 
 ## Manager Round
 1. Walk me through a project you've owned end-to-end.
@@ -242,8 +222,8 @@ Ans: entire team i mentored to understand new tool . previously we are using Fas
  - Having 1-on-1s with every team member — understanding their strengths, career goals, frustrations, and what's blocking them
 2. Set clear goals and ownership
 3. Build a culture of trust, not micromanagement
- 
-### CHALLENGES
+
+7. CHALLENGES
 **Silent Feature Drift in Production — Battery Fault Classifier**
 **Situation:** 
 when we working on ev battery fault classifier model which is running in production for about three months, performing well. Accuracy and latency dashboards on Grafana looked stable. But then the battery domain engineers started reporting something strange — the number of degraded classifications had quietly increased by 30% over the past few weeks. No alerts had fired. No errors in logs.  
