@@ -13,30 +13,32 @@ yyaml - YAML
 pytest - Tests  
 joblib - Model serialization  
 
-## Python Core
-Variables  
-Data Types  
-Type Conversion  
-Input & Output  
-Operators  
-Strings  
-if / elif / else  
-for loop  
-while loop  
-Lists  
-Tuples  
-Sets  
-Dictionaries  
-Functions  
-Built-in Functions  
-Modules & Import  
-List Comprehensions  
-File Handling  
-Error Handling  
 
-
-
-
+## Python Core Topics (Must Know)
+1. Variables
+2. Data Types
+3. Type Conversion
+4. Operators
+5. Strings
+6. if / elif / else
+7. for loop
+8. while loop
+9. Lists
+10. Tuples
+11. Sets
+12. Dictionaries
+13. Functions
+14. Lambda Functions
+15. *args & **kwargs
+16. Built-in Functions
+17. OOP Basics (Classes & Objects)
+18. Modules & Import
+19. List Comprehensions
+20. Error Handling
+**Nice to Have**
+21. Input & Output
+22. File Handling
+23. Decorators (just recognize, not write)
 
 
 
