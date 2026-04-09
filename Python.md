@@ -41,6 +41,58 @@ joblib - Model serialization
 23. Decorators (just recognize, not write)
 
 
+### Variables:	
+variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
+```  
+model_version = "v1.3"
+threshold = 0.5
+max_depth = 6
+data_path = "s3://daimler-battery/data/train.csv"
+
+**Multiple Assignment:**
+```
+best_score = 0.91
+current_score = 0.95
+# current model is better, so swap
+best_score, current_score = current_score, best_score
+print(best_score)    # 0.95
+```
+
+
+Types:
+———
+Global Variable
+Local Variable
+
+Naming Conventions:
+Variable names must start with a letter (a-z, A-Z) or an underscore (_).
+The rest of the name can include letters, numbers, or underscores.
+Best Practice only Lower case variable names
+Snake casing: Vinodh_Machireddy_DevOps (or) Camel Casing: vinodh_Machireddy_DevOps
+Keep variable names as descriptive as possible. vmd
+Reserved keywords (e.g., if, while, class, import) cannot be used as variable names.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Introduction
@@ -249,23 +301,7 @@ if "fault" in log:       # word exists check
 if is_active:            # boolean check
 if len(sensors) > 0:     # length check
 
-							Variables:
-							========
-
-variables are used to store data values. A variable is essentially a name that refers to a value.
-- It store data, DATA can be any type like String, Float, Boolean….etc
-Types:
-———
-Global Variable
-Local Variable
-
-Naming Conventions:
-Variable names must start with a letter (a-z, A-Z) or an underscore (_).
-The rest of the name can include letters, numbers, or underscores.
-Best Practice only Lower case variable names
-Snake casing: Vinodh_Machireddy_DevOps (or) Camel Casing: vinodh_Machireddy_DevOps
-Keep variable names as descriptive as possible. vmd
-Reserved keywords (e.g., if, while, class, import) cannot be used as variable names.
+							
 
 
 							FUNCTIONS
