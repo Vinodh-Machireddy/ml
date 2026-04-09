@@ -79,6 +79,12 @@ machireddyvinodh@larach.biz
 Mail ID Password:  Larc@1234$
 EMP ID: LARC-6402
 
+12. June 2011 to feb 2019 (7.8 years gap) : Handling Family Business
+- i'm into my family business for 7.5 years. my father was facing serious health issues at that time and he needed support to run our rice business. so, i took over family business for 7.5 years.
+
+- Actually my passion is to work in IT many of my friend are in good position it motivated me and start learning IT cousers. at that time only a ai and ml buzz started. 
+
+
 Ai vs ml
 Docker image size reduce
 Handling huge data - pyspark
