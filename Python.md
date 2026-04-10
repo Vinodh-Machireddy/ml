@@ -41,7 +41,7 @@ joblib - Model serialization
 23. Decorators (just recognize, not write)
 
 
-### Variables:	
+### Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
 ```  
 model_version = "v1.3"
@@ -75,9 +75,42 @@ Local Variable : Defined inside a function — only lives inside that function.
 - Keep variable names as descriptive as possible. vmd  
 - Reserved keywords (e.g., if, while, class, import) cannot be used as variable names.  
 
+### Data Types
+**int — Integer:** Whole numbers, no decimals.  
+```
+n_estimators = 100
+max_depth = 6
+num_classes = 4         # fault types in battery classifier
+print(type(n_estimators))   # <class 'int'>
+```
+**float — Decimal Numbers:**
+```
+learning_rate = 0.05
+threshold = 0.5
+f1_score = 0.923
+print(type(learning_rate))   # <class 'float'>
+```
+**str — String:**
+```
+model_name = "XGBoost"
+experiment_name = "battery_fault_classifier"
+data_path = "s3://daimler-battery/data/train.csv"
+print(type(model_name))   # <class 'str'>
+```
+**bool — Boolean:** Only two values — True or False.
+```
+is_trained = False
+log_to_mlflow = True
 
-
-
+print(type(is_trained))   # <class 'bool'>
+```
+> Important — In Python, booleans are actually integers underneath
+**Check Data Type:**
+```
+# use isinstance() — more useful in real code
+print(isinstance(0.95, float))    # True
+print(isinstance(100, int))       # True
+```
 
 
 
