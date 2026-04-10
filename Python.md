@@ -48,7 +48,7 @@ model_version = "v1.3"
 threshold = 0.5
 max_depth = 6
 data_path = "s3://daimler-battery/data/train.csv"
-
+```  
 **Multiple Assignment:**
 ```
 best_score = 0.91
@@ -57,7 +57,7 @@ current_score = 0.95
 best_score, current_score = current_score, best_score
 print(best_score)    # 0.95
 ```
-**Unpack:**  
+**Unpack**
 x, y, z = 10, 20, 30
 #x=10  y=20  z=30
 `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)`
@@ -65,7 +65,7 @@ x, y, z = 10, 20, 30
 
 Types:
 ———
-Global Variable
+Global Variable: Defined inside a function — only lives inside that function.
 Local Variable
 
 Naming Conventions:
