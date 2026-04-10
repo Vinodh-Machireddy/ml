@@ -57,7 +57,11 @@ current_score = 0.95
 best_score, current_score = current_score, best_score
 print(best_score)    # 0.95
 ```
-
+**Unpack:**  
+x, y, z = 10, 20, 30
+#x=10  y=20  z=30
+`X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)`
+> left side variables = right side values, matched by position.
 
 Types:
 ———
