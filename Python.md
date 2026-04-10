@@ -57,24 +57,23 @@ current_score = 0.95
 best_score, current_score = current_score, best_score
 print(best_score)    # 0.95
 ```
-**Unpack**
-x, y, z = 10, 20, 30
-#x=10  y=20  z=30
-`X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)`
-> left side variables = right side values, matched by position.
+**Unpack**  
+x, y, z = 10, 20, 30  
+#x=10  y=20  z=30  
+`X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)`  
+> left side variables = right side values, matched by position.  
 
-Types:
-———
-Global Variable: Defined inside a function — only lives inside that function.
-Local Variable
+**Types:**
+Global Variable: Defined outside all functions — accessible everywhere.  
+Local Variable : Defined inside a function — only lives inside that function.  
 
-Naming Conventions:
-Variable names must start with a letter (a-z, A-Z) or an underscore (_).
-The rest of the name can include letters, numbers, or underscores.
-Best Practice only Lower case variable names
-Snake casing: Vinodh_Machireddy_DevOps (or) Camel Casing: vinodh_Machireddy_DevOps
-Keep variable names as descriptive as possible. vmd
-Reserved keywords (e.g., if, while, class, import) cannot be used as variable names.
+**Naming Conventions:**
+- Variable names must start with a letter (a-z, A-Z) or an underscore (_).  
+- The rest of the name can include letters, numbers, or underscores.  
+- Best Practice only Lower case variable names  
+- Snake casing: Vinodh_Machireddy_DevOps (or) Camel Casing: vinodh_Machireddy_DevOps  
+- Keep variable names as descriptive as possible. vmd  
+- Reserved keywords (e.g., if, while, class, import) cannot be used as variable names.  
 
 
 
