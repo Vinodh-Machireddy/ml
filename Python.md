@@ -233,11 +233,69 @@ result = (2 + 3) * 4    # 20 — brackets first
 > ### MLOps example
 accuracy = correct / total * 100    # division first, then multiply
 
+### 5. Strings
+Any text data wrapped in quotes — single 'battery_fault_classifier' or double "XGBoost", both work the same.  
 
+**String Indexing & Slicing:**
+Every character has a position starting from 0.  
+```
+name = "XGBoost"
+#       0123456
 
+print(name[0])      # X — first character
+print(name[-1])     # t — last character
+print(name[0:3])    # XGB — from index 0 to 2
+print(name[2:])     # Boost — from index 2 to end
+print(name[:3])     # XGB — from start to index 2
+```
+**String Methods:**
+| # | Method | What it does |
+|---|---|---|
+| 1 | `.strip()` | Removes leading/trailing whitespace |
+| 2 | `.lower()` | Converts to lowercase — used in comparisons |
+| 3 | `.split(sep)` | Splits string into list by separator |
+| 4 | `",".join(list)` | Joins list into a single string |
+| 5 | `.replace(old, new)` | Replaces part of a string |
+| 6 | `.startswith(prefix)` | Checks if string starts with something |
+| 7 | `.endswith(suffix)` | Checks if string ends with something |
+| 8 | `.find(sub)` | Finds index of substring, -1 if not found |
+| 9 | `.format()` / `f"..."` | Inserts values into a string |
+| 10 | `len(str)` | Returns length of string |
 
+**f-string Formatting :**
+```
+print(f"Model: {model}, F1: {f1}, Version: v{version}")
+o/p: Model: XGBoost, F1: 0.923, Version: v3  
 
+f1 = 0.92345
+print(f"F1 Score: {f1:.4f}")        # F1 Score: 0.9235
 
+print(f"Epoch: {epoch} | Loss: {loss:.4f}")     # Epoch: 10 | Loss: 0.0432
+
+model_path = f"s3://{bucket}/models/{version}/model.pkl"  
+
+experiment_name = f"{model_name}_{env}_{date}"  
+```
+**Multi-line Strings:**
+```
+# triple quotes — used for long messages, SQL queries, prompts
+query = """
+    SELECT feature, value
+    FROM battery_data
+    WHERE fault_type = 'thermal'
+    AND timestamp > '2024-01-01'
+"""
+
+# also used for docstrings in functions
+def train_model(X, y):
+    """
+    Trains XGBoost classifier on battery fault data.
+    Returns trained model and f1 score.
+    """
+    pass
+```
+### 6. if / elif / else
+Controls which block of code runs based on a condition. Every condition returns True or False.  
 
 
 
