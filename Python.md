@@ -323,6 +323,24 @@ if f1_score < 0.75 or drift_detected:
 ```
 > we can use `in / not in` ,  `is / is not` also.
 
+### 7. for loop
+Repeats a block of code for each item in a collection — list, tuple, dictionary, range, or any iterable.  
+```
+# range(start, stop, step)
+for i in range(0, 100, 10):
+    print(i)        # 0 10 20 30 40 50 60 70 80 90
+```  
+
+
+
+
+
+
+
+
+
+
+
 
 
 
