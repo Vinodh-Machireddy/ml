@@ -107,9 +107,39 @@ print(type(is_trained))   # <class 'bool'>
 > Important — In Python, booleans are actually integers underneath
 **Check Data Type:**
 ```
+print(type(100))          # <class 'int'>
+print(type(0.95))         # <class 'float'>
+print(type("XGBoost"))    # <class 'str'>
+  
 # use isinstance() — more useful in real code
 print(isinstance(0.95, float))    # True
 print(isinstance(100, int))       # True
+```
+**Type Conversion:**
+Converting a value from one data type to another.  
+
+| Function | Converts To | Input Example | Output | Watch Out For |
+|---|---|---|---|---|
+| `int()` | Integer | `int("100")` | `100` | `int(3.9)` → `3` (truncates, no rounding) |
+| `float()` | Float | `float("0.05")` | `0.05` | `float("abc")` crashes — wrap in try/except |
+| `str()` | String | `str(100)` | `"100"` | |
+| `bool()` | Boolean | `bool(0)` | `False` | `bool("False")` → `True` ⚠️ any non-empty string is True |
+| `list()` | List | `list((1,2,3))` | `[1, 2, 3]` | |
+
+**bool():**
+```
+# These are all False
+print(bool(0))          # False
+print(bool(0.0))        # False
+print(bool(""))         # False — empty string
+print(bool(None))       # False
+print(bool([]))         # False — empty list
+
+# Everything else is True
+print(bool(1))          # True
+print(bool(0.95))       # True
+print(bool("XGBoost"))  # True
+print(bool([1,2,3]))    # True
 ```
 
 
