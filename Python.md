@@ -141,11 +141,97 @@ print(bool(0.95))       # True
 print(bool("XGBoost"))  # True
 print(bool([1,2,3]))    # True
 ```
+### Operators
+**Arithmetic Operators:**
+```
+a = 10
+b = 3
 
+print(a + b)    # 13  — addition
+print(a - b)    # 7   — subtraction
+print(a * b)    # 30  — multiplication
+print(a / b)    # 3.3333 — division (always float)
+print(a // b)   # 3   — floor division (drops decimal)
+print(a % b)    # 1   — modulus (remainder)
+print(a ** b)   # 1000 — power (10³)
+```
+**Comparison Operators:**
+Always returns True or False.  
+```
+f1_score = 0.923
+threshold = 0.90
 
+print(f1_score > threshold)     # True  — greater than
+print(f1_score < threshold)     # False — less than
+print(f1_score >= 0.923)        # True  — greater than or equal
+print(f1_score <= 0.90)         # False — less than or equal
+print(f1_score == 0.923)        # True  — equal
+print(f1_score != 0.923)        # False — not equal
+```
+**Logical Operators:**
+Combine multiple conditions.  
+```
+# and — both must be True
+# or  — at least one must be True
+# not — flips True to False
 
+f1_score = 0.94
+drift_detected = False
+model_age_days = 10
 
+# Deploy only if f1 is good AND no drift
+if f1_score > 0.90 and not drift_detected:
+    print("Safe to deploy")         # ✅ this runs
 
+# Retrain if drift detected OR model is old
+if drift_detected or model_age_days > 30:
+    print("Trigger retraining")     # ❌ doesn't run here
+```
+**Assignment Operators:**
+Shortcut for updating a variable.  
+```
+score = 0.90
+
+score += 0.03       # same as score = score + 0.03  → 0.93
+score -= 0.01       # same as score = score - 0.01  → 0.92
+score *= 2          # same as score = score * 2     → 1.84
+score /= 2          # same as score = score / 2     → 0.92
+```
+**Membership Operators:**
+Check if a value exists inside a collection.  (in & not in)
+```
+supported_models = ["XGBoost", "RandomForest", "LightGBM"]
+requested_model = "XGBoost"
+
+if requested_model in supported_models:
+    print(f"Loading {requested_model}...")
+else:
+    print("Model not supported")
+
+# Check if feature exists in dataframe columns
+required_features = ["voltage", "temperature", "current"]
+if "voltage" not in df.columns:
+    raise ValueError("Missing required feature: voltage")
+```
+**Identity Operators:**
+Check if two variables point to same object in memory — not just equal value.  
+```
+# is / is not
+
+# use 'is' for None checks — standard Python practice
+model = None
+
+if model is None:
+    print("Model not loaded yet")      # ✅ correct way
+
+if model is not None:
+    print("Model ready")
+```
+> ### Python follows math order: ** → * / // % → + -
+result = 2 + 3 * 4      # 14, not 20 — multiplication first
+result = (2 + 3) * 4    # 20 — brackets first  
+> ### MLOps example
+accuracy = correct / total * 100    # division first, then multiply
 
 
 
