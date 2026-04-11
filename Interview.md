@@ -302,6 +302,11 @@ Infosys:
 	> challenges  
 	> once you get a new project how you handle or start it like distributing modules, sharing workload.    
 	> did you face any branstroming sessions
+www.axtria.com: 
+	> diff b/w fine tuning and prompting 
+	> diff b/w list and generator 
+	> Data process related 
+	
 
 ## Team Handling	
 **You don't 've prior experience how do you handle a team?**	
