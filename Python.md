@@ -296,8 +296,32 @@ def train_model(X, y):
 ```
 ### 6. if / elif / else
 Controls which block of code runs based on a condition. Every condition returns True or False.  
+```
+f1_score = 0.94
 
+if f1_score >= 0.90:
+    print("Model is good — ready for deployment")
+elif f1_score >= 0.75:
+    print("Model is average — needs improvement")
+else:
+    print("Model is poor — retrain immediately")
 
+# Output: Model is good — ready for deployment
+```
+**Multiple Conditions — and / or:**
+```
+f1_score = 0.94
+drift_detected = False
+
+# both must be True
+if f1_score >= 0.90 and not drift_detected:
+    print("Safe to deploy")
+
+# at least one must be True
+if f1_score < 0.75 or drift_detected:
+    print("Trigger retraining")
+```
+> we can use `in / not in` ,  `is / is not` also.
 
 
 
