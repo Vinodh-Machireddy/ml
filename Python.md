@@ -329,7 +329,8 @@ Repeats a block of code for each item in a collection — list, tuple, dictionar
 # range(start, stop, step)
 for i in range(0, 100, 10):
     print(i)        # 0 10 20 30 40 50 60 70 80 90
-```  
+```
+
 | Syntax | Use | MLOps Example |
 |---|---|---|
 | `for item in list` | Loop over a list | Iterate over feature names |
@@ -340,6 +341,8 @@ for i in range(0, 100, 10):
 | `break` | Exit loop early | Stop when target F1 is hit |
 | `continue` | Skip current iteration | Skip None or missing features |
 
+### 8. while loop
+Repeats a block of code as long as a condition is True — unlike for loop, you don't know upfront how many times it will run.  
 
 
 
