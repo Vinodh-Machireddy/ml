@@ -330,9 +330,15 @@ Repeats a block of code for each item in a collection — list, tuple, dictionar
 for i in range(0, 100, 10):
     print(i)        # 0 10 20 30 40 50 60 70 80 90
 ```  
-
-**enumerate() — Loop with Index:**
-
+| Syntax | Use | MLOps Example |
+|---|---|---|
+| `for item in list` | Loop over a list | Iterate over feature names |
+| `for i in range(n)` | Loop n times | Training epochs |
+| `for i, item in enumerate(list)` | Loop with index | Track model number in search |
+| `for a, b in zip(list1, list2)` | Loop two lists together | Compare actual vs predicted labels |
+| `for k, v in dict.items()` | Loop over dictionary | Print hyperparameter config |
+| `break` | Exit loop early | Stop when target F1 is hit |
+| `continue` | Skip current iteration | Skip None or missing features |
 
 
 
