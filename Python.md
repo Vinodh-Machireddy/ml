@@ -343,6 +343,27 @@ for i in range(0, 100, 10):
 
 ### 8. while loop
 Repeats a block of code as long as a condition is True — unlike for loop, you don't know upfront how many times it will run.  
+```
+epoch = 0
+
+while epoch < 5:
+    print(f"Training epoch {epoch}")
+    epoch += 1          # ⚠️ must update — otherwise runs forever!
+
+# Output:
+# Training epoch 0
+# Training epoch 1
+# Training epoch 2
+# Training epoch 3
+# Training epoch 4
+```
+> break — Exit Early
+> continue — Skip Current Iteration
+
+### 9. Lists
+An ordered, mutable collection that stores multiple values in a single variable.  
+
+
 
 
 
