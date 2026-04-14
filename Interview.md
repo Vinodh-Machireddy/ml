@@ -232,7 +232,7 @@ This answers "you OWN this end-to-end — decisions, quality, improvements, on-c
 ```
 > "Ownership gives people pride and accountability. They're not just executing tasks — they're owning a piece of the platform."
 
-**tep 5** — Regular Cadence
+**Step 5** — Regular Cadence
 "I'd establish a regular cadence — daily standups to surface blockers immediately, weekly one-on-ones with each member to build trust and address personal concerns, biweekly retrospectives for the team to improve its own process, and monthly architecture reviews to address tech debt and plan improvements.   
 ```  
 Meeting              Frequency    Duration    Purpose
@@ -246,12 +246,12 @@ Monthly arch review  Every month  1-2 hours   Big picture and tech debt
 "My job as a lead is to protect the team from distractions — unnecessary meetings, unclear requirements, last-minute scope changes. I handle the stakeholder communication so the team can focus on building."  
 
 **Step 7** — Grow the Team
-"Finally, I'd invest in their growth:"  
+"Finally, I'd invest in their growth:"    
  
-→ Pair them on tasks outside their comfort zone
-→ Encourage internal tech talks (each person presents their area)
-→ Support certifications (AWS, Kubernetes, MLOps)
-→ Give credit publicly, give feedback privately
+→ Pair them on tasks outside their comfort zone  
+→ Encourage internal tech talks (each person presents their area)  
+→ Support certifications (AWS, Kubernetes, MLOps)  
+→ Give credit publicly, give feedback privately  
 
 **13. If team members not listining you, what would you do?**
 If someone isn't listening, there's always a reason — They don't understand, disagree technically, Attitude problem, they might feel unheard, or they might be dealing with personal issues. So I'd start with a private one-on-one conversation — ask questions, listen, and understand their perspective. 
