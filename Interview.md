@@ -42,8 +42,13 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 **My Role is:** Senior MLOps Engineer
 
 **i'm Responsible for:** 
-1. maintaining all pipelines CI/CT/CD/CM
-2. 
+1. 🔁 ML Pipeline Design & Orchestration
+2. 🚀 Model Deployment & Serving Infrastructure
+3. ⚙️ CI/CD Automation for ML Workflows
+4. 📊 Observability, Monitoring & Alerting
+5. optimize ML infrastructure on AWS using Kubernetes
+6. Cost governance/Optimization
+7. Security
 
 ## Interview Schedule:
 
