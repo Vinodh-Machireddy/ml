@@ -48,7 +48,9 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 4. 📊 Observability, Monitoring & Alerting
 5. optimize ML infrastructure on AWS using Kubernetes
 6. Cost governance/Optimization
-7. Security
+   > aws Fargate is serverless compute for containers which manages worker nodes.
+   > knative: serverless model serving where it scale to zero.
+8. Security
 
 ## Interview Schedule:
 
