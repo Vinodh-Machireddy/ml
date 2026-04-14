@@ -256,15 +256,15 @@ Monthly arch review  Every month  1-2 hours   Big picture and tech debt
 **13. If team members not listining you, what would you do?**
 If someone isn't listening, there's always a reason — They don't understand, disagree technically, Attitude problem, they might feel unheard, or they might be dealing with personal issues. So I'd start with a private one-on-one conversation — ask questions, listen, and understand their perspective. 
 
-If Reason 1: They Don't Understand   -  i try to explain again in detail.  
-If Reason 2: They Disagree Technically  - Your response: "Arun, I respect your opinion. Let's do this properly —  you present the case for blue-green, I'll present the case for canary, and we'll evaluate together based on our requirements.   
-If Reason 3: They Feel Unheard  - "Sneha, I realize I've been pushing back on your monitoring proposals because of deadlines,  
-If Reason 4: Personal Issues  - I just want to know , if you're okay and how I can support you."  
-If Reason 5: Genuine Attitude Problem (Rare) - Direct conversation with clear expectations.   
-If no improvement after 2 weeks:  
+	- If Reason 1: They Don't Understand   -  i try to explain again in detail.  
+	- If Reason 2: They Disagree Technically  - Your response: "Arun, I respect your opinion. Let's do this properly —  you present the case for blue-green, I'll 			               present the case for canary, and we'll evaluate together based on our requirements.   
+	- If Reason 3: They Feel Unheard  - "Sneha, I realize I've been pushing back on your monitoring proposals because of deadlines,  
+	- If Reason 4: Personal Issues  - I just want to know , if you're okay and how I can support you."  
+	- If Reason 5: Genuine Attitude Problem (Rare) - Direct conversation with clear expectations.   
+- If no improvement after 2 weeks:  
 	- Involve your manager / HR
 	- Put on a performance improvement plan (PIP) 
-If still no improvement:  
+- If still no improvement:  
 	- This person may need to leave the team or role
 
 **14. How you will handle Deadlines**
