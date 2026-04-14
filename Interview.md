@@ -51,13 +51,14 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 7. Security
 
 ## Cost governance/Optimization
-- aws Fargate is serverless compute for containers which manages worker nodes.
-- knative: serverless model serving where it scale to zero.
-In ECR, Implemented image lifecycle policy, Delete untagged images older than 30 days. and Only kept last 5 versions. 👉 Reduced ECR storage cost
-In S3, I implemented lifecycle policies and intelligent tiering to move old artifacts to Glacier.
-EC2 Cost Optimization by Converted stable workloads to Reserved Instances, and Used Spot for batch processing
-In EKS, I enabled Cluster Autoscaler and HPA to scale nodes and pods dynamically.
-Also, I implemented tagging strategy and used AWS Cost Explorer for monitoring and budget alerts.
+- aws Fargate is serverless compute for containers which manages worker nodes.  
+- knative: serverless model serving where it scale to zero.  
+- In ECR, Implemented image lifecycle policy, Delete untagged images older than 30 days. and Only kept last 5 versions. 👉 Reduced ECR storage cost   
+- In S3, I implemented lifecycle policies and intelligent tiering to move old artifacts to Glacier.
+- In EKS, I enabled Cluster Autoscaler and HPA to scale nodes and pods dynamically.  
+- Also, I implemented tagging strategy and used AWS Cost Explorer for monitoring and budget alerts.  
+- EC2 Cost Optimization by Converted stable workloads to Reserved Instances, and Used Spot for batch processing  
+
 
 
 ## Interview Schedule:
