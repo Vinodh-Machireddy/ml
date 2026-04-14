@@ -37,7 +37,13 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 ## Tell me about your project:
 
 - I am working on Daimler Project which comes under automotive domain/Industry, their i am dealing with Battery Fault Classification. The project aims to classify battery cell faults in real time using sensor data from the Battery Management System (BMS). This helps detect issues like overheating, overcharging, internal short circuits, and cell degradation early — before they become safety-critical.  
--  The main purpose is to improve EV battery safety, and extend battery lifespan.  
+-  The main purpose is to improve EV battery safety, and extend battery lifespan.
+
+**My Role is:** Senior MLOps Engineer
+
+**i'm Responsible for:** 
+1. maintaining all pipelines CI/CT/CD/CM
+2. 
 
 ## Interview Schedule:
 
