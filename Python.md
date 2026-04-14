@@ -362,7 +362,63 @@ while epoch < 5:
 
 ### 9. Lists
 An ordered, mutable collection that stores multiple values in a single variable.  
+```
+features = ["voltage", "temperature", "current", "capacity"]
+f1_scores = [0.91, 0.93, 0.87, 0.95]
+mixed = ["XGBoost", 100, 0.05, True]       # can hold different types
+empty = []                                  # empty list
+```
+**Indexing & Slicing:**
+```
+features = ["voltage", "temperature", "current", "capacity"]
+#                 0            1           2           3
 
+print(features[0])      # voltage   — first item
+print(features[-1])     # capacity  — last item
+print(features[1:3])    # ['temperature', 'current'] — index 1 to 2
+print(features[:2])     # ['voltage', 'temperature'] — first two
+print(features[2:])     # ['current', 'capacity']    — from index 2
+```
+**Most Useful List Methods:**
+```
+features = ["voltage", "temperature", "current"]
+
+# Add
+features.append("capacity")            # adds to end
+features.insert(1, "resistance")       # adds at index 1
+
+# Remove
+features.remove("resistance")          # removes by value
+features.pop()                         # removes last item
+features.pop(0)                        # removes at index 0
+
+# Info
+print(len(features))                   # number of items
+print("voltage" in features)           # True — membership check
+print(features.index("current"))       # returns index of value
+print(features.count("voltage"))       # counts occurrences
+
+# Order
+features.sort()                        # sorts in place A-Z
+features.reverse()                     # reverses in place
+sorted_list = sorted(features)         # returns new sorted list
+
+# Copy
+features_copy = features.copy()        # safe copy — not reference
+```
+**List of Lists — 2D:**
+```
+# each inner list is one training sample
+# [voltage, temperature, current, capacity]
+battery_data = [
+    [3.7, 35.2, 1.2, 98.5],
+    [3.2, 42.1, 1.8, 87.3],
+    [3.9, 28.5, 0.9, 99.1]
+]
+
+print(battery_data[0])          # [3.7, 35.2, 1.2, 98.5] — first sample
+print(battery_data[0][1])       # 35.2 — first sample, temperature
+```
 
 
 
