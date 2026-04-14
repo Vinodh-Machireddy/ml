@@ -245,29 +245,23 @@ Ans:
 5. Tell me about a time you mentored someone or helped a teammate grow.
 Ans: entire team i mentored to understand new tool . previously we are using Fast API for modal serving now we switched to kserve on project req. i explained to team how kserve works. and intergrations with the cloud. etc
 
-6. if we give a opportunity to handle a team how you will handle
-1. Listen and understand:
- - Having 1-on-1s with every team member — understanding their strengths, career goals, frustrations, and what's blocking them
-2. Set clear goals and ownership
-3. Build a culture of trust, not micromanagement
-
-7. CHALLENGES
-**Silent Feature Drift in Production — Battery Fault Classifier**
-**Situation:** 
+6. CHALLENGES  
+**Silent Feature Drift in Production — Battery Fault Classifier**  
+**Situation:**   
 when we working on ev battery fault classifier model which is running in production for about three months, performing well. Accuracy and latency dashboards on Grafana looked stable. But then the battery domain engineers started reporting something strange — the number of degraded classifications had quietly increased by 30% over the past few weeks. No alerts had fired. No errors in logs.  
-Why it was dangerous: This is what I call a silent failure — the model wasn't crashing, it was confidently making wrong predictions. the model is missing real faults. 
+Why it was dangerous: This is what I call a silent failure — the model wasn't crashing, it was confidently making wrong predictions. the model is missing real faults.  
 
 **Root cause analysis:**
 1. Deep Monitoring Analysis
 2. Checked model and pipeline — No code changes, no redeployment, same XGBoost model version in MLflow. Pipeline was clean. So the problem wasn't in our system.
-3. Compared training vs live data distributions — This is where I found it. The battery supplier had made a small manufacturing change that shifted the internal resistance and temperature-under-load distributions.
+3. Compared training vs live data distributions — This is where I found it. The battery supplier had made a small manufacturing change that shifted the internal resistance and temperature-under-load distributions.  
 
-**Actions I took:**
-1.  Immediate fix — retrained with fresh data
-2.  we added a drift detection layer : This was the bigger lesson. I implemented a proper feature drift monitoring system:
-3.  Added prediction distribution monitoring
-4.  Established a retraining policy
-5.  Set up a simple communication channel with the battery supplier and procurement team. if Any material or process changes now get flagged to the ML team proactively.
+**Actions I took:**  
+1.  Immediate fix — retrained with fresh data  
+2.  we added a drift detection layer : This was the bigger lesson. I implemented a proper feature drift monitoring system:  
+3.  Added prediction distribution monitoring  
+4.  Established a retraining policy  
+5.  Set up a simple communication channel with the battery supplier and procurement team. if Any material or process changes now get flagged to the ML team proactively.  
 
 
 ## HR Round:
@@ -292,7 +286,11 @@ If negotiable:
 “My official notice period is ___ days, but I can try to discuss early release depending on transition planning.”(work handover is completed, they may release me earlier.)
 
 **How do you handle pressure or tight deadlines?**
-I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks.
+I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks. 
+
+Example: Sure. In one of my projects, we had a situation where a production ML model deployment was delayed due to issues in the pipeline integration between Kubeflow and the serving layer in KServe. At the same time, there was pressure from stakeholders to release it quickly because it was tied to a business deadline.
+
+I first identified the critical priority, which was stabilizing the deployment pipeline rather than rushing the release. Then I broke the problem into smaller parts — pipeline debugging, container validation, and endpoint testing.  I coordinated with the team to parallelize some of these tasks and kept stakeholders informed about realistic timelines and risks.
 
 **Where do you see yourself in 5 years?**
 Ans: based on my skill set and automation first troubleshooting mindset , definitely i will be in the architect or manager level. 
@@ -455,10 +453,6 @@ Monthly arch review  Every month  1-2 hours   Big picture and tech debt
 → Encourage internal tech talks (each person presents their area)
 → Support certifications (AWS, Kubernetes, MLOps)
 → Give credit publicly, give feedback privately
-```
-**Put It All Together — Your Crisp Answer**
-
-"If given a team, my approach would be: first understand each person — their strengths, gaps, and goals through one-on-ones. Then set clear expectations — who owns what, how we work, and what quality looks like. I'd divide the platform into clear ownership areas so each person owns a piece end-to-end rather than just executing tasks. I'd establish a regular cadence — daily standups, weekly one-on-ones, biweekly retros. My job as a lead would be to shield the team from distractions, unblock them when they're stuck, and grow them by giving stretch assignments and learning opportunities. I've been doing this informally as a senior IC for years — mentoring juniors, leading design discussions, coordinating with data science teams. A formal role would just make that official."  
 
 ### if team members not listining you, what would you do?  
 If someone isn't listening, there's always a reason — They don't understand, disagree technically, Attitude problem, they might feel unheard, or they might be dealing with personal issues. So I'd start with a private one-on-one conversation — ask questions, listen, and understand their perspective. 
