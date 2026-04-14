@@ -72,18 +72,18 @@ Ans: explain daimler end to end.
 
 2. Tell me about a conflict with a teammate or stakeholder. How did you resolve it?
 Ans: we mostly collaberate with data scientis teams. 
--  While building the ML pipeline for our battery fault classification project, there was a disagreement between me and a data scientist on the team. They wanted to retrain and deploy models manually using notebooks, while I was pushing for a fully automated CI/CD pipeline using GitHub Actions and MLflow for experiment tracking and model registry.
-- Instead of escalating or insisting,I created a shor demo and I scheduled a short demo.  I showed how the automated pipeline would actually save them time. no manual artifact uploads, automatic versioning in MLflow, and one-click promotion to staging on KServe. I also incorporated their feedback.
+	-  While building the ML pipeline for our battery fault classification project, there was a disagreement between me and a data scientist on the team. They wanted 		   to retrain and deploy models manually using notebooks, while I was pushing for a fully automated CI/CD pipeline using GitHub Actions and MLflow for experiment 		   tracking and model registry.
+	- Instead of escalating or insisting,I created a shor demo and I scheduled a short demo.  I showed how the automated pipeline would actually save them time. no 		  manual artifact uploads, automatic versioning in MLflow, and one-click promotion to staging on KServe. I also incorporated their feedback.
 
 3. How do you handle model drift in production?
 Ans: Already Know.
 
 4. What makes a Senior MLOps Engineer different from a Mid-level one?
 Ans:
-- A Mid-level MLOps Engineer is usually strong in implementing pipelines, deployments, and automation tasks within a defined scope. A Senior MLOps Engineer, however, is expected to take end-to-end ownership of the ML platform    
-- A senior doesn't just fix incidents — they run postmortems, identify systemic gaps, and push for long-term fixes rather than patches.
-- decision-making
-- mentor team members
+	- A Mid-level MLOps Engineer is usually strong in implementing pipelines, deployments, and automation tasks within a defined scope. A Senior MLOps Engineer, 			  however, is expected to take end-to-end ownership of the ML platform    
+	- A senior doesn't just fix incidents — they run postmortems, identify systemic gaps, and push for long-term fixes rather than patches.
+	- decision-making
+	- mentor team members
 > **ownership, architecture, production thinking, and business impact.**
 
 5. Tell me about a time you mentored someone or helped a teammate grow.
@@ -107,23 +107,22 @@ Why it was dangerous: This is what I call a silent failure — the model wasn't 
 4.  Established a retraining policy  
 5.  Set up a simple communication channel with the battery supplier and procurement team. if Any material or process changes now get flagged to the ML team proactively.  
 
-7. **How do you handle pressure or tight deadlines?**
-I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating clearly with stakeholders about dependencies and risks. 
+7. **How do you handle pressure or tight deadlines?**  
+	- I handle pressure by bringing structure to the situation — first by identifying critical priorities, then breaking work into manageable parts, and communicating        clearly with stakeholders about dependencies and risks.  
 
-Example: Sure. In one of my projects, we had a situation where a production ML model deployment was delayed due to issues in the pipeline integration between Kubeflow and the serving layer in KServe. At the same time, there was pressure from stakeholders to release it quickly because it was tied to a business deadline.
+	- **Example:** Sure. In one of my projects, we had a situation where a production ML model deployment was delayed due to issues in the pipeline integration between 	 Kubeflow and the serving layer in KServe. At the same time, there was pressure from stakeholders to release it quickly because it was tied to a business deadline.  
+	- I first identified the critical priority, which was stabilizing the deployment pipeline rather than rushing the release. Then I broke the problem into smaller 		parts — pipeline debugging, container validation, and endpoint testing.  I coordinated with the team to parallelize some of these tasks and kept stakeholders 			informed about realistic timelines and risks.  
 
-I first identified the critical priority, which was stabilizing the deployment pipeline rather than rushing the release. Then I broke the problem into smaller parts — pipeline debugging, container validation, and endpoint testing.  I coordinated with the team to parallelize some of these tasks and kept stakeholders informed about realistic timelines and risks.  
-
-8. **Have you worked with clients directly?**
+8. **Have you worked with clients directly?**  
 Yes, I’ve worked in collaborative environments where interaction with cross-functional stakeholders was important, including discussing deployment requirements, release coordination, issue resolution, and production support expectations.
 
-9. **Where do you see yourself in 5 years?**
-Ans: based on my skill set and automation first troubleshooting mindset , definitely i will be in the architect or manager level.
+9. **Where do you see yourself in 5 years?**  
+Ans: based on my skill set and automation first troubleshooting mindset , definitely i will be in the architect or manager level.  
 
-10. **why should we hire you**
-- I’m not limited to one tool in mlops space . i can handle take end-to-end ownership.  
-- Automation first mindset 
-- Strong troubleshooting mindset
+10. **why should we hire you**  
+	- I’m not limited to one tool in mlops space . i can handle take end-to-end ownership.    
+	- Automation first mindset  
+	- Strong troubleshooting mindset
 
 11. **Why do you want to join Infosys?**
 	1. opportunity to develope model from scratch  
@@ -132,11 +131,11 @@ Ans: based on my skill set and automation first troubleshooting mindset , defini
 12. **You don't 've prior experience how do you handle a team?** (Team Handling)	
 I haven’t had formal reporting management yet. But in my current role, Even though I've been an IC for 7+ years, I've naturally taken on informal leadership throughout my career — mentoring junior engineers, technical ownership, leading architecture discussions, and coordinating across teams with data scientists, which already requires many of the same skills.  
 
-I believe people management is an extension of ownership and communication, and I’m confident I If given a formal team, i have a plan with the structured approach where.
+I believe people management is an extension of ownership and communication, and I’m confident I If given a formal team, i have a plan with the structured approach where.  
 
-### Step 1.First, I would understand the project goal, timelines, dependencies, and expectations clearly so I can give the team the right direction.  
+**Step 1.** First, I would understand the project goal, timelines, dependencies, and expectations clearly so I can give the team the right direction.  
 
-### Step 2. First, I'd have one-on-one conversations with every team member to understand:
+**Step 2.** First, I'd have one-on-one conversations with every team member to understand:
 ```  
 → What are their strengths and interests?
 → What are their skill gaps?
@@ -146,7 +145,7 @@ I believe people management is an extension of ownership and communication, and 
 ```
 > "For example, one person might be strong in Kubernetes but weak in ML pipelines. Another might be great at monitoring but wants to learn deployment. Understanding this helps me assign the right work to the right person."
 
-### Step 3 — Set Clear Expectations(Detailed)
+**Step 3** — Set Clear Expectations(Detailed)
 The idea is simple: if people know exactly what's expected, most problems never happen. Confusion causes 80% of team issues — not laziness, not bad attitude.  
 > I believe most team problems come from unclear expectations, not bad people. If everyone knows what's expected, 80% of issues don't happen.
 
@@ -218,7 +217,7 @@ Deployment quality:
 ```
 > "When everyone knows what 'good' looks like, you don't need to micromanage. People self-correct because the standard is clear."
   
-### Step 4 — Create Ownership (Deep Level)
+**Step 4** — Create Ownership (Deep Level)
 I wouldn't micromanage. Instead, I'd divide the MLOps platform into clear ownership areas:"  
 This answers "you OWN this end-to-end — decisions, quality, improvements, on-call, everything."  
 ```
@@ -233,7 +232,7 @@ This answers "you OWN this end-to-end — decisions, quality, improvements, on-c
 ```
 > "Ownership gives people pride and accountability. They're not just executing tasks — they're owning a piece of the platform."
 
-### Step 5 — Regular Cadence
+**tep 5** — Regular Cadence
 "I'd establish a regular cadence — daily standups to surface blockers immediately, weekly one-on-ones with each member to build trust and address personal concerns, biweekly retrospectives for the team to improve its own process, and monthly architecture reviews to address tech debt and plan improvements.   
 ```  
 Meeting              Frequency    Duration    Purpose
@@ -243,10 +242,10 @@ Weekly 1-on-1        Every week   30 min      Build trust, grow people
 Biweekly retro       Every 2 wks  1 hour      Team improves its process
 Monthly arch review  Every month  1-2 hours   Big picture and tech debt
 ```
-### Step 6 — Shield the Team
+**Step 6** — Shield the Team
 "My job as a lead is to protect the team from distractions — unnecessary meetings, unclear requirements, last-minute scope changes. I handle the stakeholder communication so the team can focus on building."  
 
-### Step 7 — Grow the Team
+**Step 7** — Grow the Team
 "Finally, I'd invest in their growth:"  
  
 → Pair them on tasks outside their comfort zone
