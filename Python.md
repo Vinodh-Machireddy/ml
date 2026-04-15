@@ -622,8 +622,13 @@ for key, value in config.items():
 
 ```
 
-
-
+### 13. Functions
+A reusable block of code that runs only when called. Write once, use many times.
+```
+def function_name(parameters):
+    # code
+    return result
+```  
 
 
 
