@@ -544,9 +544,41 @@ print(expected ^ actual)
 ```
 > convert to list if you need indexing  
 
+### 12. Dictionaries
+A collection of key-value pairs — like a lookup table. Instead of index numbers, you access values by meaningful keys.  
+```
+model_config = {
+    "model_name": "XGBoost",
+    "n_estimators": 100,
+    "max_depth": 6,
+    "learning_rate": 0.05
+}
+```
+**Accessing Values:**
+```
+# by key
+print(model_config["model_name"])       # XGBoost
 
+# .get() — safer, returns None if key missing
+print(model_config.get("max_depth", 6))         # 6 — default value ✅
+```  
+> .get(key, default) means — "give me the value for this key, but if the key doesn't exist, give me this default value instead."
+  
+**Adding, Updating & Removing:**
+```
+# add new key
+model_config["n_estimators"] = 100
+model_config["learning_rate"] = 0.05
 
+# update existing key
+model_config["learning_rate"] = 0.01   # overwrites old value
 
+# remove by key
+del model_config["debug"]
+
+# remove and return value
+n = model_config.pop("n_estimators")
+print(n)            # 100
 
 
 
