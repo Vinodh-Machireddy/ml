@@ -620,18 +620,37 @@ for value in config.values():
 for key, value in config.items():
     print(f"{key} = {value}")
 
-```
-
+```  
 ### 13. Functions
-A reusable block of code that runs only when called. Write once, use many times.
+A reusable block of code that runs only when called. Write once, use many times. Python provides several built-in functions like print(), len(), type(), range(), input(), etc.  
+
+Functions always follows 3 principles I.e 
+- Taking Input
+- Execute the desired logic
+- Return the Output 
 ```
 def function_name(parameters):
     # code
     return result
 ```  
+def addition(n1, n2):
+    Add = n1 + n2
+    return add
 
+def check_fault(score, threshold=0.8):
+    if score < threshold:
+        return "FAULT"
+    return "OK"
+     
+print(addition(2, 5)) ——> invoking & printing function output
+print(check_fault(0.75, 0.7))   # OK
 
-
+### 14. Lambda Functions
+A small, one-line anonymous function — no def, no name, no return statement needed.
+```
+lambda parameters: expression
+#                  ↑ automatically returned
+```
 
 
 
@@ -853,24 +872,6 @@ if len(sensors) > 0:     # length check
 
 							FUNCTIONS
 							==========
-In Python, functions are blocks of reusable code that perform a specific task. They make programs modular, easier to understand, and more maintainable. Python provides several built-in functions like print(), len(), type(), range(), input(), etc.
-
-Functions always follows 3 principles I.e 
-- Taking Input
-- Execute the desired logic
-- Return the Output 
-
-def addition(n1, n2):
-    Add = n1 + n2
-    return add
-
-def check_fault(score, threshold=0.8):
-    if score < threshold:
-        return "FAULT"
-    return "OK"
-     
-print(addition(2, 5)) ——> invoking & printing function output
-print(check_fault(0.75, 0.7))   # OK
 
 **String Manipulation:**
 - String manipulation means cleaning, searching, or modifying that sentence.
