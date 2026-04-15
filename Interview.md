@@ -64,6 +64,9 @@ www.axtria.com:
 	> diff b/w fine tuning and prompting   
 	> diff b/w list and generator  
 	> Data process related  
+## https://www.accellor.com/
+	> where you get last 10 history
+	> how to set limits for external user
 	
 
 ## Manager Round
