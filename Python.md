@@ -494,7 +494,19 @@ print(f1_score)     # 0.94
 ```
 
 
+### 11. Sets
+An unordered, unindexed collection of unique values — duplicates are automatically removed.  
+```
+fault_types = {"thermal", "voltage", "current", "capacity"}
+empty_set = set()           # ⚠️ not {} — that creates a dictionary!
+```
 
+| | List | Set |
+|---|---|---|
+| Ordered | ✅ Yes | ❌ No |
+| Duplicates | ✅ Allowed | ❌ Auto removed |
+| Indexing | ✅ `list[0]` | ❌ Not supported |
+| Use when | Order matters | Unique values matter |
 
 
 
