@@ -579,6 +579,59 @@ del model_config["debug"]
 # remove and return value
 n = model_config.pop("n_estimators")
 print(n)            # 100
+```  
+**Dictionary Methods:**
+print(config.keys())        
+print(config.values())       
+print(config.items())    
+
+#### Merge Dict
+```
+config = {"model": "XGBoost", "n_estimators": 100}
+extra  = {"max_depth": 6, "learning_rate": 0.05}
+
+**.update() — modifies original dict:**
+config.update(extra)        # extra gets added INTO config
+print(config)
+
+** **unpacking — creates new dict ✅ preferred**
+merged = {**config, **extra}    # creates brand new dict, originals untouched
+print(merged)
+```  
+**What if Same Key Exists in Both?**
+```
+config  = {"learning_rate": 0.05}   # left  — goes in first
+updates = {"learning_rate": 0.01}   # right — goes in second, overwrites!
+
+merged = {**config, **updates}
+print(merged)   # {"learning_rate": 0.01}  ← 0.01 won
+```
+**Looping Over Dictionary:**
+```
+# loop keys
+for key in config:
+    print(key)
+
+# loop values
+for value in config.values():
+    print(value)
+
+# loop both — most useful ✅
+for key, value in config.items():
+    print(f"{key} = {value}")
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
