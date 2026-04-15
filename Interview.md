@@ -67,6 +67,7 @@ www.axtria.com:
 ## https://www.accellor.com/
 	> where you get last 10 history
 	> how to set limits for external user
+	> draw how to setup the ml pipelines (Excalidraw)
 	
 
 ## Manager Round
