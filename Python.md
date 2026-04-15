@@ -419,9 +419,79 @@ battery_data = [
 print(battery_data[0])          # [3.7, 35.2, 1.2, 98.5] — first sample
 print(battery_data[0][1])       # 35.2 — first sample, temperature
 ```
+**Common Mistakes**
+```
+# ❌ reference vs copy
+a = [1, 2, 3]
+b = a               # b points to same list!
+b.append(4)
+print(a)            # [1, 2, 3, 4] ← a also changed!
 
+# ✅ always use .copy()
+b = a.copy()
+b.append(4)
+print(a)            # [1, 2, 3] ← safe
+``` 
+**Useful Built-in Functions on Lists**
+```
+scores = [0.91, 0.87, 0.95, 0.93]
 
+print(len(scores))          # 4     — number of items
+print(max(scores))          # 0.95  — highest value
+print(min(scores))          # 0.87  — lowest value
+print(sum(scores))          # 3.66  — total
+print(sorted(scores))       # [0.87, 0.91, 0.93, 0.95]
+```
+### 10. Tuples
+An ordered, immutable collection — like a list but cannot be changed after creation.  
+```
+# list   → mutable   → can change
+# tuple  → immutable → cannot change
 
+features = ("voltage", "temperature", "current", "capacity")
+model_info = ("XGBoost", "v1.3", 0.94)
+empty = ()
+single = ("voltage",)      # ⚠️ single item needs trailing comma!
+```
+**List vs Tuple**
+# Python — List vs Tuple Comparison
+
+| | List | Tuple |
+|---|---|---|
+| Syntax | `[ ]` | `( )` |
+| Mutable | ✅ Yes | ❌ No |
+| Use when | Data changes | Data is fixed |
+| Speed | Slower | Faster |
+| Example | Collecting F1 scores across runs | Fixed feature set for training |
+| Methods | `.append()` `.remove()` `.sort()` | `.count()` `.index()` only |
+| Convert | `tuple(list)` to lock | `list(tuple)` to edit |
+
+> Indexing & Slicing — Same as List
+
+**Immutable — Cannot Change:**
+```
+features = ("voltage", "temperature", "current")
+
+features[0] = "resistance"      # ❌ TypeError — cannot modify!
+features.append("capacity")     # ❌ AttributeError — no append!
+
+# if you need to change — convert to list, edit, convert back
+features = list(features)
+features.append("capacity")
+features = tuple(features)
+print(features)     # ('voltage', 'temperature', 'current', 'capacity')
+```
+**Unpacking :**
+```
+model_info = ("XGBoost", "v1.3", 0.94)
+
+# unpack into variables
+model_name, version, f1_score = model_info
+
+print(model_name)   # XGBoost
+print(version)      # v1.3
+print(f1_score)     # 0.94
+```
 
 
 
