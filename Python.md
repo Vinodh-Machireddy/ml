@@ -508,6 +508,42 @@ empty_set = set()           # ⚠️ not {} — that creates a dictionary!
 | Indexing | ✅ `list[0]` | ❌ Not supported |
 | Use when | Order matters | Unique values matter |
 
+**Most Useful Set Methods:**
+```
+fault_types = {"thermal", "voltage", "current"}
+
+# Add / Remove
+fault_types.add("capacity")            # adds one item
+fault_types.remove("voltage")          # removes — raises error if not found
+fault_types.discard("voltage")         # removes — no error if not found
+
+# Info
+print(len(fault_types))                # number of items
+print("thermal" in fault_types)        # True — fast membership check
+```
+**Set Operations — Most Powerful Feature:**
+```
+expected = {"voltage", "temperature", "current", "capacity"}
+actual   = {"voltage", "temperature", "resistance"}
+
+# union — all items from both
+print(expected | actual)
+# {'voltage', 'temperature', 'current', 'capacity', 'resistance'}
+
+# intersection — only common items
+print(expected & actual)
+# {'voltage', 'temperature'}
+
+# difference — in expected but NOT in actual
+print(expected - actual)
+# {'current', 'capacity'}  ← these are missing!
+
+# symmetric difference — in either but NOT in both
+print(expected ^ actual)
+# {'current', 'capacity', 'resistance'}
+```
+> convert to list if you need indexing  
+
 
 
 
