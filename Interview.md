@@ -68,6 +68,7 @@ www.axtria.com:
 	> where you get last 10 history
 	> how to set limits for external user
 	> draw how to setup the ml pipelines (Excalidraw)
+	> overall flow 
 	
 
 ## Manager Round
