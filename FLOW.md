@@ -67,8 +67,8 @@ This is the full picture. Level 2 adds CI/CD for the pipeline code itself, not j
 
 ## 1. Project Initiation & Tech Stack:
 I am working on Daimler Project which comes under automotive domain/Industry, their i am dealing with Battery Fault Classification. The project aims to classify battery cell faults in real time using sensor data from the Battery Management System (BMS). This helps detect issues like overheating, overcharging, internal short circuits, and cell degradation early — before they become safety-critical. The main purpose is to improve EV battery safety, and extend battery lifespan.  
-> **Tech stack:**  Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.
-> **Classes(Output):** normal, thermal_runaway, cell_imbalance, sensor_drift, over_discharge
+> **Tech stack:**  Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.  
+> **Classes(Output):** normal, thermal_runaway, cell_imbalance, sensor_drift, over_discharge  
 ## 2. What the Data Scientists hand over to MLOps
 
 **Data ingestion from Vehical to s3**
