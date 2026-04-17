@@ -46,9 +46,10 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 2. 🚀 Model Deployment & Serving Infrastructure
 3. ⚙️ CI/CD Automation for ML Workflows
 4. 📊 Observability, Monitoring & Alerting
-5. optimize ML infrastructure on AWS using Kubernetes
-6. Cost governance/Optimization
-7. Security
+5. Responsible for running promotion scripts
+6. optimize ML infrastructure on AWS using Kubernetes
+7. Cost governance/Optimization
+8. Security
 
 ## Cost governance/Optimization
 - aws Fargate is serverless compute for containers which manages worker nodes.  
