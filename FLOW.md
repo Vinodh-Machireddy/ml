@@ -79,7 +79,21 @@ I am working on Daimler Project which comes under automotive domain/Industry, th
 
 ## 2. What the Data Scientists hand over to MLOps
 
-Data scientists own everything related to model development — choosing the architecture, deciding whether to fine-tune a pre-trained model or train from scratch, selecting hyperparameters, running experiments in Jupyter notebooks, and evaluating which approach gives the best metrics. Fine-tuning is a modeling decision, so it falls squarely in their domain.
+Data scientists own everything related to model development — choosing the architecture, deciding whether to fine-tune a pre-trained model or train from scratch, selecting hyperparameters, running experiments in Jupyter notebooks, and evaluating which approach gives the best metrics. Fine-tuning is a modeling decision, so it falls squarely in their domain.  
+
+**Fine-Tuning:**
+Fine-tuning means taking a pre-trained model (Transformer-based time-series pre-trained model like PatchTST) that already learned general patterns. You remove/freeze the last layer and replace it with a new layer for ev battery classes. Then we fine-tune on our dataset. 
+
+**Types:**
+Fixed Feature Extraction → Freeze the pre-trained backbone, train only the  head i.e last layer(Classification Layer).  
+                 Small dataset + similar task → Fixed Feature Extractor.  
+You stop updating their weights during training.  
+Full Fine-Tuning → Unfreeze more layers, retrain them on your dataset.  
+                 Bigger dataset + different task → Full Fine-Tuning.  
+Many teams start with fixed extractor, and if results are not good, they move to progressive/full fine-tuning.  
+
+**What is Classification Layer/Head:**  
+At the end of every model, there is a final layer that gives predictions. Its job is to take all the features the earlier layers have extracted and map them to output classes. 
 
 **as a Senior MLOps Engineer.** My responsibility starts from the point where we need to productionize that model. That means — how do we take this model from a Jupyter notebook, build a proper training pipeline around it, package it, deploy it to production, serve it in real time, monitor it, and retrain it.   
 
