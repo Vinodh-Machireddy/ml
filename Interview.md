@@ -61,15 +61,14 @@ We discuss ongoing issues, improvements, and after any failure, we do a post-mor
 
 ## Learnings
 www.axtria.com:  
-	> diff b/w fine tuning and prompting   
 	> diff b/w list and generator  
-	> Data process related  
+	> Data process related   
 https://www.accellor.com/  
-	> where you get last 10 history
-	> how to set limits for external user
-	> draw how to setup the ml pipelines (Excalidraw)
-	> what you do to get recommendations?
-	
+	> where you get last 10 history  
+	> how to set limits for external user  
+	> draw how to setup the ml pipelines (Excalidraw)  
+	> what you do to get recommendations?  
+	>StatefulSet vs Deployment
 
 ## Manager Round
 1. Walk me through a project you've owned end-to-end.
