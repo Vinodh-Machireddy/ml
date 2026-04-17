@@ -129,10 +129,11 @@ Ans: based on my skill set and automation first troubleshooting mindset , defini
 	- Strong troubleshooting mindset
 
 11. **Why do you want to join Infosys?**
+    0. Deloitte works across industries — automotive, healthcare, finance, manufacturing. As an MLOps engineer, that 			   excites me because the challenges change. 
 	1. opportunity to develope model from scratch  
 	2. long-term growth.  
 
-12. **You don't 've prior experience how do you handle a team?** (Team Handling)	
+13. **You don't 've prior experience how do you handle a team?** (Team Handling)	
 I haven’t had formal reporting management yet. But in my current role, Even though I've been an IC for 7+ years, I've naturally taken on informal leadership throughout my career — mentoring junior engineers, technical ownership, leading architecture discussions, and coordinating across teams with data scientists, which already requires many of the same skills.  
 
 I believe people management is an extension of ownership and communication, and I’m confident I If given a formal team, i have a plan with the structured approach where.  
