@@ -80,7 +80,7 @@ The raw telemetry data lands in S3 via the ingestion pipeline from Data engineer
 **as a Senior MLOps Engineer.** My responsibility starts from the point where we need to productionize that model. That means — how do we take this model from a Jupyter notebook, build a proper training pipeline around it, package it, deploy it to production, serve it in real time, monitor it, and retrain it.   
 
 ### Fine-Tuning:
-Fine-tuning means taking a pre-trained model (Transformer-based time-series pre-trained model like PatchTST) that already learned general patterns. You remove/freeze the last layer and replace it with a new layer for ev battery classes. Then we fine-tune on our dataset. 
+Fine-tuning means taking a pre-trained model (Transformer-based time-series pre-trained model like PatchTST) that already learned general patterns. You remove/freeze the last layer and replace it with a new layer for ev battery classes. Then we fine-tune on our dataset.  
 
 **Types:**
 Fixed Feature Extraction → Freeze the pre-trained backbone, train only the  head i.e last layer(Classification Layer).  
@@ -93,6 +93,7 @@ Many teams start with fixed extractor, and if results are not good, they move to
 **What is Classification Layer/Head:**  
 At the end of every model, there is a final layer that gives predictions. Its job is to take all the features the earlier layers have extracted and map them to output classes. 
 
+**Hyperparameter tuning:** — you're adjusting knobs like learning rate, max depth, number of estimators, etc. to get the best performance. The architecture and data stay the same
 
 ### I received three essentially things from Data Scientists 
 - A monolithic Jupyter notebook — with the full training code, preprocessing logic, feature engineering, model training, and evaluation.  (the original experiment)
