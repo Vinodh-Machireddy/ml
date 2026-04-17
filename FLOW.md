@@ -63,14 +63,6 @@ Problem: The pipeline itself is still deployed manually. If a data scientist cha
 This is the full picture. Level 2 adds CI/CD for the pipeline code itself, not just for the model. Every component of the ML system — data processing, training logic, serving config — is treated as software and goes through automated testing, building, and deployment.
   - Level 2 — Complete Flow Using Your Stack
 
-1. Project Initiation & Tech Stack
-2. What the Data Scientists hand over — brief context, just enough to show you understand the ML side
-3. Training Pipeline (KFP) — how you productionized their notebook into a repeatable pipeline (this is YOUR territory)
-4. Experiment Tracking & Model Registry (MLflow) — how models are versioned and promoted (YOUR territory)
-5. CI/CD Pipeline (GitHub Actions + ArgoCD + DVC) — how code and model changes flow to production (YOUR territory)
-6. Model Serving (KServe) — real-time inference architecture (YOUR territory)
-7. Monitoring & Observability (Prometheus + Grafana) — drift detection, alerting (YOUR territory)
-8. Retraining Strategy — when and how retraining is triggered (YOUR territory)
 > **Team Flow:** Platform Engineering → Data Engineering → Data Science → MLOps Engineering
 
 ## 1. Project Initiation & Tech Stack:
@@ -79,9 +71,15 @@ I am working on Daimler Project which comes under automotive domain/Industry, th
 
 ## 2. What the Data Scientists hand over to MLOps
 
-Data scientists own everything related to model development — choosing the architecture, deciding whether to fine-tune a pre-trained model or train from scratch, selecting hyperparameters, running experiments in Jupyter notebooks, and evaluating which approach gives the best metrics. Fine-tuning is a modeling decision, so it falls squarely in their domain.  
+**Data ingestion from Vehical to s3**
+The raw telemetry data lands in S3 via the ingestion pipeline from Data engineering teams. Now the data science team pull this raw data from s3, did their EDA, cleaned it, and future engineering steps and pushes the processed training dataset back into S3 as **Parquet files. i.e train.parquet**.
+> so, s3 contains raw data, processed data, model artifacts, etc...
 
-**Fine-Tuning:**
+**Data scientists:** own everything related to model development — choosing the architecture, deciding whether to fine-tune a pre-trained model or train from scratch, selecting hyperparameters, running experiments in Jupyter notebooks, and evaluating which approach gives the best metrics. Fine-tuning is a modeling decision, so it falls squarely in their domain.  
+
+**as a Senior MLOps Engineer.** My responsibility starts from the point where we need to productionize that model. That means — how do we take this model from a Jupyter notebook, build a proper training pipeline around it, package it, deploy it to production, serve it in real time, monitor it, and retrain it.   
+
+### Fine-Tuning:
 Fine-tuning means taking a pre-trained model (Transformer-based time-series pre-trained model like PatchTST) that already learned general patterns. You remove/freeze the last layer and replace it with a new layer for ev battery classes. Then we fine-tune on our dataset. 
 
 **Types:**
@@ -95,11 +93,6 @@ Many teams start with fixed extractor, and if results are not good, they move to
 **What is Classification Layer/Head:**  
 At the end of every model, there is a final layer that gives predictions. Its job is to take all the features the earlier layers have extracted and map them to output classes. 
 
-**as a Senior MLOps Engineer.** My responsibility starts from the point where we need to productionize that model. That means — how do we take this model from a Jupyter notebook, build a proper training pipeline around it, package it, deploy it to production, serve it in real time, monitor it, and retrain it.   
-
-**Data ingestion from Vehical to s3**
-The raw telemetry data lands in S3 via the ingestion pipeline from platform engineering teams. Now the data science team pull this raw data from s3, did their EDA, cleaned it, and future engineering steps and pushes the processed training dataset back into S3 as **Parquet files. i.e train.parquet**.
-> so, s3 contains raw data, processed data, model artifacts, etc...    
 
 ### I received three essentially things from Data Scientists 
 - A monolithic Jupyter notebook — with the full training code, preprocessing logic, feature engineering, model training, and evaluation.  (the original experiment)
