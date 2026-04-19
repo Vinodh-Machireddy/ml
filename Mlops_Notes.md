@@ -935,23 +935,3 @@ Primary Use: Saving and loading models in PyTorch.
 Primary Use: Deploying models in production, especially when the training framework is different from the inference environment.
 
 
-# Strange
-What are Guardrails?
-STRANGE
-—————
-endpoint deployment
-endpoint prediction
-online and batch endpoints
-AutoML
-hyperparameters
-pyspark:
-- PySpark is primarily used for handling and processing large‑scale data in a distributed fashion.
-parallel processing and fast.
-
-- Machine Learning Libraries: Strong experience with machine learning libraries and frameworks such as scikit-learn, TensorFlow, PyTorch, Keras, etc.
-      - For deep learning → TensorFlow, PyTorch, Keras.
-      -	For traditional ML → Scikit-learn.
-      - For boosting models → XGBoost, LightGBM, CatBoost.
-      - For NLP → Hugging Face Transformers.
-- Experience with RestAPI Frameworks like FastAPIs, Flask
-
