@@ -31,10 +31,13 @@ parallel processing and fast.
 
 ## Deloitte:
 	1. Drive in ml
-	2. List of dictionary and get first value
+	2. List of dictionary and get first value, & all keys
 	3. Where you deploy python file
 	4. when we give Google.com in browser, what it  runs internally and how it know to which server to go.
 
 ## Epam: 
 	1. What output ml pipeline gives
-	2. Where you deploy it
+	2. Where you deploy it 
+	3. Data Points of your current project
+	
+	
