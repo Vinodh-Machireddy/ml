@@ -39,5 +39,6 @@ parallel processing and fast.
 	1. What output ml pipeline gives
 	2. Where you deploy it 
 	3. Data Points of your current project
+	4. where do you deploy kubeflow
 	
 	
