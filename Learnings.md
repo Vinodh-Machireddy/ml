@@ -20,14 +20,14 @@ parallel processing and fast.
 
 
 ## axtria:  
-	diff b/w list and generator  
-	Data process related   
+	1. diff b/w list and generator  
+	2. Data process related   
 ## accellor:
-	where you get last 10 history  
-	how to set limits for external user  
-	draw how to setup the ml pipelines (Excalidraw)  
-	what you do to get recommendations?  
-	StatefulSet vs Deployment  
+	1. where you get last 10 history  
+	2. how to set limits for external user  
+	3. draw how to setup the ml pipelines (Excalidraw)  
+	4. what you do to get recommendations?  
+	5. StatefulSet vs Deployment  
 
 ## Deloitte:
 	1. Drive in ml
