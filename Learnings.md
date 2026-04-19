@@ -1,13 +1,13 @@
 # Learnings
-## www.axtria.com:  
+## axtria:  
 	> diff b/w list and generator  
 	> Data process related   
-## https://www.accellor.com/  
+## accellor:
 	> where you get last 10 history  
 	> how to set limits for external user  
 	> draw how to setup the ml pipelines (Excalidraw)  
 	> what you do to get recommendations?  
-	> StatefulSet vs Deployment
+	> StatefulSet vs Deployment  
 
 ## Deloitte:
 1. Drive in ml
