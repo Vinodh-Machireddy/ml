@@ -43,5 +43,8 @@ parallel processing and fast.
 	3. Data Points of your current project
 	4. where do you deploy kubeflow
 	5. KFP stages and what cloud services you used
+	6. structured or unstructured data you used
+	7. what models you used
+	
 	
 	
