@@ -37,6 +37,7 @@ parallel processing and fast.
 	5. Why f1 score formula is like that
 	6. what metric Explainer give?
 	7. Mean
+	8. what are the python libraries you used and diff?
 
 ## Epam: 
 	1. What output ml pipeline gives
