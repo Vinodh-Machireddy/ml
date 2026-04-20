@@ -141,6 +141,15 @@ print(bool(0.95))       # True
 print(bool("XGBoost"))  # True
 print(bool([1,2,3]))    # True
 ```
+**Mapping(dict):** 
+In Python, a mapping data type is a type that stores data in key-value pairs. he main mapping data type in Python is the dict (dictionary). 
+
+student = {
+    "name": "Vinodh",
+    "age": 30,
+    "role": "MLOps Engineer"
+}  
+
 ### Operators
 **Arithmetic Operators:**
 ```
@@ -693,181 +702,28 @@ NOTE:- When we automating the things, normally we talk to API (OR) CLI.
 	- while APIs provide more flexibility and are better suited for complex, programmatic integrations.
 
 
-DATATYPES:
-==========
-Sequence
-	String   len(), split(), replace(), find(), strip(), lower()
-	list.     numbers = [10, 20, 30, 40]
-	tuple    data = (1, 2, 3)
-	range.     for i in range(3):
-Non-sequence data types
-Set
-Frozen Set
-Dict
-Numeric
-   	 Int.      abs(-7)
-    	Float      round(3.14159265359, 2)
-Mapping
-Boolean
-Binary
-None
-Custome 
-
-# String: 
-	- A sequence of characters. Enclosed in single ('), double (") or triple quotes.
-                 Eg:- name = "Vinodh"
-
-String concatenation:
-Syntax: result = string1 + string2
-str1 = "Hello"
-str2 = "World"
-result = str1 + " " + str2
-print(result)
-
-str(object)
-object: The object you want to convert to a string. This could be of any type, such as numbers, lists, dictionaries, etc.
-Note:- we cannot concatenate string to integer. If you want Use str()
-
-Syntax: len(object)
-object: This can be a sequence (e.g., string, list, tuple, range)
-text = "Welcome To VmTutes"
-length = len(text)
-print("wow length", length)
-
-text = “Welcome To VmTutes"
-uppercase = text.upper()
-lowercase = text.lower()
-print("Uppercase:", uppercase)
-print("Lowercase:", lowercase)
-
-Syntax: string.replace(old, new, count)
-text = "Python is awesome"
-new_text = text.replace("awesome", "great")
-print("Modified text:", new_text)
-
-Syntax: string.strip([chars])  
-text = “   Some spaces around      "
-stripped_text = text.strip()
-print("Stripped text:", stripped_text)
-Note:- It removes spaces from both start and end of the string. but not from the middle
-
-text = "Welcome To VmTutes"
-vm = "is"
-if vm in text:
-    print(vm, "found in the text")
-
-Syntax: string.split(separator, maxsplit)   
-text = "Welcome To VmTutes"
-words = text.split(“-")[1]
-print("Words:", words)    
-
-	List:
-	A collection of ordered, changeable (mutable) elements. Enclosed in square brackets [ ]
-
-            Vm_list = [“Vinodh”,  1, 2, 3  “Meghan”,  10.8] # any datatype we can add. It just consider as one element.
-            Vm_list.append(“nethra”)
-             Vm_list.remove(“nethra”)
-	print(Vm_list[0])
-	print(len(Vm_list))
-	new_list = Vm_list[0:3], print(new_list) only 0, 1, 2 elements print from the list.
-         
-	numbers = [1, 10, 5, 2]
-	print(sorted(numbers))  # Output: [1, 2, 5, 10]
-
-
-	Tuple:
-	A collection of ordered, unchangeable (immutable) elements. Enclosed in parentheses ( ).
-	     eg:- info = (1, "apple", 3.5)
-
-           Set:
-          A set in Python is an unordered collection of unique elements. It is useful for mathematical operations like union, intersection, and difference. 
-           Eg:-  my_set = {1, 2, 3, 4, 5}
-            set1 = {1, 2, 3, 4}
-		set2 = {3, 4, 5, 6}
-
-union_set = set1.union(set2)  # Union of sets
-intersection_set = set1.intersection(set2)  # Intersection of sets
-difference_set = set1.difference(set2)  # Difference of sets
-
-print("Union of set1 and set2:", union_set)
-print("Intersection of set1 and set2:", intersection_set)
-print("Difference of set1 and set2:", difference_set)
-
-
-# Float
-result1 = num1 / num2
-print("Addition:", result1)
-result5 = round(3.14159265359, 2)  # Rounds to 2 decimal places
-print("Rounded:", result5)
-
-
-# Integer 
-num1 = 10
-num2 = 5
-
-result1 = num1 // num2
-print("Integer Division:", result1)
-# Absolute Value
-result3 = abs(-7)
-print("Absolute Value:", result3)
-
-Mapping(dict): 
-In Python, a mapping data type is a type that stores data in key-value pairs. he main mapping data type in Python is the dict (dictionary). 
-
-student = {
-    "name": "Vinodh",
-    "age": 30,
-    "role": "MLOps Engineer"
-}
-
-print(student["name"])          # To access a value
-student["city"] = "Chennai"     # Add or update a new key-value pair
-del student["city"]              # Delete a key-value pair
-print(student.keys())           # Get all keys
-print(student.values())         # Get all values
-print(student.items())         # Get all items (key-value pairs)
-student.clear()                 # Clear all items
-
-Boolean:
-In Python, the Boolean data type (bool) is used to represent truth values — that means something is either True or False.  Data type name : bool
-
-In Python, some values are automatically considered False in Boolean context:
-False
-None
-0
-"" (empty string)
-[] (empty list)
-{} (empty dict)
-() (empty tuple)
-Everything else is treated as True.
-Binary Data Types:
-In Python, the binary data type is used to store raw binary information — that is, data in the form of bytes (0s and 1s) instead of text.
-This type is commonly used when dealing with files, images, network data, or serial communication, where data is not human-readable.
-Python provides three built-in binary types:
-
-None data type:
-In Python, the None data type represents the absence of a value or nothingness.
-When do we use None?  -> To show empty or no value
 
 
 
-							KeyWords:
-							=========
 
 
-If
-Else
-Elif
 
-**All are valid if conditions:**
-if score > 0.8:          # comparison
-if score == 0:           # equality check
-if n in count:           # exists check
-if "fault" in log:       # word exists check
-if is_active:            # boolean check
-if len(sensors) > 0:     # length check
+	
 
-							
+
+	
+
+
+
+
+
+
+
+
+					
+
+
+
 
 
 							FUNCTIONS
@@ -1137,47 +993,16 @@ Note: Builtin env variable : env
 
 
 
-								OPERATOR
-								==========
+					
 
-Regular Division (/)	16/3 which gives division value i.e 5.3333							
-Floor Division (//):- It rounds down the result to the nearest whole number. 16//3 i.e 5
-(%) modulus:  16%3  Remainder is 5
 
-Assignment operators: 
-X = 10
-x=x+10
-x+=10
 
-Identity Operators:
-is: Returns True if two variables point to the same object.
-is not: Returns True if two variables do not point to the same object.
-A = 10
-B = 20
-A is b ——> false
-B is not a —-> true
-
-logical operator:
-Logical operators in Python are used to combine multiple conditions and determine whether they are True or False.
-and
-Returns True if both conditions are True. If one condition is false then False.
- or
-Returns True if at least one condition is True.
-not
-Reverses the result of a condition.
-If the condition is True, not makes it False, and vice versa.
-
-Relational Operator:
-Relational operators in Python are used to compare two values. They check the relationship between the values and return True or False based on the result.
-print(5 == 5)  # True
-print(5 == 3)  # False
-
-What is IDLE?
+What is IDLE?  
 It is the default Python IDE (Integrated Development Environment) that comes with the standard Python installation.
 It's designed to be simple and beginner-friendly, making it great for learning Python, without writing py file.
-To exit the IDLE terminal:  exit(). (Or) Control + d
+To exit the IDLE terminal:  exit(). (Or) Control + d  
 
-NOTE:-  Python, operators are essential for the interpreter and compiler to understand and execute specific operations
+> NOTE:-  Python, operators are essential for the interpreter and compiler to understand and execute specific operations  
 
 						
 
@@ -1509,324 +1334,17 @@ pytest is run every time you: push code,  create PR,  run CI/CD,  deploy a model
 pip install pytest
 
 							PyYAML:
-							======
+							
 
 
 
 
 
 
-							DOCKER:
-							=======
 
 
-							MLOPS CI/CD:	
-							============
 
-Traditional DevOps CI/CD = build → test → deploy code
-MLOps CI/CD = build → test → train model → evaluate → version → deploy model
 
+     
 
-
-
-
-
-
-Access key : AKIAV6HFIYWSAKH657NZ
-Secret access key: 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
-
-
-eksctl create cluster \
-  --name mlops-eks-cluster \
-  --region us-east-1 \
-  --node-type t3.medium \
-  --nodes 2 \
-  --nodes-min 1 \
-  --nodes-max 3
-
-aws eks update-kubeconfig --region us-east-1 --name mlops-eks-cluster
-
-eksctl delete cluster --name mlops-eks-cluster --region us-east-1
-
-
-
-Ec2-instance
-sudo apt update && sudo apt upgrade -y
-
-client_loop: send disconnect: Broken pipe
-Client-Side
-1. vi .ssh/config
-2. Host *
-    ServerAliveInterval 60
-    ServerAliveCountMax 5
-
-                 (OR)
-Host *
-    ServerAliveInterval 10
-    ServerAliveCountMax 30
-    TCPKeepAlive yes
-
-3. chmod 600 ~/.ssh/config
-
-Server-Side
-1.Edit /etc/ssh/sshd_config on the server.
-2. Add or uncomment:
-	ClientAliveInterval 60
-	ClientAliveCountMax 5
-3. Restart the SSH service (sudo service sshd restart).
-
-
-
-
-PROJECT
-=======
-
-							train.py file:
-							—————
-import joblib
-from sklearn.datasets import load_iris
-from sklearn.ensemble import RandomForestClassifier
-
-# Load the iris dataset
-iris = load_iris()
-X, y = iris.data, iris.target
-
-# Train a random forest classifier
-model = RandomForestClassifier()
-model.fit(X, y)
-
-# Save the trained model
-joblib.dump(model, 'vinodh.pkl')
-
-print("Model trained and saved as vinodh.pkl")
-
-NOTE:
-import joblib
-model = joblib.load('vinodh.pkl')
-
-# Predict one sample
-sample = [[5.1, 3.5, 1.4, 0.2]]
-print("Prediction:", model.predict(sample))
-
-test_load.py is a small testing script used to check two things:
-✔️ A) Your saved model file (vinodh.pkl) can be loaded
-✔️ B) The model can make a prediction correctly
-It is NOT part of the training. It is only used to verify the model works before you move to FastAPI / Docker / EKS deployment.
-
-						FastAPI(Server.py File):
-							———-
-from fastapi import FastAPI
-import joblib
-import numpy as np
-
-model = joblib.load('app/vinodh.pkl')
-
-class_names = np.array(['setosa', 'versicolor', 'virginica'])
-
-app = FastAPI()
-
-@app.get('/')
-def read_root():
-    return {'message': 'Iris model API'}
-
-@app.post('/predict')
-def predict(data: dict):
-    """
-    Predicts the class of a given set of features.
-
-    Args:
-        data (dict): A dictionary containing the features to predict.
-        e.g. {"features": [1, 2, 3, 4]}
-
-    Returns:
-        dict: A dictionary containing the predicted class.
-    """
-    features = np.array(data['features']).reshape(1, -1)
-    prediction = model.predict(features)
-    class_name = class_names[prediction][0]
-    return {'predicted_class': class_name}
-NOTE:- To Test locally: uvicorn app.server:app --reload
-
-
-client-side inference test script.
-
-import json
-import requests
-
-data = [[4.3, 3. , 1.1, 0.1],
-       [5.8, 4. , 1.2, 0.2],
-       [5.7, 4.4, 1.5, 0.4],
-       [5.4, 3.9, 1.3, 0.4],
-       [5.1, 3.5, 1.4, 0.3],
-       [5.7, 3.8, 1.7, 0.3],
-       [5.1, 3.8, 1.5, 0.3],
-       [5.4, 3.4, 1.7, 0.2],
-       [5.1, 3.7, 1.5, 0.4],
-       [4.6, 3.6, 1. , 0.2],
-       [5.1, 3.3, 1.7, 0.5],
-       [4.8, 3.4, 1.9, 0.2]]
-
-url = 'http://0.0.0.0:8000/predict/'
-
-predictions = []
-for record in data:
-    payload = {'features': record}
-    payload = json.dumps(payload)
-    response = requests.post(url, data=payload)
-    predictions.append(response.json()['predicted_class'])
-
-print(predictions)
-
-							Dockerfile:
-
-FROM python:3.11
-
-WORKDIR /code
-
-COPY ./requirements.txt /code/requirements.txt
-
-RUN pip install --no-cache-dir -r /code/requirements.txt
-
-COPY ./app /code/app
-
-EXPOSE 8000
-
-CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8000"]
-
-NOTE:- docker build -t mlops-fastapi .
-	  docker run -p 8000:8000 mlops-fastapi
-
-						PUSH IMAGE TO AWS ECR
-aws ecr create-repository --repository-name mlops-fastapi
-
-Login to ECR
-aws ecr get-login-password --region us-east-1 \
-| docker login --username AWS --password-stdin \
-408502715812.dkr.ecr.us-east-1.amazonaws.com
-Tag & push image
-docker tag mlops-fastapi:latest \
-408502715812.dkr.ecr.us-east-1.amazonaws.com/mlops-fastapi:latest
-
-docker push \
-408502715812.dkr.ecr.us-east-1.amazonaws.com/mlops-fastapi:latest
-
-						KUBERNETES DEPLOYMENT (EKS)
-
-
-k8s-deployment.yaml 
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: mlops
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mlops-api
-  namespace: mlops
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mlops-api
-  template:
-    metadata:
-      labels:
-        app: mlops-api
-    spec:
-      containers:
-      - name: mlops-api
-        image: 408502715812.dkr.ecr.us-east-1.amazonaws.com/mlops-fastapi:latest
-        ports:
-        - containerPort: 8000
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mlops-api-service
-  namespace: mlops
-spec:
-  type: LoadBalancer
-  selector:
-    app: mlops-api
-  ports:
-    - port: 80
-      targetPort: 8000
-                                                                                                     
-
-kubectl apply -f k8s-deployment.yaml
-Test inference
-curl -X POST http://<LB-DNS>/predict \
--H "Content-Type: application/json" \
--d '{"data": [[5.1,3.5,1.4,0.2]]}'
-
-					CI/CD WITH GITHUB ACTIONS
-Push code to GitHub
-Dockerfile
-app/
-model.joblib
-k8s-deployment.yaml
-.github/workflows/deploy.yml
-
-Add GitHub Secrets
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
-ECR_REGISTRY
-ECR_REPOSITORY
-EKS_CLUSTER_NAME
-
-GitHub Actions pipeline
-on:
-  push:
-    branches: [main]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - uses: aws-actions/amazon-ecr-login@v2
-
-      - run: docker build -t ${{ secrets.ECR_REPOSITORY }} .
-
-      - run: |
-          docker tag ${{ secrets.ECR_REPOSITORY }}:latest \
-          ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
-
-      - run: docker push \
-          ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
-
-      - run: |
-          aws eks update-kubeconfig \
-          --region ${{ secrets.AWS_REGION }} \
-          --name ${{ secrets.EKS_CLUSTER_NAME }}
-
-      - run: kubectl rollout restart deployment mlops-api -n mlops
-
-Code push → GitHub Actions → Docker build → ECR push → EKS rollout → Live ML prediction
-
-
-
-HOW TO WRITE THIS ON YOUR RESUME
-Project: End-to-End MLOps Pipeline on AWS
-Built ML inference service using FastAPI + scikit-learn
-Containerised application using Docker
-Pushed images to AWS ECR
-Provisioned AWS EKS cluster using eksctl
-Deployed application using Kubernetes Deployments & Services
-Debugged IAM, CloudFormation, and nodegroup issues
-Exposed service via AWS LoadBalancer
-Implemented live inference and validated predictions
-
-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
 
