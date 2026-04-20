@@ -35,7 +35,8 @@ parallel processing and fast.
 	3. Where you deploy python file
 	4. when we give Google.com in browser, what it  runs internally and how it know to which server to go.
 	5. Why f1 score formula is like that
-	6. Explainer 
+	6. what metric Explainer give?
+	7. Mean
 
 ## Epam: 
 	1. What output ml pipeline gives
