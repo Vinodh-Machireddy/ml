@@ -654,11 +654,89 @@ def check_fault(score, threshold=0.8):
 print(addition(2, 5)) ——> invoking & printing function output
 print(check_fault(0.75, 0.7))   # OK
 
+
+#### Parameters in Functions, There are 5 types:
+**1. Positional Parameters — order matters:**
+```
+def train_model(model_name, learning_rate, n_estimators):
+    print(f"{model_name} | lr={learning_rate} | n={n_estimators}")
+
+# must pass in exact order
+train_model("XGBoost", 0.05, 100)       # ✅
+train_model(0.05, "XGBoost", 100)       # ❌ wrong — model_name gets 0.05
+
+#Output
+XGBoost | lr=0.05 | n=100
+0.05 | lr=XGBoost | n=100
+```
+**2. Default Parameters — optional, has fallback:**
+```
+def train_model(model_name, learning_rate=0.05, n_estimators=100):
+    print(f"{model_name} | lr={learning_rate} | n={n_estimators}")
+
+train_model("XGBoost")                  # uses defaults for rest
+train_model("XGBoost", 0.01)            # overrides learning_rate only
+train_model("XGBoost", 0.01, 200)       # overrides both
+```  
+```
+def train_model(model_name, learning_rate=0.05):
+#               ↑                ↑
+#         no = sign           has = sign
+#         positional          default parameter
+```
+> Rule — default parameters must always come after positional:
+> Simple rule — if it has =, it's a default parameter. If it doesn't, it's positional.
+> Python reads left to right — required arguments first, optional ones at the end.  
+
+**3. Keyword Arguments — pass by name, order doesn't matter:**
+```
+def train_model(model_name, learning_rate, n_estimators):
+    pass
+
+# keyword — very readable ✅
+train_model(
+    model_name="XGBoost",
+    n_estimators=100,
+    learning_rate=0.05      # order doesn't matter here
+)
+```
+**4.*args(When you don't know how many values will be passed:)**  
+```
+def log_metrics(*args):
+    for value in args:      # args is a tuple
+        print(value)
+
+log_metrics(0.94)                       # one metric
+log_metrics(0.94, 0.92, 0.96)          # three metrics — all work ✅
+```
+**5. **kwargs — variable number of keyword arguments:**
+```
+def log_metrics(**kwargs):
+    for name, value in kwargs.items():  # kwargs is a dict
+        print(f"{name} = {value}")
+
+log_metrics(f1=0.94, precision=0.92, recall=0.96)
+# f1 = 0.94
+# precision = 0.92
+# recall = 0.96
+```
+
+
 ### 14. Lambda Functions
 A small, one-line anonymous function — no def, no name, no return statement needed.
 ```
 lambda parameters: expression
 #                  ↑ automatically returned
+```
+
+```
+# lambda
+add = lambda x, y: x + y
+print(add(3, 5))    # 8
+
+# MLOps example
+weighted_score = lambda precision, recall: (2 * precision * recall) / (precision + recall)
+print(weighted_score(0.92, 0.96))   # f1 score calculation
 ```
 
 
