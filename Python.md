@@ -1002,9 +1002,65 @@ battery2 = Battery()    # object 2 — another instance
 Runs automatically when object is created — It stores the values you passed — into the object.
 
 **self:** When you create multiple objects from same class — each object has its own data. self tells Python which object's data to use.
+> self = battery1
+
+```
+class Battery:
+    def __init__(self, battery_id, voltage, temperature):
+        self.battery_id  = battery_id
+        self.voltage     = voltage
+        self.temperature = temperature
+        self.status      = "normal"
+
+    def check_status(self):
+        if self.voltage < 3.0:
+            self.status = "fault"
+        else:
+            self.status = "normal"
+        return self.status
+
+    def get_info(self):
+        return f"{self.battery_id} | voltage={self.voltage} | status={self.status}"
 
 
+# create object and use methods
+battery1 = Battery("BAT001", 2.8, 35.2)
+print(battery1.check_status())      # fault
+print(battery1.get_info())          # BAT001 | voltage=2.8 | status=fault
+```
+**Class Variables vs Instance/Object Variables:**
+```
+class Battery:
+    manufacturer = "Daimler"          # class variable — shared by ALL objects
+    total_batteries = 0				 # class variable — defined OUTSIDE __init__
 
+    def __init__(self, battery_id, voltage):
+        # instance variables — unique to each object
+        self.battery_id = battery_id   # anything with self. is an object variable.
+        self.voltage    = voltage
+        Battery.total_batteries += 1    # update class variable   # every time object created, add 1
+
+battery1 = Battery("BAT001", 3.7)
+battery2 = Battery("BAT002", 3.2)
+
+print(battery1.manufacturer)        # Daimler — class variable
+print(battery2.manufacturer)        # Daimler — same for all
+print(Battery.total_batteries)      # 2 — shared count
+```
+**Inheritance:**
+One class inherits from another — gets all its methods and can add more. 
+inheritance:  child class gets parent's methods/functions
+super()calls parent class __init__ 
+
+**Why OOP Matters for MLOps — sklearn is Built on It:**
+you are creating an object from it and calling its methods. You are already using OOP without realizing it!   
+Every sklearn Component is a Class  
+```
+from sklearn.preprocessing import StandardScaler      # class
+from sklearn.ensemble import RandomForestClassifier   # class
+from sklearn.pipeline import Pipeline                 # class
+from xgboost import XGBClassifier                     # class
+```
 
 
 
