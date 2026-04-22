@@ -760,7 +760,87 @@ for i, feature in enumerate(features, start=1):
 # 2: current
 # 3: capacity
 ```
+**zip():**
+Combines two or more lists together — pairs up items by position so you can loop over them at the same time.  
+```
+features   = ["voltage", "temperature", "current"]
+importance = [0.45, 0.32, 0.23]
+dtypes     = ["float", "float", "float"]
 
+for feature, score, dtype in zip(features, importance, dtypes):
+    print(f"{feature} ({dtype}): {score}")
+
+# voltage (float): 0.45
+# temperature (float): 0.32
+# current (float): 0.23
+```
+**Unequal Length Lists — zip() Stops at Shortest :**
+```
+features   = ["voltage", "temperature", "current", "capacity"]
+importance = [0.45, 0.32, 0.23]        # only 3 items!
+
+for feature, score in zip(features, importance):
+    print(f"{feature}: {score}")
+
+# Output — capacity is ignored!
+# voltage: 0.45
+# temperature: 0.32
+# current: 0.23
+```
+**Convert zip to List or Dict:**
+```
+features   = ["voltage", "temperature", "current"]
+importance = [0.45, 0.32, 0.23]
+
+# convert to list of tuples
+pairs = list(zip(features, importance))
+print(pairs)
+# [('voltage', 0.45), ('temperature', 0.32), ('current', 0.23)]
+
+# convert to dictionary — very useful ✅
+feature_importance = dict(zip(features, importance))
+print(feature_importance)
+# {'voltage': 0.45, 'temperature': 0.32, 'current': 0.23}
+```
+
+**map():**
+Applies a function to every item in a collection — transforms each item one by one and returns the result.   
+**Syntax:**   map(function, collection)   
+
+map() Returns an Iterator — Always Convert to list  
+```
+result = map(lambda x: x * 2, [1, 2, 3])
+print(result)           # <map object at 0x...> ← not useful!
+print(list(result))     # [2, 4, 6] ✅
+```
+map() With Built-in Functions:
+```
+# convert list of strings to integers
+values = ["100", "200", "300"]
+integers = list(map(int, values))
+print(integers)         # [100, 200, 300]
+
+# convert list of strings to floats
+scores = ["0.94", "0.91", "0.88"]
+floats = list(map(float, scores))
+print(floats)           # [0.94, 0.91, 0.88]
+
+# convert list of numbers to strings
+versions = [1, 2, 3, 4]
+labels = list(map(str, versions))
+print(labels)           # ['1', '2', '3', '4']
+```
+map() With Custom Function  
+```
+def classify(proba):
+    return "fault" if proba >= 0.5 else "normal"
+
+probabilities = [0.87, 0.43, 0.91, 0.35, 0.62]
+
+labels = list(map(classify, probabilities))
+print(labels)
+# ['fault', 'normal', 'fault', 'normal', 'fault']
+```
 
 
 ### 14. Lambda Functions
