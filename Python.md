@@ -114,6 +114,7 @@ print(type("XGBoost"))    # <class 'str'>
 # use isinstance() — more useful in real code
 print(isinstance(0.95, float))    # True
 print(isinstance(100, int))       # True
+print(isinstance(1, (int, float)))  # True ✅ — accepts both
 ```
 **Type Conversion:**
 Converting a value from one data type to another.  
@@ -739,23 +740,26 @@ print("-" * 50)													# print("Training Complete") # ---------------------
 
 **len():**
 Returns the total number of items in a collection or sequence — list, tuple, set, dictionary, string.  
+> not support: int, float, bool, None  ❌ TypeError
 
-| Type | Example | len() Returns |
-|---|---|---|
-| `list` | `len([1, 2, 3])` | `3` — number of items |
-| `tuple` | `len((1, 2, 3))` | `3` — number of items |
-| `set` | `len({1, 2, 3})` | `3` — number of unique items |
-| `dictionary` | `len({"a": 1, "b": 2})` | `2` — number of keys |
-| `string` | `len("XGBoost")` | `7` — number of characters |
-| `range` | `len(range(100))` | `100` — number of values in range |
-| `bytes` | `len(b"hello")` | `5` — number of bytes |
-| `numpy 1D array` | `len(np.array([1,2,3]))` | `3` — number of elements |
-| `numpy 2D array` | `len(np.array([[1,2],[3,4]]))` | `2` — rows only ⚠️ use `.shape` instead |
-| `pandas DataFrame` | `len(df)` | number of rows |
-| `pandas Series` | `len(df["col"])` | number of values |
-| `df.columns` | `len(df.columns)` | number of columns |
+**range(start, stop, step):**
+range(0, 100, 10)   # 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
+> print(list(range(5)))   # [0, 1, 2, 3, 4] — convert if you need a list  
 
+**enumerate():**
+Loops over a collection and gives you both the index and the value at the same time — so you don't have to manually track position.  
+```
+features = ["voltage", "temperature", "current", "capacity"]
 
+for i, feature in enumerate(features, start=1):
+    print(f"{i}: {feature}")
+
+# Output:
+# 0: voltage			# default starts from 0
+# 1: temperature		# start=1 to start from 1
+# 2: current
+# 3: capacity
+```
 
 
 
