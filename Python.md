@@ -720,7 +720,16 @@ log_metrics(f1=0.94, precision=0.92, recall=0.96)
 # precision = 0.92
 # recall = 0.96
 ```
-
+#### Buil-in Functions
+**print():**
+Outputs text or values to the console. Most used function in Python — for logging, debugging, monitoring.  
+```
+print("Training started")           # Print string
+print(["voltage", "temperature"])   # Print list
+print("Model:", model, "F1:", f1)   # Print Multiple Values. comma separated — adds space
+print("XGBoost", 0.94, "production", sep=" | ")  # XGBoost | 0.94 | production
+print(model, f1, sep = " | ", end = " | ")  # default end is newline  # custom end — stays on same line
+```  
 
 ### 14. Lambda Functions
 A small, one-line anonymous function — no def, no name, no return statement needed.
