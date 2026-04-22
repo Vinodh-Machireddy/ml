@@ -722,7 +722,7 @@ log_metrics(f1=0.94, precision=0.92, recall=0.96)
 # recall = 0.96
 ```
 #### Buil-in Functions
-**print():**
+**print():**  
 Outputs text or values to the console. Most used function in Python — for logging, debugging, monitoring.  
 ```
 model = "XGBoost"
@@ -738,15 +738,15 @@ print(f"Epoch: {epoch} | F1: {f1:.4f}") 					    # Epoch: 10 | F1: 0.9457
 print("-" * 50)													# print("Training Complete") # -----------------------
 ```
 
-**len():**
+**len():**  
 Returns the total number of items in a collection or sequence — list, tuple, set, dictionary, string.  
 > not support: int, float, bool, None  ❌ TypeError
 
-**range(start, stop, step):**
+**range(start, stop, step):**  
 range(0, 100, 10)   # 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
 > print(list(range(5)))   # [0, 1, 2, 3, 4] — convert if you need a list  
 
-**enumerate():**
+**enumerate():**  
 Loops over a collection and gives you both the index and the value at the same time — so you don't have to manually track position.  
 ```
 features = ["voltage", "temperature", "current", "capacity"]
@@ -760,7 +760,7 @@ for i, feature in enumerate(features, start=1):
 # 2: current
 # 3: capacity
 ```
-**zip():**
+**zip():**  
 Combines two or more lists together — pairs up items by position so you can loop over them at the same time.  
 ```
 features   = ["voltage", "temperature", "current"]
@@ -803,7 +803,7 @@ print(feature_importance)
 # {'voltage': 0.45, 'temperature': 0.32, 'current': 0.23}
 ```
 
-**map():**
+**map():**  
 Applies a function to every item in a collection — transforms each item one by one and returns the result.   
 **Syntax:**   map(function, collection)   
 
@@ -841,7 +841,7 @@ labels = list(map(classify, probabilities))
 print(labels)
 # ['fault', 'normal', 'fault', 'normal', 'fault']
 ```
-**filter():**
+**filter():**  
 Goes through a collection and keeps only items that match a condition — filters out everything else.  
 Syntax:  filter(function, collection)
 ```
@@ -863,7 +863,7 @@ good_scores = list(filter(is_good_model, f1_scores))
 print(good_scores)      # [0.94, 0.91, 0.88]
 ```
 
-**sorted():**
+**sorted():**  
 Returns a new sorted list from any collection — without modifying the original.  
 sorted() — creates NEW list, original untouched   
 ```
@@ -878,7 +878,7 @@ print(sorted(scores, reverse=True))     # [0.95, 0.93, 0.91, 0.87]
 print(sorted(models))                   # alphabetical A-Z
 # ['LightGBM', 'RandomForest', 'SVM', 'XGBoost']
 ``` 
-**max() and min():**
+**max() and min():**  
 max() — returns the highest value  
 min() — returns the lowest value  
 
@@ -893,7 +893,7 @@ models = ["XGBoost", "RandomForest", "LightGBM"]
 print(max(models))      # XGBoost      — last alphabetically
 print(min(models))      # LightGBM     — first alphabetically
 ```
-**sum():**
+**sum():**  
 Returns the total of all values in a collection — works on numbers only.  
 ```
 scores = [0.91, 0.87, 0.95, 0.93]
@@ -911,7 +911,7 @@ f1_scores = [0.91, 0.87, 0.95, 0.93]
 average = sum(f1_scores) / len(f1_scores)
 print(f"Average F1: {average:.4f}")     # 0.9150
 ```
-**round():**
+**round():**  
 Rounds a number to a specified number of decimal places.  
 ```
 f1 = 0.94567
@@ -936,7 +936,7 @@ print(round(1567, -1))      # 1570  — round to tens
 print(round(1567, -2))      # 1600  — round to hundreds
 print(round(1567, -3))      # 2000  — round to thousands
 ```
-**abs():**
+**abs():**  
 Returns the absolute value of a number — removes the negative sign, always gives positive result.  
 ```
 print(abs(10))          # 10  — already positive
@@ -945,7 +945,7 @@ print(abs(0.15))        # 0.15
 print(abs(-0.15))       # 0.15
 print(abs(0))           # 0
 ```
-**any() and all():**
+**any() and all():**  
 - any() — returns True if at least one item is True  
 - all() — returns True if all items are True   
 
@@ -966,11 +966,7 @@ all([True, True,  True])    # True  — all True ✅
 all([True, False, True])    # False — one False breaks it
 ```
 
-
-
-
-
-### 14. Lambda Functions
+### 14. Lambda Functions  
 A small, one-line anonymous function — no def, no name, no return statement needed.
 ```
 lambda parameters: expression
