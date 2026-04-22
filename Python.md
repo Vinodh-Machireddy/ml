@@ -734,7 +734,30 @@ print("XGBoost", 0.94, "production", sep=" | ")  			    # XGBoost | 0.94 | produ
 print(model, f1, sep = " | ", end=" -> ")  					    # default end is newline  # custom end — stays on same line
 print(f"my_model: {model} | model_f1_score: {f1}", end=" -> ")  # f-string
 print(f"Epoch: {epoch} | F1: {f1:.4f}") 					    # Epoch: 10 | F1: 0.9457
-```  
+print("-" * 50)													# print("Training Complete") # -----------------------
+```
+
+**len():**
+Returns the total number of items in a collection or sequence — list, tuple, set, dictionary, string.  
+
+| Type | Example | len() Returns |
+|---|---|---|
+| `list` | `len([1, 2, 3])` | `3` — number of items |
+| `tuple` | `len((1, 2, 3))` | `3` — number of items |
+| `set` | `len({1, 2, 3})` | `3` — number of unique items |
+| `dictionary` | `len({"a": 1, "b": 2})` | `2` — number of keys |
+| `string` | `len("XGBoost")` | `7` — number of characters |
+| `range` | `len(range(100))` | `100` — number of values in range |
+| `bytes` | `len(b"hello")` | `5` — number of bytes |
+| `numpy 1D array` | `len(np.array([1,2,3]))` | `3` — number of elements |
+| `numpy 2D array` | `len(np.array([[1,2],[3,4]]))` | `2` — rows only ⚠️ use `.shape` instead |
+| `pandas DataFrame` | `len(df)` | number of rows |
+| `pandas Series` | `len(df["col"])` | number of values |
+| `df.columns` | `len(df.columns)` | number of columns |
+
+
+
+
 
 ### 14. Lambda Functions
 A small, one-line anonymous function — no def, no name, no return statement needed.
