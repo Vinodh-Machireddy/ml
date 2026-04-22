@@ -721,7 +721,7 @@ log_metrics(f1=0.94, precision=0.92, recall=0.96)
 # precision = 0.92
 # recall = 0.96
 ```
-#### Buil-in Functions
+#### 16. Buil-in Functions
 **print():**  
 Outputs text or values to the console. Most used function in Python — for logging, debugging, monitoring.  
 ```
@@ -983,6 +983,7 @@ weighted_score = lambda precision, recall: (2 * precision * recall) / (precision
 print(weighted_score(0.92, 0.96))   # f1 score calculation
 ```
 
+### 17. OOP Basics (Classes & Objects)
 
 
 
