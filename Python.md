@@ -893,9 +893,51 @@ models = ["XGBoost", "RandomForest", "LightGBM"]
 print(max(models))      # XGBoost      — last alphabetically
 print(min(models))      # LightGBM     — first alphabetically
 ```
-
-
+**sum():**
+Returns the total of all values in a collection — works on numbers only.  
 ```
+scores = [0.91, 0.87, 0.95, 0.93]
+
+# start=0 is default
+print(sum(scores, 0))       # 3.66
+
+# start=1 — adds 1 to total
+print(sum(scores, 1))       # 4.66
+```
+Calculate Average  
+```
+f1_scores = [0.91, 0.87, 0.95, 0.93]
+
+average = sum(f1_scores) / len(f1_scores)
+print(f"Average F1: {average:.4f}")     # 0.9150
+```
+**round():**
+Rounds a number to a specified number of decimal places.  
+```
+f1 = 0.94567
+
+print(round(f1))        # 1    — rounds to nearest integer
+print(round(f1, 1))     # 0.9  — 1 decimal place
+
+# Rounding Rules
+# .5 rounds to nearest EVEN number — Python standard
+print(round(0.5))       # 0 — rounds to even
+print(round(1.5))       # 2 — rounds to even
+print(round(2.5))       # 2 — rounds to even
+print(round(3.5))       # 4 — rounds to even
+
+# normal rounding
+print(round(0.94))      # 1
+print(round(0.44))      # 0
+
+# Round to Tens, Hundreds
+# negative decimal places
+print(round(1567, -1))      # 1570  — round to tens
+print(round(1567, -2))      # 1600  — round to hundreds
+print(round(1567, -3))      # 2000  — round to thousands
+```
+
+
 
 
 
