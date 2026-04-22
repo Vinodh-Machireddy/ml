@@ -984,9 +984,24 @@ print(weighted_score(0.92, 0.96))   # f1 score calculation
 ```
 
 ### 17. OOP Basics (Classes & Objects)
+A way to organize code into reusable blueprints called classes. Instead of writing separate functions and variables, you group related data and behaviour together.  
+```
+# Class  — blueprint (like a template)
+# Object — actual instance created from blueprint
 
+# Class is like a blueprint of a battery
+# Object is an actual battery built from that blueprint
 
+class Battery:
+    pass
 
+battery1 = Battery()    # object 1 — instance of Battery
+battery2 = Battery()    # object 2 — another instance
+```
+**__init__ — Constructor:** 
+Runs automatically when object is created — It stores the values you passed — into the object.
+
+**self:** When you create multiple objects from same class — each object has its own data. self tells Python which object's data to use.
 
 
 
