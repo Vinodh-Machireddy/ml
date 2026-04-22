@@ -936,9 +936,35 @@ print(round(1567, -1))      # 1570  — round to tens
 print(round(1567, -2))      # 1600  — round to hundreds
 print(round(1567, -3))      # 2000  — round to thousands
 ```
+**abs():**
+Returns the absolute value of a number — removes the negative sign, always gives positive result.  
+```
+print(abs(10))          # 10  — already positive
+print(abs(-10))         # 10  — negative becomes positive
+print(abs(0.15))        # 0.15
+print(abs(-0.15))       # 0.15
+print(abs(0))           # 0
+```
+**any() and all():**
+- any() — returns True if at least one item is True  
+- all() — returns True if all items are True   
 
+```
+checks = [True, True, False, True]
 
+print(any(checks))      # True  — at least one is True
+print(all(checks))      # False — not all are True
 
+# Simple Rule
+# any() — like OR — one True is enough
+# all() — like AND — every single one must be True
+
+any([False, False, False])  # False — none are True
+any([False, True,  False])  # True  — one is enough ✅
+
+all([True, True,  True])    # True  — all True ✅
+all([True, False, True])    # False — one False breaks it
+```
 
 
 
