@@ -841,6 +841,65 @@ labels = list(map(classify, probabilities))
 print(labels)
 # ['fault', 'normal', 'fault', 'normal', 'fault']
 ```
+**filter():**
+Goes through a collection and keeps only items that match a condition — filters out everything else.  
+Syntax:  filter(function, collection)
+```
+f1_scores = [0.94, 0.78, 0.91, 0.65, 0.88]
+
+good_scores = list(filter(lambda x: x >= 0.85, f1_scores))
+print(good_scores)      # [0.94, 0.91, 0.88]
+```
+> Same behaviour as map() — lazy, needs list() to execute.  
+
+filter() With Custom Function  
+```
+def is_good_model(score):
+    return score >= 0.85        # returns True or False
+
+f1_scores = [0.94, 0.78, 0.91, 0.65, 0.88]
+
+good_scores = list(filter(is_good_model, f1_scores))
+print(good_scores)      # [0.94, 0.91, 0.88]
+```
+
+**sorted():**
+Returns a new sorted list from any collection — without modifying the original.  
+sorted() — creates NEW list, original untouched   
+```
+scores = [0.91, 0.87, 0.95, 0.93]
+
+# ascending — default
+print(sorted(scores))                   # [0.87, 0.91, 0.93, 0.95]
+
+# descending
+print(sorted(scores, reverse=True))     # [0.95, 0.93, 0.91, 0.87]
+
+print(sorted(models))                   # alphabetical A-Z
+# ['LightGBM', 'RandomForest', 'SVM', 'XGBoost']
+``` 
+**max() and min():**
+max() — returns the highest value  
+min() — returns the lowest value  
+
+```
+scores = [0.91, 0.87, 0.95, 0.93]
+
+print(max(scores))      # 0.95 — highest
+print(min(scores))      # 0.87 — lowest
+
+models = ["XGBoost", "RandomForest", "LightGBM"]
+
+print(max(models))      # XGBoost      — last alphabetically
+print(min(models))      # LightGBM     — first alphabetically
+```
+
+
+```
+
+
+
+
 
 
 ### 14. Lambda Functions
