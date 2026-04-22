@@ -38,6 +38,7 @@ parallel processing and fast.
 	6. what metric Explainer give?
 	7. Mean
 	8. what are the python libraries you used and diff?
+	9. Decoraters
 
 ## Epam: 
 	1. What output ml pipeline gives
