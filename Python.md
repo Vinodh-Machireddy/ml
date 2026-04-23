@@ -985,6 +985,9 @@ print(weighted_score(0.92, 0.96))   # f1 score calculation
 
 ### 17. OOP Basics (Classes & Objects)
 A way to organize code into reusable blueprints called classes. Instead of writing separate functions and variables, you group related data and behaviour together.  
+	- function OUTSIDE class — standalone function
+	- function INSIDE class — called method 
+	- Most functions in sklearn are inside classes — that's why you create objects first.
 ```
 # Class  — blueprint (like a template)
 # Object — actual instance created from blueprint
@@ -1140,6 +1143,18 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings("ignore")
 ```
+**full-path:**
+```
+# short way — package hides module
+from sklearn.metrics import f1_score
+
+# full path — with module
+from sklearn.metrics._classification import f1_score
+#    ↑        ↑            ↑                ↑
+#  library  package      module           function
+```
+> Because package's __init__.py already imports everything from its modules internally — so module is invisible to you. 
+
 
 PACKAGES/LIBRARIES
 ===================
