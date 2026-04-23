@@ -74,16 +74,15 @@ print(os.getenv(“apitoken”))
 12. Dictionaries
 13. Functions
 14. Lambda Functions
-15. *args & **kwargs
-16. Built-in Functions
-17. OOP Basics (Classes & Objects)
-18. Modules & Import
-19. List Comprehensions
-20. Error Handling
+15. Built-in Functions
+16. OOP Basics (Classes & Objects)
+17. Modules & Import
+18. List Comprehensions
+19. Error Handling
 **Nice to Have**
-21. Input & Output
-22. File Handling
-23. Decorators (just recognize, not write)
+20. Input & Output
+21. File Handling
+22. Decorators (just recognize, not write)
 
 ## 1. Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
