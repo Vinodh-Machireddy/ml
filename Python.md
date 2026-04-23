@@ -1,5 +1,27 @@
 
 # PYTHON
+**Introduction:**  
+	- python is a dynamically typed programming language.  variables are key for any program lang bcz using variable  we can make our program dynamic.  Variables are 	  flagship in python.   
+	- Dynamically typed programming languages: Python, Ruby, JavaScript, PHP, Perl, Lua, Tcl, Groovy.  
+	- Statically Typed Languages:C, C++, Java, C#, Go.  
+
+**Shell Scripting  VS Python Scripting:**  
+	- in devops mostly we use linux systems bcz windows has less security. In Windows/Mac it uses rich UI. In Linux default CLI. The main purpose of Shell Scripting         is to interact with Linux systems and get information. We can write the commands one after the other or set of command in scriptFile.sh and execute.
+	- Platform-specific behavior (e.g., Bash for Linux, PowerShell for Windows).  
+	- Simpler for small tasks but syntax can become complex for larger scripts.  
+	- Best for system-level tasks like command chaining and file operations.  
+
+	. Cross-platform; runs on any system with Python installed.  
+	. Easy to learn with a clean syntax; suitable for beginners.  
+	. Suitable for writing complex programs, Interact with API, automation, and data processing.  
+
+in real-world scenario we might get a chance to work on windows that’s why python is needed.  
+
+> **NOTE:** As a devops engineer it not mandatory to use python to fetch the information from linux and windows machines we can use Ansible also to achieve this task.  
+> **NOTE:** When we automating the things, normally we talk to API (OR) CLI.  
+		- CLIs are great for immediate and straightforward automation tasks,  
+		- while APIs provide more flexibility and are better suited for complex, programmatic integrations.  
+
 ## python packages:
 
 numpy - Numerical Computing  
@@ -39,7 +61,6 @@ joblib - Model serialization
 21. Input & Output
 22. File Handling
 23. Decorators (just recognize, not write)
-
 
 ### Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
@@ -1156,25 +1177,6 @@ from sklearn.metrics._classification import f1_score
 > Because package's __init__.py already imports everything from its modules internally — so module is invisible to you. 
 
 
-PACKAGES/LIBRARIES
-===================
-packages are collection of modules.
-Eg:- suppose we’ve amazon.com ecommerce application where we will not write entire app code in a single .py file.   We use diff .py files for diff microservices like add to cart, my acc, orders ….etc
-
-Why Use Packages?
-Organization: Makes large projects easier to manage by grouping related code into separate files.
-Reusability: Code in a package can be reused in other projects.
-
-Package Structure
-A package is a directory that contains:
-Sub-packages (optional)
-Modules (Python files with .py extension)
-An optional __init__.py file, which defines the package’s behavior when it’s imported.
-
-PYPI - python package index where we can download modules and packages just like docker registry to download container images.
-
-PIP - Python’s package installer.
-python -m pip install --upgrade pip
 
 
 
@@ -1182,36 +1184,6 @@ python -m pip install --upgrade pip
 
 
 
-Introduction
-python is a dynamically typed programming language.  variables are key for any program lang bcz using variable  we can make our program dynamic.  Variables are flagship in python.
-
-Dynamically typed programming languages:
-Python, Ruby, JavaScript, PHP, Perl, Lua, Tcl, Groovy.
-
-Statically Typed Languages:
-C, C++, Java, C#, Go.
-
-
-## Shell Scripting  VS Python Scripting
-
-- in devops mostly we use linux systems bcz windows has less security. In Windows/Mac it uses rich UI. In Linux default CLI. The main purpose of Shell Scripting is to interact with Linux systems and get information. We can write the commands one after the other or set of command in scriptFile.sh and execute.
-
-Platform-specific behavior (e.g., Bash for Linux, PowerShell for Windows).
-Simpler for small tasks but syntax can become complex for larger scripts.
-Best for system-level tasks like command chaining and file operations.
-
-Cross-platform; runs on any system with Python installed.
- Easy to learn with a clean syntax; suitable for beginners.
-Suitable for writing complex programs, Interact with API, automation, and data processing.
-
-in real-world scenario we might get a chance to work on windows that’s why python is needed.
-Python solves 
-
-
-NOTE:- As a devops engineer it not mandatory to use python to fetch the information from linux and windows machines we can use Ansible also to achieve this task.
-NOTE:- When we automating the things, normally we talk to API (OR) CLI.
-	- CLIs are great for immediate and straightforward automation tasks, 
-	- while APIs provide more flexibility and are better suited for complex, programmatic integrations.
 
 
 
