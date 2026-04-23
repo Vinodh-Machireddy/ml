@@ -1238,6 +1238,43 @@ faults = [ s   for s in scores   if s < 0.8 ]
 ``` 
 > Whatever name you give in for — same name must be used in the expression. [round(s, 2) for s in f1_scores]
 
+## 20. Error Handling
+	- A way to catch and handle errors gracefully instead of letting your program crash.  
+```
+try:
+    learning_rate = float("abc")        # code that might cause error  bcoz cant convert abc to float
+
+except ValueError:
+    print("Invalid learning rate")      # ✅ runs — error occurred
+    learning_rate = 0.05                # ✅ safe fallback assigned
+
+else:
+    print(f"Learning rate set to {learning_rate}")  # runs only if NO error happened  # only runs if no error
+
+finally:
+    print("Learning rate configuration done")       # runs ALWAYS — error or no error # runs no matter what ✅
+```
+>  **Fallback** = backup value used when original value fails.  
+   **Safe** = value that is valid and won't break your program.  
+
+
+**Python — Common Error Types:**
+
+| Error | When it Happens | Example |
+|---|---|---|
+| `ValueError` | Wrong value type | `int("abc")` |
+| `TypeError` | Wrong data type | `"a" + 1` |
+| `KeyError` | Dictionary key not found | `dict["missing_key"]` |
+| `IndexError` | List index out of range | `list[99]` |
+| `FileNotFoundError` | File doesn't exist | `open("missing.csv")` |
+| `ZeroDivisionError` | Dividing by zero | `100 / 0` |
+| `AttributeError` | Attribute doesn't exist | `None.predict()` |
+| `ImportError` | Module not found | `import missing_module` |
+| `NameError` | Variable not defined | `print(undefined_var)` |
+| `Exception` | Catches ALL errors | use as last resort only |
+
+
+> **Rule** — always catch specific errors first (`ValueError`, `KeyError`) and use `Exception` only as last resort.
 
 
 
@@ -1374,30 +1411,7 @@ for n in numbers:
 print(count)
 ```
 
-## Error Handling
-```  
-try:
-    score = float("abc")       # code that might cause error  bcoz cant convert abc to float
-except ValueError:
-    print("Invalid value!")     # what to do if error happens  # catches error ✅
-else:
-    print("Conversion worked!")  # runs only if NO error happened  # only runs if no error
-finally:
-    print("Always runs!")        # runs ALWAYS — error or no error # runs no matter what ✅
-```  
 
-**Common Errors You Must Know:**
-## Common Errors You Must Know
-
-| Error | When it happens | Example |
-|---|---|---|
-| `FileNotFoundError` | File missing | `open("abc.txt")` |
-| `ValueError` | Wrong value | `int("abc")` |
-| `ZeroDivisionError` | Divide by zero | `10/0` |
-| `KeyError` | Dict key missing | `dict["xyz"]` |
-| `IndexError` | List index wrong | `list[99]` |
-| `TypeError` | Wrong data type | `"abc" + 123` |
-| `Exception` | Catches ALL errors | use as last resort |
 
 
 
