@@ -59,7 +59,8 @@ print(os.getenv(“apitoken”))
 
 > **NOTE:** Python, operators are essential for the interpreter and compiler to understand and execute specific operations  
 
-## Python Core Topics (Must Know)
+<details>
+<summary><b>Python Core Topics (Must Know)</b></summary>  
 1. Variables
 2. Data Types
 3. Type Conversion
@@ -84,6 +85,10 @@ print(os.getenv(“apitoken”))
 21. File Handling
 22. Decorators (just recognize, not write)
 
+</details>
+<details>
+<summary><b>Python Core Topics (Must Know)</b></summary>  
+</details>	
 ## 1. Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
 ```  
