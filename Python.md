@@ -1062,6 +1062,109 @@ from sklearn.pipeline import Pipeline                 # class
 from xgboost import XGBClassifier                     # class
 ```
 
+### 18. Modules 
+In Python, modules are .py files containing Python code (e.g., functions, variables, or classes) that can be imported and reused in other Python programs. Modules are collection of functions. (Modularity Approach).
+ 
+**1. Built-in — comes with Python, no install needed:**  
+Examples:
+	- math: Provides mathematical functions.
+	- os: Interacts with the operating system.
+	- sys: Provides access to system-specific parameters and functions.
+	- datetime: Deals with date and time.
+
+**2. Third-party — install via pip, then import:**
+```
+Daily use:
+pandas, numpy, scikit-learn,
+xgboost, mlflow, boto3,
+pyyaml, python-dotenv
+
+Frequently:
+requests, matplotlib,
+great-expectations, prometheus-client
+
+Sometimes:
+flask, pytorch/tensorflow,
+docker sdk, kubernetes client
+```  
+NOTE: when we call packages indirectly it is a module. Inside module collection of functions.
+
+**3. Your own — files you created yourself:**
+import my_utils
+import train
+
+#### 4 Ways to Import
+```
+# 1. import entire module
+import os
+os.getenv("MODEL_VERSION")      # must use module name prefix
+
+# 2. import specific item — no prefix needed ✅
+from os import getenv
+getenv("MODEL_VERSION")
+
+# 3. import with alias — shortens long names ✅
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 4. import everything — avoid this ❌
+from os import *                # pollutes namespace — hard to debug
+```
+#### Most Common MLOps Imports
+```
+# data handling
+import pandas as pd
+import numpy as np
+
+# machine learning
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from xgboost import XGBClassifier
+
+# experiment tracking
+import mlflow
+import mlflow.sklearn
+
+# environment & file handling
+import os
+import sys
+import json
+
+# date & time
+from datetime import datetime
+
+# warnings
+import warnings
+warnings.filterwarnings("ignore")
+```
+
+PACKAGES/LIBRARIES
+===================
+packages are collection of modules.
+Eg:- suppose we’ve amazon.com ecommerce application where we will not write entire app code in a single .py file.   We use diff .py files for diff microservices like add to cart, my acc, orders ….etc
+
+Why Use Packages?
+Organization: Makes large projects easier to manage by grouping related code into separate files.
+Reusability: Code in a package can be reused in other projects.
+
+Package Structure
+A package is a directory that contains:
+Sub-packages (optional)
+Modules (Python files with .py extension)
+An optional __init__.py file, which defines the package’s behavior when it’s imported.
+
+PYPI - python package index where we can download modules and packages just like docker registry to download container images.
+
+PIP - Python’s package installer.
+python -m pip install --upgrade pip
+
+
+
+
+
 
 
 Introduction
@@ -1271,56 +1374,6 @@ finally:
 
 
 
-							MODULES
-							=========
-In Python, modules are .py files containing Python code (e.g., functions, variables, or classes) that can be imported and reused in other Python programs. Modules are collection of functions. (Modularity Approach).
-
-Built-in Modules:
-These come pre-installed with Python.
-Examples:
-math: Provides mathematical functions.
-os: Interacts with the operating system.
-sys: Provides access to system-specific parameters and functions.
-datetime: Deals with date and time.
-
-Third-party Modules:
-Here are some widely-used packages:
-Aws - boto3
-GitHub - GitHub
-Jira - jira
-NumPy: Numerical computing
-Pandas: Data manipulation
-Matplotlib/Seaborn: Data visualization
-Flask/Django: Web development
-TensorFlow/PyTorch: Machine learning
-Requests: HTTP requests
-
-NOTE: when we call packages indirectly it is a module. Inside module collection of functions.
-
-User-defined Modules:
-import mymodule 
-print(mymodule.greet("Alice"))  
-
-
-PACKAGES/LIBRARIES
-===================
-packages are collection of modules.
-Eg:- suppose we’ve amazon.com ecommerce application where we will not write entire app code in a single .py file.   We use diff .py files for diff microservices like add to cart, my acc, orders ….etc
-
-Why Use Packages?
-Organization: Makes large projects easier to manage by grouping related code into separate files.
-Reusability: Code in a package can be reused in other projects.
-
-Package Structure
-A package is a directory that contains:
-Sub-packages (optional)
-Modules (Python files with .py extension)
-An optional __init__.py file, which defines the package’s behavior when it’s imported.
-
-PYPI - python package index where we can download modules and packages just like docker registry to download container images.
-
-PIP - Python’s package installer.
-python -m pip install --upgrade pip
 
 Virtual Env
 =========
