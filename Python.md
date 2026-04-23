@@ -22,19 +22,42 @@ in real-world scenario we might get a chance to work on windows that’s why pyt
 		- CLIs are great for immediate and straightforward automation tasks,  
 		- while APIs provide more flexibility and are better suited for complex, programmatic integrations.  
 
-## python packages:
+## Virtual Env  
+A virtual environment in Python is an isolated environment that allows you to install and manage packages separately from the global Python environment. If we want to work with multiple projects in on virtual machine/ec2-instance would prefer virtual Env.  It creates logical separation on virtual machine/ec2-instance for python packages.  
+```
+python -m venv vmtutes   #to create
+source vmtutes/bin/activate
+pip install requests numpy pandas
+Pip list
+deactivate
+rm -rf venv
+```  
+## Command Line Arguments
+	- Command-line arguments in Python are a way to give input to a Python program when you run it from the command line or terminal.  
+	  Syntax: python example.py arg1 arg2 arg3  
 
-numpy - Numerical Computing  
-pandas - Data Manipulation  
-scikit-learn - Core ML Library  
-mlflow - Experiment Tracking & Model Registry  
-dvc - Data & Model Versioning  
-fastapi - API for Model Serving  
-optuna & XGBoost - Hyperparameter Tuning  
-yyaml - YAML  
-pytest - Tests  
-joblib - Model serialization  
+## Environment variables
+Environment variables in Python are like little notes your operating system keeps to tell your programs about important settings. They can store information such as:  
+	- Paths to files or directories.
+	- API keys or credentials.
+	- Configuration details like debug settings.  
 
+`Export password=“root123”`
+`Export apitoken=“45rf6tgy78u9i9o0p9o”`
+
+```
+import os  
+print(os.getenv(“password”)) # get password from environment variable
+print(os.getenv(“apitoken”))
+```
+> **Note:** Builtin env variable : env
+
+## IDLE  
+	- It is the default Python IDE (Integrated Development Environment) that comes with the standard Python installation.
+	- It's designed to be simple and beginner-friendly, making it great for learning Python, without writing py file.
+	- To exit the IDLE terminal:  exit(). (Or) Control + d  
+
+> **NOTE:** Python, operators are essential for the interpreter and compiler to understand and execute specific operations  
 
 ## Python Core Topics (Must Know)
 1. Variables
@@ -1177,7 +1200,43 @@ from sklearn.metrics._classification import f1_score
 > Because package's __init__.py already imports everything from its modules internally — so module is invisible to you. 
 
 
+### 19. List Comprehensions  
+- List comprehension is a shortcut to create a new list in one line.  
+```  
+scores = [0.91, 0.74, 0.88, 0.65, 0.95]
 
+# Old way — 4 lines
+faults = []
+for s in scores:
+    if s < 0.8:
+        faults.append(s)
+
+print(faults)   # [0.74, 0.65]
+
+# New way — 1 line ✅
+faults = [s for s in scores if s < 0.8]
+print(faults)   # [0.74, 0.65]
+```  
+```
+# 1. Basic
+[round(score, 2)        for score in f1_scores]
+
+# 2. With filter
+[score                  for score in f1_scores   if score >= 0.85]
+
+# 3. With if/else
+["fault" if p >= 0.5
+ else "normal"          for p     in probabilities]
+```
+
+**"Go through every score — if it is less than 0.8 — keep it"**  
+```
+faults = [ s   for s in scores   if s < 0.8 ]
+           ↑        ↑                ↑
+        keep it   go through      only if
+                  every score     score < 0.8
+``` 
+> Whatever name you give in for — same name must be used in the expression. [round(s, 2) for s in f1_scores]
 
 
 
@@ -1296,43 +1355,7 @@ with open("results.txt", "a") as f:
 You must always import it first before using.
 
 
-**List Comprehensions:**  
-- List comprehension is a shortcut to create a new list in one line.  
 
-```
-# 1. Basic
-[round(score, 2)        for score in f1_scores]
-
-# 2. With filter
-[score                  for score in f1_scores   if score >= 0.85]
-
-# 3. With if/else
-["fault" if p >= 0.5
- else "normal"          for p     in probabilities]
-```
-```  
-scores = [0.91, 0.74, 0.88, 0.65, 0.95]
-
-# Old way — 4 lines
-faults = []
-for s in scores:
-    if s < 0.8:
-        faults.append(s)
-
-print(faults)   # [0.74, 0.65]
-
-# New way — 1 line ✅
-faults = [s for s in scores if s < 0.8]	   (or) 	rounded = [round(score, 2) for score in f1_scores]
-print(faults)   # [0.74, 0.65]
-```
-**"Go through every score — if it is less than 0.8 — keep it"**  
-```
-faults = [ s   for s in scores   if s < 0.8 ]
-           ↑        ↑                ↑
-        keep it   go through      only if
-                  every score     score < 0.8
-``` 
-> Whatever name you give in for — same name must be used in the expression. [round(s, 2) for s in f1_scores]
 
 
 
@@ -1383,153 +1406,11 @@ finally:
 
 
 
-Virtual Env
-=========
-A virtual environment in Python is an isolated environment that allows you to install and manage packages separately from the global Python environment. If we want to work with multiple projects in on virtual machine/ec2-instance would prefer virtual Env.
 
-- It creates logical separation on virtual machine/ec2-instance for python packages.
+				
 
-python -m venv vmtutes   #to create
-source vmtutes/bin/activate
-pip install requests numpy pandas
-Pip list
-deactivate
-rm -rf venv
-
-Command Line Arguments:
-=====================
-Command-line arguments in Python are a way to give input to a Python program when you run it from the command line or terminal.
-
-Syntax: python example.py arg1 arg2 arg3
-
-import sys
-
-def addition(n1, n2):
-    return n1 + n2
-def subtract (n1, n2):
-    return n1 - n2
-def multiply (n1, n2):
-    return n1 * n2
-
-n1 = int(sys.argv[1])
-operation = sys.argv[2]
-n2 = int(sys.argv[3])
-
-if operation == "addition":
-    print(addition(n1, n2))
-elif operation == "subtract":
-    print(subtract(n1, n2))
-elif operation == "multiply":
-    print(multiply(n1, n2))
-
-print("Arguments:", sys.argv)
-print("Number of arguments:", len(sys.argv))
-print("First argument:", sys.argv[1])
-print("Second argument:", sys.argv[2])
-print("Third argument:", sys.argv[3])
-
-
-
-Environment variables:
-—————————-
-Environment variables in Python are like little notes your operating system keeps to tell your programs about important settings. They can store information such as:
-Paths to files or directories.
-API keys or credentials.
-Configuration details like debug settings.
-
-Export password=“root123” 
-Export apitoken=“45rf6tgy78u9i9o0p9o”
-
-import os
-print(os.getenv(“password”)) # get password from environment variable
-print(os.getenv(“apitoken”))
-
-Note: Builtin env variable : env
-
-
-
-					
-
-
-
-What is IDLE?  
-It is the default Python IDE (Integrated Development Environment) that comes with the standard Python installation.
-It's designed to be simple and beginner-friendly, making it great for learning Python, without writing py file.
-To exit the IDLE terminal:  exit(). (Or) Control + d  
-
-> NOTE:-  Python, operators are essential for the interpreter and compiler to understand and execute specific operations  
-
+## Python Libraries for ML
 						
-
-						Conditional Handling 
-						==================
-
-
-
-import sys
-
-vinodh = sys.argv[1]
-
-if vinodh == "hello":
-    print("Hello, Vinodh!")
-elif vinodh == "hi":
-    print("Hi, Vinodh!")
-elif vinodh == "bye":
-    print("Bye, Vinodh!")
-elif vinodh == "goodbye":
-    print("Goodbye, Vinodh!")
-else:
-    print("Unrecognized greeting.")
-        
-						Loops
-						=====	
-Loops are a fundamental concept in programming, and they allow you to perform repetitive tasks efficiently. In Python, there are two primary types of loops: "for" and "while."
-
-Syntax:- for variable in sequence:
-
-numbers = [1, 2, 3, 4, 5]
-tuple = (10, 20, 30, 40, 50)
-colors = ["red", "green", "blue"]
-
-for i in colors:
-    print(i)
-
-Break statement:
-numbers = [1, 2, 3, 4, 5]
-for number in numbers:
-    if number == 3:
-        break
-    print(number)
-
-Continue statement:
-numbers = [1, 2, 3, 4, 5]
-for number in numbers:
-    if number == 3:
-        continue
-    print(number)
-#### While Loop
-
-The "while" loop continues to execute a block of code as long as a specified condition is true. It's often used when you don't know in advance how many times the loop should run.
-
-**Syntax:**
-
-```python
-while condition:
-    # Code to be executed as long as the condition is true
-```
-
-**Example:**
-
-```python
-count = 0
-while count < 5:
-    print(count)
-    count += 1
-
-
-							Python Libraries for ML
-							=======================
-
 numpy – Numerical Computing
 pandas – Data Manipulation
 scikit-learn – Core ML Library
@@ -1540,7 +1421,6 @@ optuna & XGBoost – Hyperparameter Tuning
 pyyaml – YAML
 pytest – Tests
 joblib – Model Serialization
-
 
 
 Numpy: 
@@ -1555,42 +1435,10 @@ pip install pandas
 import pandas as pd
 
 scikit-learn(Sklearn):
-
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.datasets import load_breast_cancer
-
-# Load dataset
-data = load_breast_cancer()
-X = data.data
-y = data.target
-
-# Split dataset into training and testing sets  
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=None
-                                                    )
-# Initialize and train the Logistic Regression model
-model = LogisticRegression(max_iter=10000)
-model.fit(X_train, y_train)
-
-# Make predictions on the test set
-pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, pred)
-
-print(f"accuracy: {accuracy * 100:.5f}%")
-
-# Save the trained model to a file
-import joblib
-joblib.dump(model, 'logistic_regression_model.pkl')
-
-
-NOTE: random_state=None —> it changes the split samples for each code run.
-
-random_state=0,1,7,42,100,999.  So numbers are needed to freeze randomness. same split for every code run. all work exactly the same.
-
-test_size only decides how many samples go to test
-random_state only decides which samples are selected
-
 
 Joblib:
 Joblib is a small Python library used to save and load machine learning models.
@@ -1617,69 +1465,6 @@ Model packaging
 Model deployment
 It works with any ML library (Scikit-Learn, TensorFlow, PyTorch, XGBoost, etc.)
 
-
-import joblib
-import mlflow
-import mlflow.sklearn
-from mlflow.models import infer_signature
-
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-
-# 1. Load dataset
-data = load_breast_cancer()
-X = data.data
-y = data.target
-
-# 2. Split dataset (use fixed seed for reproducibility)
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-# 3. Start an MLflow run and do training, logging, saving, and verification
-with mlflow.start_run():
-
-    # Train model
-    model = LogisticRegression(max_iter=10000)
-    model.fit(X_train, y_train)
-
-    # Predict and evaluate
-    preds = model.predict(X_test)
-    acc = accuracy_score(y_test, preds)
-
-    # Log parameter and metric
-    mlflow.log_param("max_iter", 10000)
-    mlflow.log_metric("accuracy", acc)
-
-    # Create signature and input_example to avoid MLflow warnings
-    signature = infer_signature(X_test[:50], model.predict(X_test[:50]))
-    input_example = X_test[:5]
-
-    # Log model to MLflow (use 'name' not deprecated 'artifact_path')
-    mlflow.sklearn.log_model(
-        sk_model=model,
-        name="model",
-        signature=signature,
-        input_example=input_example
-    )
-
-    # Also save model locally with joblib (optional, for local use)
-    joblib.dump(model, "logistic_regression_model.pkl")
-
-    # Load the saved local model and verify predictions
-    loaded_model = joblib.load("logistic_regression_model.pkl")
-    loaded_preds = loaded_model.predict(X_test)
-    loaded_acc = accuracy_score(y_test, loaded_preds)
-
-    # Log loaded model accuracy too (optional)
-    mlflow.log_metric("loaded_accuracy", loaded_acc)
-
-    # Print results
-    print(f"Training run accuracy: {acc * 100:.5f}%")
-    print(f"Loaded model accuracy: {loaded_acc * 100:.3f}%")
-
-
 with mlflow.start_run():
 This starts a new MLflow run. A “run” means one experiment attempt. Everything inside this with block will automatically be tracked and saved in MLflow. It creates a folder like: mlruns. 
 So MLflow knows:
@@ -1697,84 +1482,15 @@ signature = infer_signature(X_test[:50], model.predict(X_test[:50]))
 input_example = X_test[:5]  # input_example.json 
 Model (sk_model): The actual trained machine learning model (LogisticRegression, RandomForest, etc.) that learns patterns from data and makes predictions. MLflow saves it as model.pkl.
 
-pip install mlflow
-Mlflow ui # http://127.0.0.1:5000
+XGBOOST:	 					
+XGBoost is a machine learning algorithm that builds many small decision trees, each tree correcting the mistakes of the previous tree.  
+Used for Fast training, Very high accuracy, Works well for CSV, excel(structured  data)  
 
+OPTUNA:	  				
+Optuna is a tool that automatically searches for the best hyperparameters for your ML model. Because choosing good parameters manually is difficult.  
 
-DVC: DVC = Git for Data + Models 
-Git cannot store: large datasets, model files, intermediate artifacts So DVC handles those.
-
-pip install dvc
-from dvc.repo import Repo
-repo = Repo(".")
-stages = repo.stages
-print(stages)
-
-pip install dvc[s3].  # cloud storage integration
-pip install dvclive.  # internal storage engine
-dvclive 			     # ML metrics & plots logging
- 
-
-pip install dvc
-git init. #Inside your project folder:
-dvc init. #Inside your project folder:
-dvc add data.csv
-git add .
-git commit -m "tracked data with dvc"
-
-
-
-FASTAPI:
-This code creates a FastAPI web service that loads a trained ML model (iris_model.pkl) and exposes an API /predict to make predictions.
-
- pip install fastapi uvicorn
-
-from fastapi import FastAPI
-from pydantic import BaseModel
-import joblib
-
-app = FastAPI()
-
-# Load model
-model = joblib.load("iris_model.pkl")
-
-# Input schema
-class Input(BaseModel):
-    sepal_length: float
-    sepal_width: float
-    petal_length: float
-    petal_width: float
-
-@app.post("/predict")
-def predict(data: Input):
-    features = [[
-        data.sepal_length,
-        data.sepal_width,
-        data.petal_length,
-        data.petal_width
-    ]]
-
-    pred = model.predict(features)[0]
-    return {"prediction": int(pred)}
-
-uvicorn app:app --reload
-http://127.0.0.1:8000/docs
-
-
-								XGBOOST:
-								========
-XGBoost is a machine learning algorithm that builds many small decision trees, each tree correcting the mistakes of the previous tree.
-
-Used for Fast training, Very high accuracy, Works well for CSV, excel(structured  data)
-
-								OPTUNA:
-								========
-Optuna is a tool that automatically searches for the best hyperparameters for your ML model. Because choosing good parameters manually is difficult.
-
-
-							PYTEST:
-							=======
-pytest is a Python testing library used to check if your code is working correctly. It is like a quality checker, If your code is wrong → pytest catches it before deployment.
+PYTEST:  				
+pytest is a Python testing library used to check if your code is working correctly. It is like a quality checker, If your code is wrong → pytest catches it before deployment.  
 
 Model prediction code
 ✔ Data preprocessing code
@@ -1785,10 +1501,10 @@ Model prediction code
 CI/CD checks
 
 It checks Whether ML model gives correct output or not, FastAPI endpoint returns correct response or not,  Your function calculates correct values or not.
-pytest is run every time you: push code,  create PR,  run CI/CD,  deploy a model
-pip install pytest
+pytest is run every time you: push code,  create PR,  run CI/CD,  deploy a model  
+pip install pytest  
 
-							PyYAML:
+PyYAML:
 							
 
 
