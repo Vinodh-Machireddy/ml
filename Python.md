@@ -1296,8 +1296,20 @@ with open("results.txt", "a") as f:
 You must always import it first before using.
 
 
-**List Comprehensions:**
-- List comprehension is a shortcut to create a new list in one line.
+**List Comprehensions:**  
+- List comprehension is a shortcut to create a new list in one line.  
+
+```
+# 1. Basic
+[round(score, 2)        for score in f1_scores]
+
+# 2. With filter
+[score                  for score in f1_scores   if score >= 0.85]
+
+# 3. With if/else
+["fault" if p >= 0.5
+ else "normal"          for p     in probabilities]
+```
 ```  
 scores = [0.91, 0.74, 0.88, 0.65, 0.95]
 
@@ -1310,10 +1322,19 @@ for s in scores:
 print(faults)   # [0.74, 0.65]
 
 # New way — 1 line ✅
-faults = [s for s in scores if s < 0.8]
-
-print(faults)   # [0.74, 0.65] 
+faults = [s for s in scores if s < 0.8]	   (or) 	rounded = [round(score, 2) for score in f1_scores]
+print(faults)   # [0.74, 0.65]
 ```
+**"Go through every score — if it is less than 0.8 — keep it"**  
+```
+faults = [ s   for s in scores   if s < 0.8 ]
+           ↑        ↑                ↑
+        keep it   go through      only if
+                  every score     score < 0.8
+``` 
+> Whatever name you give in for — same name must be used in the expression. [round(s, 2) for s in f1_scores]
+
+
 
 **Whenever you want to COUNT something → use Dictionary:**
 ```
