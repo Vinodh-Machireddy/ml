@@ -85,7 +85,7 @@ print(os.getenv(“apitoken”))
 22. File Handling
 23. Decorators (just recognize, not write)
 
-### Variables
+## 1. Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
 ```  
 model_version = "v1.3"
@@ -119,7 +119,7 @@ Local Variable : Defined inside a function — only lives inside that function.
 - Keep variable names as descriptive as possible. vmd  
 - Reserved keywords (e.g., if, while, class, import) cannot be used as variable names.  
 
-### Data Types
+## 2. Data Types
 **int — Integer:** Whole numbers, no decimals.  
 ```
 n_estimators = 100
@@ -160,7 +160,7 @@ print(isinstance(0.95, float))    # True
 print(isinstance(100, int))       # True
 print(isinstance(1, (int, float)))  # True ✅ — accepts both
 ```
-**Type Conversion:**
+## 3.Type Conversion
 Converting a value from one data type to another.  
 
 | Function | Converts To | Input Example | Output | Watch Out For |
@@ -195,7 +195,7 @@ student = {
     "role": "MLOps Engineer"
 }  
 
-### Operators
+## 4. Operators
 **Arithmetic Operators:**
 ```
 a = 10
@@ -287,7 +287,7 @@ result = (2 + 3) * 4    # 20 — brackets first
 > ### MLOps example
 accuracy = correct / total * 100    # division first, then multiply
 
-### 5. Strings
+## 5. Strings
 Any text data wrapped in quotes — single 'battery_fault_classifier' or double "XGBoost", both work the same.  
 
 **String Indexing & Slicing:**
@@ -302,19 +302,53 @@ print(name[0:3])    # XGB — from index 0 to 2
 print(name[2:])     # Boost — from index 2 to end
 print(name[:3])     # XGB — from start to index 2
 ```
-**String Methods:**
-| # | Method | What it does |
-|---|---|---|
-| 1 | `.strip()` | Removes leading/trailing whitespace |
-| 2 | `.lower()` | Converts to lowercase — used in comparisons |
-| 3 | `.split(sep)` | Splits string into list by separator |
-| 4 | `",".join(list)` | Joins list into a single string |
-| 5 | `.replace(old, new)` | Replaces part of a string |
-| 6 | `.startswith(prefix)` | Checks if string starts with something |
-| 7 | `.endswith(suffix)` | Checks if string ends with something |
-| 8 | `.find(sub)` | Finds index of substring, -1 if not found |
-| 9 | `.format()` / `f"..."` | Inserts values into a string |
-| 10 | `len(str)` | Returns length of string |
+**String Manipulation:**
+- String manipulation means cleaning, searching, or modifying that sentence.
+```  
+log = "  ERROR: Battery voltage drop at 14:32  "
+
+# 1. strip() → removes spaces from both sides
+log.strip()           # "ERROR: Battery voltage drop at 14:32"
+
+# 2. lower() → converts everything to lowercase
+log.lower()           # "  error: battery voltage drop at 14:32  "
+
+# 3. upper() → converts everything to uppercase
+log.upper()           # "  ERROR: BATTERY VOLTAGE DROP AT 14:32  "
+
+# 4. replace() → replaces a word
+log.replace("ERROR", "ALERT")   # "  ALERT: Battery voltage drop..."
+
+# 5. split() → breaks string into a list
+log.split(":")        # ["  ERROR", " Battery voltage drop at 14", "32  "]
+
+# 6. startswith() → checks beginning
+log.strip().startswith("ERROR")   # True
+
+# 7. endswith() → checks ending
+log.strip().endswith("32")        # True
+
+# 8. in → checks if word exists
+"voltage" in log      # True ✅
+"thermal" in log      # False ❌
+```
+**Chaining Methods — Do Multiple Things at Once:**  
+```
+log = "  ERROR: Battery voltage drop  "
+
+# Instead of writing 3 lines
+log = log.strip()
+log = log.lower()
+log = log.replace("error", "alert")
+
+# Write in one line ✅
+log = log.strip().lower().replace("error", "alert")
+print(log)    # "alert: battery voltage drop"
+
+# Capitalize inside f-string
+print(f"Model: {model.upper()}, Accuracy: {accuracy}")
+# Model: XGBOOST, Accuracy: 0.94
+```
 
 **f-string Formatting :**
 ```
@@ -348,7 +382,7 @@ def train_model(X, y):
     """
     pass
 ```
-### 6. if / elif / else
+## 6. if / elif / else
 Controls which block of code runs based on a condition. Every condition returns True or False.  
 ```
 f1_score = 0.94
@@ -377,7 +411,7 @@ if f1_score < 0.75 or drift_detected:
 ```
 > we can use `in / not in` ,  `is / is not` also.
 
-### 7. for loop
+## 7. for loop
 Repeats a block of code for each item in a collection — list, tuple, dictionary, range, or any iterable.  
 ```
 # range(start, stop, step)
@@ -395,7 +429,7 @@ for i in range(0, 100, 10):
 | `break` | Exit loop early | Stop when target F1 is hit |
 | `continue` | Skip current iteration | Skip None or missing features |
 
-### 8. while loop
+## 8. while loop
 Repeats a block of code as long as a condition is True — unlike for loop, you don't know upfront how many times it will run.  
 ```
 epoch = 0
@@ -414,7 +448,7 @@ while epoch < 5:
 > break — Exit Early
 > continue — Skip Current Iteration
 
-### 9. Lists
+## 9. Lists
 An ordered, mutable collection that stores multiple values in a single variable.  
 ```
 features = ["voltage", "temperature", "current", "capacity"]
@@ -496,7 +530,7 @@ print(min(scores))          # 0.87  — lowest value
 print(sum(scores))          # 3.66  — total
 print(sorted(scores))       # [0.87, 0.91, 0.93, 0.95]
 ```
-### 10. Tuples
+## 10. Tuples
 An ordered, immutable collection — like a list but cannot be changed after creation.  
 ```
 # list   → mutable   → can change
@@ -547,8 +581,7 @@ print(version)      # v1.3
 print(f1_score)     # 0.94
 ```
 
-
-### 11. Sets
+## 11. Sets
 An unordered, unindexed collection of unique values — duplicates are automatically removed.  
 ```
 fault_types = {"thermal", "voltage", "current", "capacity"}
@@ -598,7 +631,7 @@ print(expected ^ actual)
 ```
 > convert to list if you need indexing  
 
-### 12. Dictionaries
+## 12. Dictionaries
 A collection of key-value pairs — like a lookup table. Instead of index numbers, you access values by meaningful keys.  
 ```
 model_config = {
@@ -675,7 +708,7 @@ for key, value in config.items():
     print(f"{key} = {value}")
 
 ```  
-### 13. Functions
+## 13. Functions
 A reusable block of code that runs only when called. Write once, use many times. Python provides several built-in functions like print(), len(), type(), range(), input(), etc.  
 
 Functions always follows 3 principles I.e 
@@ -700,7 +733,7 @@ print(addition(2, 5)) ——> invoking & printing function output
 print(check_fault(0.75, 0.7))   # OK
 
 
-#### Parameters in Functions, There are 5 types:
+### Parameters in Functions, There are 5 types:
 **1. Positional Parameters — order matters:**
 ```
 def train_model(model_name, learning_rate, n_estimators):
@@ -765,7 +798,23 @@ log_metrics(f1=0.94, precision=0.92, recall=0.96)
 # precision = 0.92
 # recall = 0.96
 ```
-#### 16. Buil-in Functions
+### 14. Lambda Functions  
+A small, one-line anonymous function — no def, no name, no return statement needed.
+```
+lambda parameters: expression
+#                  ↑ automatically returned
+```
+
+```
+# lambda
+add = lambda x, y: x + y
+print(add(3, 5))    # 8
+
+# MLOps example
+weighted_score = lambda precision, recall: (2 * precision * recall) / (precision + recall)
+print(weighted_score(0.92, 0.96))   # f1 score calculation
+```
+## 15. Buil-in Functions
 **print():**  
 Outputs text or values to the console. Most used function in Python — for logging, debugging, monitoring.  
 ```
@@ -1010,24 +1059,7 @@ all([True, True,  True])    # True  — all True ✅
 all([True, False, True])    # False — one False breaks it
 ```
 
-### 14. Lambda Functions  
-A small, one-line anonymous function — no def, no name, no return statement needed.
-```
-lambda parameters: expression
-#                  ↑ automatically returned
-```
-
-```
-# lambda
-add = lambda x, y: x + y
-print(add(3, 5))    # 8
-
-# MLOps example
-weighted_score = lambda precision, recall: (2 * precision * recall) / (precision + recall)
-print(weighted_score(0.92, 0.96))   # f1 score calculation
-```
-
-### 17. OOP Basics (Classes & Objects)
+## 16. OOP Basics (Classes & Objects)
 A way to organize code into reusable blueprints called classes. Instead of writing separate functions and variables, you group related data and behaviour together.  
 	- function OUTSIDE class — standalone function
 	- function INSIDE class — called method 
@@ -1109,7 +1141,7 @@ from sklearn.pipeline import Pipeline                 # class
 from xgboost import XGBClassifier                     # class
 ```
 
-### 18. Modules 
+## 17. Modules 
 In Python, modules are .py files containing Python code (e.g., functions, variables, or classes) that can be imported and reused in other Python programs. Modules are collection of functions. (Modularity Approach).
  
 **1. Built-in — comes with Python, no install needed:**  
@@ -1140,7 +1172,7 @@ NOTE: when we call packages indirectly it is a module. Inside module collection 
 import my_utils
 import train
 
-#### 4 Ways to Import
+### 4 Ways to Import
 ```
 # 1. import entire module
 import os
@@ -1158,7 +1190,7 @@ import matplotlib.pyplot as plt
 # 4. import everything — avoid this ❌
 from os import *                # pollutes namespace — hard to debug
 ```
-#### Most Common MLOps Imports
+### Most Common MLOps Imports
 ```
 # data handling
 import pandas as pd
@@ -1200,7 +1232,7 @@ from sklearn.metrics._classification import f1_score
 > Because package's __init__.py already imports everything from its modules internally — so module is invisible to you. 
 
 
-### 19. List Comprehensions  
+## 18. List Comprehensions  
 - List comprehension is a shortcut to create a new list in one line.  
 ```  
 scores = [0.91, 0.74, 0.88, 0.65, 0.95]
@@ -1238,7 +1270,7 @@ faults = [ s   for s in scores   if s < 0.8 ]
 ``` 
 > Whatever name you give in for — same name must be used in the expression. [round(s, 2) for s in f1_scores]
 
-## 20. Error Handling
+## 19. Error Handling
 	- A way to catch and handle errors gracefully instead of letting your program crash.  
 ```
 try:
@@ -1277,87 +1309,10 @@ finally:
 > **Rule** — always catch specific errors first (`ValueError`, `KeyError`) and use `Exception` only as last resort.
 
 
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-	
-
-
-
-
-
-
-
-
-					
-
-
-
-
-
-							FUNCTIONS
-							==========
-
-**String Manipulation:**
-- String manipulation means cleaning, searching, or modifying that sentence.
-```  
-log = "  ERROR: Battery voltage drop at 14:32  "
-
-# 1. strip() → removes spaces from both sides
-log.strip()           # "ERROR: Battery voltage drop at 14:32"
-
-# 2. lower() → converts everything to lowercase
-log.lower()           # "  error: battery voltage drop at 14:32  "
-
-# 3. upper() → converts everything to uppercase
-log.upper()           # "  ERROR: BATTERY VOLTAGE DROP AT 14:32  "
-
-# 4. replace() → replaces a word
-log.replace("ERROR", "ALERT")   # "  ALERT: Battery voltage drop..."
-
-# 5. split() → breaks string into a list
-log.split(":")        # ["  ERROR", " Battery voltage drop at 14", "32  "]
-
-# 6. startswith() → checks beginning
-log.strip().startswith("ERROR")   # True
-
-# 7. endswith() → checks ending
-log.strip().endswith("32")        # True
-
-# 8. in → checks if word exists
-"voltage" in log      # True ✅
-"thermal" in log      # False ❌
-```
-**Chaining Methods — Do Multiple Things at Once:**  
-```
-log = "  ERROR: Battery voltage drop  "
-
-# Instead of writing 3 lines
-log = log.strip()
-log = log.lower()
-log = log.replace("error", "alert")
-
-# Write in one line ✅
-log = log.strip().lower().replace("error", "alert")
-print(log)    # "alert: battery voltage drop"
-
-# Capitalize inside f-string
-print(f"Model: {model.upper()}, Accuracy: {accuracy}")
-# Model: XGBOOST, Accuracy: 0.94
-```
-
-## File Handling
+## 20. Input and Output
+ 
+				
+## 21. File Handling
 Think of file handling like opening a notebook, writing or reading, then closing it.  
 **Writing to a File:**
 ```
@@ -1392,25 +1347,7 @@ with open("results.txt", "a") as f:
 You must always import it first before using.
 
 
-
-
-
-
-**Whenever you want to COUNT something → use Dictionary:**
-```
-numbers = [3,4,4,5,6,7,8,9,2,2,9,9]
-
-count = {}   # empty dictionary
-
-for n in numbers:
-    if n in count:
-        count[n] += 1    # already exists → add 1
-    else:
-        count[n] = 1     # first time seen → set to 1
-
-print(count)
-```
-
+## 22. Decorators
 
 
 
@@ -1522,7 +1459,21 @@ PyYAML:
 							
 
 
+## Python Interview Questions & Answers
+**Whenever you want to COUNT something → use Dictionary:**
+```
+numbers = [3,4,4,5,6,7,8,9,2,2,9,9]
 
+count = {}   # empty dictionary
+
+for n in numbers:
+    if n in count:
+        count[n] += 1    # already exists → add 1
+    else:
+        count[n] = 1     # first time seen → set to 1
+
+print(count)
+```
 
 
 
