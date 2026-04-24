@@ -800,7 +800,7 @@ train_model(
     learning_rate=0.05      # order doesn't matter here
 )
 ```
-**4.*args(When you don't know how many values will be passed:)**  
+**4. *args(When you don't know how many values will be passed:)**  
 ```
 def log_metrics(*args):
     for value in args:      # args is a tuple
@@ -836,8 +836,7 @@ print(add(3, 5))    # 8
 weighted_score = lambda precision, recall: (2 * precision * recall) / (precision + recall)
 print(weighted_score(0.92, 0.96))   # f1 score calculation
 ```
-<details> 
-<summary><b>15. Buil-in Functions</b></summary> 
+## 15. Buil-in Functions 
 **1.print():**  
 Outputs text or values to the console. Most used function in Python — for logging, debugging, monitoring.  
 ```
@@ -1081,8 +1080,6 @@ any([False, True,  False])  # True  — one is enough ✅
 all([True, True,  True])    # True  — all True ✅
 all([True, False, True])    # False — one False breaks it
 ```
-
-</details>
 
 ## 16. OOP Basics (Classes & Objects)
 A way to organize code into reusable blueprints called classes. Instead of writing separate functions and variables, you group related data and behaviour together.  
