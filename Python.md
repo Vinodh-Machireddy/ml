@@ -1371,35 +1371,15 @@ A decorator is a function that wraps another function to add extra behaviour —
 ```
 @timer              # you build entire logic
 @retry              # you build entire logic
-@log_decorator      # you build entire logic
-```
-**@log_decorator:**
-```
-# SCRATCH — you write entire wrapper logic yourself
-def log_decorator(func):
-    def wrapper():
-        print("Starting...")        # before function
-        func()                      # original function runs
-        print("Done!")              # after function
-    return wrapper
-
-@log_decorator
-def train_model():
-    print("Training XGBoost model")
-
-train_model()
-# Starting...
-# Training XGBoost model
-# Done!
 ```
 **Timing decorator — how long training takes:**
 ```
 import time
 
-def timer(func):
+def timer(func):		# func = train_model is passed here
     def wrapper(*args, **kwargs):
         start = time.time()
-        result = func(*args, **kwargs)
+        result = func(*args, **kwargs)  # func() = train_model() runs here
         end = time.time()
         print(f"{func.__name__} took {end-start:.2f} seconds")
         return result
@@ -1413,6 +1393,8 @@ def train_model():
 train_model()
 # train_model took 12.34 seconds
 ```
+> (func): refers to train_model  
+> (func): Name is NOT Fixed, You can name it anything:using 'fn', f instead of 'func' — works exactly same  
 
 **Decorators we WRITE:**  
 - Decorators We WRITE using Python built-ins:
