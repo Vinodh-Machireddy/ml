@@ -61,6 +61,7 @@ print(os.getenv(“apitoken”))
 
 <details>
 <summary><b>Python Core Topics (Must Know)</b></summary>  
+	
 1. Variables  
 2. Data Types  
 3. Type Conversion  
@@ -87,17 +88,18 @@ print(os.getenv(“apitoken”))
 </details>
 
 <details> 
-<summary><b>Python Libraries/Packages for ML</b></summary> 					
-numpy – Numerical Computing
-pandas – Data Manipulation
-scikit-learn – Core ML Library
-mlflow – Experiment Tracking & Model Registry
-dvc – Data & Model Versioning
-fastapi – API for Model Serving
-optuna & XGBoost – Hyperparameter Tuning
-pyyaml – YAML
-pytest – Tests
-joblib – Model Serialization
+<summary><b>Python Libraries/Packages for ML</b></summary>  
+	
+- numpy – Numerical Computing
+- pandas – Data Manipulation
+- scikit-learn – Core ML Library
+- mlflow – Experiment Tracking & Model Registry
+- dvc – Data & Model Versioning
+- fastapi – API for Model Serving
+- optuna & XGBoost – Hyperparameter Tuning
+- pyyaml – YAML
+- pytest – Tests
+- joblib – Model Serialization
 </details>	
 
 ## 1. Variables
