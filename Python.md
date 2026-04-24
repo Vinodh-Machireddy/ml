@@ -754,7 +754,7 @@ print(addition(2, 5)) ——> invoking & printing function output
 print(check_fault(0.75, 0.7))   # OK
 ```  
 
-### Parameters in Functions, There are 5 types:
+### Parameters in Functions, There are 4 types:
 **1. Positional Parameters — order matters:**
 ```
 def train_model(model_name, learning_rate, n_estimators):
@@ -799,7 +799,8 @@ train_model(
     learning_rate=0.05      # order doesn't matter here
 )
 ```
-**4. *args(When you don't know how many values will be passed:)**  
+**4.args and kwargs:**
+ *args - When you don't know how many values will be passed:  
 ```
 def log_metrics(*args):
     for value in args:      # args is a tuple
@@ -808,13 +809,14 @@ def log_metrics(*args):
 log_metrics(0.94)                       # one metric
 log_metrics(0.94, 0.92, 0.96)          # three metrics — all work ✅
 ```
-**5. **kwargs — variable number of keyword arguments:**
+**kwargs — variable number of keyword arguments:
 ```
 def log_metrics(**kwargs):
     for name, value in kwargs.items():  # kwargs is a dict
         print(f"{name} = {value}")
 
-log_metrics(f1=0.94, precision=0.92, recall=0.96)
+log_metrics(f1=0.94, precision=0.92, recall=0.96)  
+Output:  
 # f1 = 0.94
 # precision = 0.92
 # recall = 0.96
@@ -1369,6 +1371,8 @@ You must always import it first before using.
 
 
 ## 22. Decorators
+A decorator is a function that wraps another function to add extra behaviour — without changing the original function's code.  
+
 
 
 
