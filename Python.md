@@ -82,7 +82,6 @@ print(os.getenv(“apitoken”))
 18. List Comprehensions  
 19. Error Handling  
 **Nice to Have**  
-20. Input & Output  
 21. File Handling  
 22. Decorators (just recognize, not write)
 23. dsl
