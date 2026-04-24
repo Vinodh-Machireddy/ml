@@ -1414,14 +1414,15 @@ train_model()
 # train_model took 12.34 seconds
 ```
 
-**Decorators we WRITE:**
-- Decorators We WRITE using Python built-ins:  
+**Decorators we WRITE:**  
+- Decorators We WRITE using Python built-ins:
+```
 @staticmethod       # utility function — no self, no cls
 @classmethod        # alternative constructor — uses cls
 @property           # access method as variable — uses self
-
+```  
 **Decorators we RECOGNIZE:**	
-- Decorators We RECOGNIZE — library already wrote them:  
+- Decorators We RECOGNIZE — library already wrote them:   
 ```
 @app.route()        # Flask
 @app.post/get()     # FastAPI
@@ -1432,9 +1433,7 @@ train_model()
 @app.post() / @app.get()      # Written by FastAPI team — you just use			
 ```
 from fastapi import FastAPI
-
 app = FastAPI()			# ← you write this
-
 # FastAPI already wrote @app.post() internally   # you just USE it — place above your function
 
 @app.post("/predict")           # ← you USE this (FastAPI wrote it)
@@ -1442,11 +1441,11 @@ def predict():                  # ← you write this function
     return {"label": "fault"}
 ```  
 > @app.route()     # decorator fro flask, to expose endpoint.
-> Kserve: Yes! KServe has its own way — but it uses class inheritance rather than decorators.  
+> Kserve: Yes! KServe has its own way — but it uses class inheritance rather than decorators.   
 
-**Function Call — NOT a decorator:** 
-`mlflow.autolog()     # mlflow automatically logs ML experiments (params, metrics, model)  # just a function call — no @ sign`
->**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.
+**Function Call — NOT a decorator:**   
+```mlflow.autolog()     # mlflow automatically logs ML experiments (params, metrics, model)  # just a function call — no @ sign```  
+>**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.  
 
 
 
