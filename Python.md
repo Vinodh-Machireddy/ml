@@ -61,34 +61,45 @@ print(os.getenv(“apitoken”))
 
 <details>
 <summary><b>Python Core Topics (Must Know)</b></summary>  
-1. Variables
-2. Data Types
-3. Type Conversion
-4. Operators
-5. Strings
-6. if / elif / else
-7. for loop
-8. while loop
-9. Lists
-10. Tuples
-11. Sets
-12. Dictionaries
-13. Functions
-14. Lambda Functions
-15. Built-in Functions
-16. OOP Basics (Classes & Objects)
-17. Modules & Import
-18. List Comprehensions
-19. Error Handling
-**Nice to Have**
-20. Input & Output
-21. File Handling
-22. Decorators (just recognize, not write)
-
+1. Variables  
+2. Data Types  
+3. Type Conversion  
+4. Operators  
+5. Strings  
+6. if / elif / else  
+7. for loop  
+8. while loop  
+9. Lists  
+10. Tuples  
+11. Sets  
+12. Dictionaries  
+13. Functions  
+14. Lambda Functions  
+15. Built-in Functions  
+16. OOP Basics (Classes & Objects)  
+17. Modules & Import  
+18. List Comprehensions  
+19. Error Handling  
+**Nice to Have**  
+20. Input & Output  
+21. File Handling  
+22. Decorators (just recognize, not write)  
 </details>
-<details>
-<summary><b>Python Core Topics (Must Know)</b></summary>  
+
+<details> 
+<summary><b>Python Libraries/Packages for ML</b></summary> 					
+numpy – Numerical Computing
+pandas – Data Manipulation
+scikit-learn – Core ML Library
+mlflow – Experiment Tracking & Model Registry
+dvc – Data & Model Versioning
+fastapi – API for Model Serving
+optuna & XGBoost – Hyperparameter Tuning
+pyyaml – YAML
+pytest – Tests
+joblib – Model Serialization
 </details>	
+
 ## 1. Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
 ```  
