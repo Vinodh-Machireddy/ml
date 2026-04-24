@@ -735,13 +735,8 @@ Functions always follows 3 principles I.e
 - Taking Input
 - Execute the desired logic
 - Return the Output 
-```
-def function_name(parameters):
-    # code
-    return result
-```
 ```  
-def addition(n1, n2):
+def addition(n1, n2):   # (parameters)
     Add = n1 + n2
     return add
 
@@ -1373,15 +1368,27 @@ You must always import it first before using.
 ## 22. Decorators
 A decorator is a function that wraps another function to add extra behaviour — without changing the original function's code.  
 
+**Decorators we WRITE:**
 
 
+**Decorators we RECOGNIZE:**		
+mlflow.autolog()     # mlflow automatically logs ML experiments (params, metrics, model)
+>**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.
 
+@app.post() / @app.get()      # Written by FastAPI team — you just use			
+```
+from fastapi import FastAPI
 
+app = FastAPI()			# ← you write this
 
+# FastAPI already wrote @app.post() internally   # you just USE it — place above your function
 
-
-
-
+@app.post("/predict")           # ← you USE this (FastAPI wrote it)
+def predict():                  # ← you write this function
+    return {"label": "fault"}
+```  
+> @app.route()     # decorator fro flask, to expose endpoint.
+> Kserve: Yes! KServe has its own way — but it uses class inheritance rather than decorators.  
 
 				
 
