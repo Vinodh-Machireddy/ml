@@ -84,7 +84,11 @@ print(os.getenv(“apitoken”))
 **Nice to Have**  
 20. Input & Output  
 21. File Handling  
-22. Decorators (just recognize, not write)  
+22. Decorators (just recognize, not write)
+23. dsl
+24. generator
+25. 
+26. 
 </details>
 
 <details> 
@@ -831,7 +835,8 @@ print(add(3, 5))    # 8
 weighted_score = lambda precision, recall: (2 * precision * recall) / (precision + recall)
 print(weighted_score(0.92, 0.96))   # f1 score calculation
 ```
-## 15. Buil-in Functions
+<details> 
+<summary><b>15. Buil-in Functions</b></summary> 
 **print():**  
 Outputs text or values to the console. Most used function in Python — for logging, debugging, monitoring.  
 ```
@@ -1076,12 +1081,14 @@ all([True, True,  True])    # True  — all True ✅
 all([True, False, True])    # False — one False breaks it
 ```
 
+</details>
+
 ## 16. OOP Basics (Classes & Objects)
 A way to organize code into reusable blueprints called classes. Instead of writing separate functions and variables, you group related data and behaviour together.  
 	- function OUTSIDE class — standalone function
 	- function INSIDE class — called method 
-	- Most functions in sklearn are inside classes — that's why you create objects first.
-```
+	- Most functions in sklearn are inside classes — that's why you create objects first.  
+```  
 # Class  — blueprint (like a template)
 # Object — actual instance created from blueprint
 
