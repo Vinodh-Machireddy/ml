@@ -1367,14 +1367,68 @@ You must always import it first before using.
 
 ## 22. Decorators
 A decorator is a function that wraps another function to add extra behaviour — without changing the original function's code.  
+**Decorators We WRITE from scratch:**
+```
+@timer              # you build entire logic
+@retry              # you build entire logic
+@log_decorator      # you build entire logic
+```
+**@log_decorator:**
+```
+# SCRATCH — you write entire wrapper logic yourself
+def log_decorator(func):
+    def wrapper():
+        print("Starting...")        # before function
+        func()                      # original function runs
+        print("Done!")              # after function
+    return wrapper
+
+@log_decorator
+def train_model():
+    print("Training XGBoost model")
+
+train_model()
+# Starting...
+# Training XGBoost model
+# Done!
+```
+**Timing decorator — how long training takes:**
+```
+import time
+
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} took {end-start:.2f} seconds")
+        return result
+    return wrapper
+
+@timer
+def train_model():
+    model = XGBClassifier()
+    model.fit(X_train, y_train)
+
+train_model()
+# train_model took 12.34 seconds
+```
 
 **Decorators we WRITE:**
+- Decorators We WRITE using Python built-ins:  
+@staticmethod       # utility function — no self, no cls
+@classmethod        # alternative constructor — uses cls
+@property           # access method as variable — uses self
 
-
-**Decorators we RECOGNIZE:**		
-mlflow.autolog()     # mlflow automatically logs ML experiments (params, metrics, model)
->**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.
-
+**Decorators we RECOGNIZE:**	
+- Decorators We RECOGNIZE — library already wrote them:  
+```
+@app.route()        # Flask
+@app.post/get()     # FastAPI
+@pytest.fixture     # pytest
+@pytest.mark.parametrize   # pytest
+@dataclass          # Python
+```  
 @app.post() / @app.get()      # Written by FastAPI team — you just use			
 ```
 from fastapi import FastAPI
@@ -1390,7 +1444,45 @@ def predict():                  # ← you write this function
 > @app.route()     # decorator fro flask, to expose endpoint.
 > Kserve: Yes! KServe has its own way — but it uses class inheritance rather than decorators.  
 
-				
+**Function Call — NOT a decorator:** 
+`mlflow.autolog()     # mlflow automatically logs ML experiments (params, metrics, model)  # just a function call — no @ sign`
+>**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Python Libraries for ML
 						
