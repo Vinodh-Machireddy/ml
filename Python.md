@@ -25,7 +25,7 @@ in real-world scenario we might get a chance to work on windows that’s why pyt
 ## Virtual Env  
 A virtual environment in Python is an isolated environment that allows you to install and manage packages separately from the global Python environment. If we want to work with multiple projects in on virtual machine/ec2-instance would prefer virtual Env.  It creates logical separation on virtual machine/ec2-instance for python packages.  
 ```
-python -m venv vmtutes   #to create
+python -m venv vmtutes   #to create 
 source vmtutes/bin/activate
 pip install requests numpy pandas
 Pip list
@@ -104,6 +104,29 @@ print(os.getenv(“apitoken”))
 - pytest – Tests
 - joblib – Model Serialization
 </details>	
+
+Tier 1 (Must Master)
+pandas
+NumPy
+scikit-learn
+MLflow
+FastAPI
+joblib
+
+Tier 2 (Strong MLOps Signal)
+kfp
+DVC
+PyYAML
+python-dotenv
+logging
+
+Tier 3 (Basic Usage Enough)
+requests
+prometheus_client
+os / json / datetime / pathlib
+
+
+
 
 ## 1. Variables
 variables are used to store data values. A variable is essentially a name that refers to a value. It store data, DATA can be any type like String, Float, Boolean….etc  > In Python, you don't declare types — just assign and go.  
