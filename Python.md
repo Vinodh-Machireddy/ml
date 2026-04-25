@@ -1568,16 +1568,73 @@ print(np.random.seed(42))   # reproducibility
 - Pandas stands for Panel Data — it is the most used Python library for data manipulation and analysis. Think of it as Excel but in Python — but much more powerful.  
 - Install & Import:
   	- pip install pandas
-  	- import pandas as pd      # pd is standard alias — everyone uses this
+  	- import pandas as pd      # pd is standard alias — everyone uses this  
 
-Pandas has 2 main data structures:
+Pandas has 2 main data structures:  
 	1. DataFrame
 	2. Series
+```
+# step 1 — create dictionary
+data = {
+    "battery_id" : ["BAT001", "BAT002", "BAT003", "BAT004"],
+    "voltage"    : [3.7, 3.2, 3.9, 2.8],
+    "temperature": [35.2, 42.1, 28.5, 55.6],
+    "current"    : [1.2, 1.8, 0.9, 2.1],
+    "fault_label": ["normal", "thermal", "normal", "overvoltage"]
+}
+# step 2 — pass dictionary to pd.DataFrame()
+df = pd.DataFrame(data)
+print(df)
+```  
+> **How Dictionary Maps to DataFrame:**  
+  Dictionary Key      →    Column Name
+  Dictionary Value    →    Column Values
 
-A Python library used to work with data in table format.   Rows = records,  Columns = features
-Very useful for data cleaning, loading CSV files, feature engineering.
-pip install pandas
-import pandas as pd
+**Reading/Loading Data:**  
+In Real MLOps — You Rarely Create DataFrame Manually. we use # CSV file, s3, excel, JSON.    
+```
+df = pd.read_csv("battery_data.csv")						# read CSV — most common
+df = pd.read_csv("s3://daimler-battery/data/train.csv")		# read from S3 — your real usage at Daimler
+df = pd.read_excel("battery_data.xlsx")						# read excel
+df = pd.read_json("battery_data.json")						# read json
+```
+**First Look at Data — Always Do This First:**  
+```
+print(df.shape)         # (10000, 5) — rows, columns
+print(df.head())        # first 5 rows
+print(df.tail())        # last 5 rows
+print(df.info())        # column names, types, null counts
+print(df.describe())    # statistics — mean, std, min, max
+print(df.columns)       # column names
+print(df.dtypes)        # data types of each column
+```
+**Selecting Data:**
+```
+# single column — returns Series
+voltage = df["voltage"]
+
+# multiple columns — returns DataFrame
+features = df[["voltage", "temperature", "current"]]
+
+# select rows by index
+print(df.iloc[0])           # first row
+print(df.iloc[0:3])         # first 3 rows
+print(df.iloc[0, 1])        # row 0, column 1
+
+# select rows by condition
+fault_df = df[df["fault_label"] != "normal"]
+high_temp = df[df["temperature"] > 50]
+low_volt  = df[df["voltage"] < 3.0]
+```  
+
+
+
+
+
+
+
+
+
 
 scikit-learn(Sklearn):
 from sklearn.model_selection import train_test_split
