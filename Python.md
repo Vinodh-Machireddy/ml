@@ -114,7 +114,10 @@ FastAPI
 joblib
 
 Tier 2 (Strong MLOps Signal)
-kfp
+pytest
+Evidently AI
+Boto3
+Kubeflow Pipelines (kfp)
 DVC
 PyYAML
 python-dotenv
@@ -123,8 +126,7 @@ logging
 Tier 3 (Basic Usage Enough)
 requests
 prometheus_client
-os / json / datetime / pathlib
-
+os, json, datetime, pathlib
 
 
 
