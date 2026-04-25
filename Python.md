@@ -109,6 +109,7 @@ Tier 1 (Must Master)
 pandas
 NumPy
 scikit-learn
+XGBoost
 MLflow
 FastAPI
 joblib
@@ -128,6 +129,28 @@ requests
 prometheus_client
 os, json, datetime, pathlib
 
+
+battery_id | voltage | temperature | current | capacity | fault_label
+BAT001     | 3.7     | 35.2        | 1.2     | 98.5     | normal
+BAT002     | 3.2     | 42.1        | 1.8     | 87.3     | thermal_fault
+BAT003     | 2.8     | 55.6        | 2.1     | 76.2     | overvoltage
+BAT004     | 4.3     | 38.1        | 2.5     | 91.2     | overcharging
+BAT005     | 3.1     | 36.2        | 1.1     | 45.3     | cell_degradation
+BAT006     | 3.6     | 35.8        | 1.3     | 97.1     | internal_short_circuit
+BAT007     | 3.5     | 34.9        | 1.2     | 96.8     | undervoltage
+
+Tabular/structured Multi-class Classification problem
+So yes — each row = one data point ✅
+Your project = Multi-class — one battery reading gets one label from 7 possible classes.
+
+
+| What You See | Correct Term | Example |
+|---|---|---|
+| One full row | data point / sample / observation | one battery sensor reading |
+| `voltage`, `temperature`, `current`, `capacity` | features / input variables | sensor measurements |
+| `battery_id` | identifier — not a feature | unique battery ID |
+| `fault_label` | target / label / output | what model predicts |
+| All rows together | dataset | entire battery sensor data |
 
 
 ## 1. Variables
