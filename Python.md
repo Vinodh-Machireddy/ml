@@ -105,29 +105,33 @@ print(os.getenv(“apitoken”))
 - joblib – Model Serialization
 </details>	
 
-Tier 1 (Must Master)
+Tier 1 — Must Master:
 pandas
-NumPy
+numpy
 scikit-learn
-XGBoost
-MLflow
-FastAPI
+xgboost
+mlflow
+fastapi
+kserve
 joblib
 
-Tier 2 (Strong MLOps Signal)
+Tier 2 — Strong MLOps Signal:
 pytest
-Evidently AI
-Boto3
-Kubeflow Pipelines (kfp)
-DVC
-PyYAML
+evidently
+boto3
+kfp
+pyyaml
 python-dotenv
 logging
 
-Tier 3 (Basic Usage Enough)
+Tier 3 — Basic Usage Enough:
 requests
 prometheus_client
-os, json, datetime, pathlib
+os
+json
+datetime
+pathlib
+dvc
 
 
 battery_id | voltage | temperature | current | capacity | fault_label
