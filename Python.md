@@ -1677,6 +1677,22 @@ df.rename(columns={"old": "new"})   # rename column
 df.copy()                           # safe copy
 ```
 
+### scikit-learn(Sklearn)
+Scikit-learn is the most used Python library for classical machine learning. It provides tools for preprocessing, model training, evaluation, and pipeline building.  
+**Install & Import:** 
+	- pip install scikit-learn  
+	- import sklearn  
+
+**Scikit-learn Main Components:**
+```
+scikit-learn
+├── Preprocessing      — prepare data before training
+├── Model Selection    — split data, cross validation
+├── Models             — RandomForest, LogisticRegression etc
+├── Metrics            — f1, precision, recall, accuracy
+├── Pipeline           — chain steps together
+└── Feature Selection  — select important features
+```
 
 
 
@@ -1685,11 +1701,6 @@ df.copy()                           # safe copy
 
 
 
-scikit-learn(Sklearn):
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from sklearn.datasets import load_breast_cancer
 
 Joblib:
 Joblib is a small Python library used to save and load machine learning models.
