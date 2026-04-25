@@ -91,20 +91,7 @@ print(os.getenv(“apitoken”))
 </details>
 
 <details> 
-<summary><b>Python Libraries/Packages for ML</b></summary>  
-	
-- numpy – Numerical Computing
-- pandas – Data Manipulation
-- scikit-learn – Core ML Library
-- mlflow – Experiment Tracking & Model Registry
-- dvc – Data & Model Versioning
-- fastapi – API for Model Serving
-- optuna & XGBoost – Hyperparameter Tuning
-- pyyaml – YAML
-- pytest – Tests
-- joblib – Model Serialization
-</details>	
-
+<summary><b>Python Libraries/Packages for Classic ML</b></summary>  
 Tier 1 — Must Master:
 pandas
 numpy
@@ -132,57 +119,55 @@ json
 datetime
 pathlib
 dvc
+</details>	
 
 
-battery_id | voltage | temperature | current | capacity | fault_label
-BAT001     | 3.7     | 35.2        | 1.2     | 98.5     | normal
+### Daimler = Tabular/structured Multi-class Classification problem
+```
+battery_id | voltage | temperature | current | capacity | fault_label		# Multi-class — one battery reading gets one label from 7 possible classes. 
+BAT001     | 3.7     | 35.2        | 1.2     | 98.5     | normal			# each row = one data point ✅
 BAT002     | 3.2     | 42.1        | 1.8     | 87.3     | thermal_fault
 BAT003     | 2.8     | 55.6        | 2.1     | 76.2     | overvoltage
 BAT004     | 4.3     | 38.1        | 2.5     | 91.2     | overcharging
 BAT005     | 3.1     | 36.2        | 1.1     | 45.3     | cell_degradation
 BAT006     | 3.6     | 35.8        | 1.3     | 97.1     | internal_short_circuit
 BAT007     | 3.5     | 34.9        | 1.2     | 96.8     | undervoltage
-
-Tabular/structured Multi-class Classification problem
-So yes — each row = one data point ✅
-Your project = Multi-class — one battery reading gets one label from 7 possible classes.  
-
+```
+> One full row  -> data point / sample / observation
+> `voltage`, `temperature`, `current`, `capacity`  ->  features / input variables
+> `battery_id` -> identifier — not a feature
+> `fault_label` ->  target / label / output
+>  All rows together -> dataset
+```
 Problem Type  : Multi-class Classification
 Data Type     : Structured / Tabular
 Features      : voltage, temperature, current, capacity (sensor data)
-Target        : fault_label (5-6 classes)
-Model         : XGBoost Classifier
-Serving       : Real-time prediction via KServe on EKS
-Monitoring    : Prometheus + Grafana
-Tracking      : MLflow  
+Target        : fault_label normal, thermal_fault, overvoltage,  overcharging, undervoltage, cell_degradation, internal_short_circuit, 
+Model         : XGBoost Classifier (Algorithm)
+```
 
-"I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model." 
+In real MLOps projects you never directly jump to XGBoost. we follow this process:
+```
+Step 1 — Baseline model
+         Logistic Regression     ← simplest, quick benchmark
 
-"I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model." "I started with baseline models and progressively moved to XGBoost — which gave best F1 of 0.94 on our battery fault dataset."
+Step 2 — Better models
+         Decision Tree           ← simple, explainable
+         Random Forest           ← stronger than decision tree
 
-Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:
+Step 3 — Best model
+         XGBoost                 ← best performance ✅ — your final model
+```
+> This is called model selection — you try multiple algorithms and pick the best one.
 
-| What You See | Correct Term | Example |
-|---|---|---|
-| One full row | data point / sample / observation | one battery sensor reading |
-| `voltage`, `temperature`, `current`, `capacity` | features / input variables | sensor measurements |
-| `battery_id` | identifier — not a feature | unique battery ID |
-| `fault_label` | target / label / output | what model predicts |
-| All rows together | dataset | entire battery sensor data |
+"I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model."   
+"I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model."  
+Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:  
 
 scikit-learn = framework / toolbox
 XGBoost      = algorithm inside that toolbox (actual model that learns patterns)
-
 XGBoost stands for eXtreme Gradient Boosting — it is a machine learning algorithm based on decision trees + boosting technique.  
 
-scikit-learn  =  kitchen 🍳
-XGBoost       =  recipe/technique used in that kitchen 📖
-
-pandas        =  raw ingredients 🥕
-numpy         =  measuring tools 📏
-scikit-learn  =  kitchen equipment 🍳
-XGBoost       =  cooking technique/algorithm 📖
-mlflow        =  food diary — tracks what you cooked 📓
 
 
 ## 1. Variables
