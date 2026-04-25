@@ -1495,59 +1495,61 @@ def predict():                  # ← you write this function
 >**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.  
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Python Libraries for ML
-						
-numpy – Numerical Computing
-pandas – Data Manipulation
-scikit-learn – Core ML Library
-mlflow – Experiment Tracking & Model Registry
-dvc – Data & Model Versioning
-fastapi – API for Model Serving
-optuna & XGBoost – Hyperparameter Tuning
-pyyaml – YAML
-pytest – Tests
-joblib – Model Serialization
 
-
-Numpy: 
-It is a Python library used for fast mathematical calculations
+**Numpy:** 
+NumPy stands for Numerical Python — it is the foundation of all ML libraries. Pandas, Scikit-learn, XGBoost all use NumPy arrays internally.  
 	- pip install numpy
 	- import numpy as np
+
+**array:** In Python, an array is a collection of elements stored in a single variable, typically of the same data type, arranged in an ordered sequence.
+```
+**List:**											**Array (NumPy):**
+Flexible (can store int, string, etc.)				Fixed data type
+Slower for computations								Faster  for computations
+Not suitable for ML calculations					suitable for ML calculations
+arranged in an ordered sequence.					arranged in an ordered sequence.  
+```
+```
+numpy vs Python list
+# Python list — cannot do math directly
+voltages = [3.7, 3.2, 3.9]
+print(voltages * 2)         # [3.7, 3.2, 3.9, 3.7, 3.2, 3.9] ← repeats!
+
+# numpy array — math applies to each element
+voltages = np.array([3.7, 3.2, 3.9])
+print(voltages * 2)         # [7.4 6.4 7.8] ← correct! ✅
+```
+```  
+import numpy as np
+
+# 1D array — one row of sensor readings
+voltage = np.array([3.7, 3.2, 3.9, 2.8, 3.5])
+print(voltage)          # [3.7 3.2 3.9 2.8 3.5]
+
+# 2D array — multiple battery readings
+battery_data = np.array([
+    [3.7, 35.2, 1.2, 98.5],    # BAT001
+    [3.2, 42.1, 1.8, 87.3],    # BAT002
+    [3.9, 28.5, 0.9, 99.1],    # BAT003
+    [2.8, 55.6, 2.1, 76.2]     # BAT004
+])
+
+print(battery_data.shape)       # (4, 4) — 4 rows, 4 columns
+print(battery_data.ndim)        # 2      — number of dimensions
+print(battery_data.dtype)       # float64 — data type
+print(battery_data.size)        # 16     — total elements
+
+print(battery_data[0, 0])       # 3.7  — row 0, col 0	# single element — [row, column]
+print(battery_data[0])          # [3.7 35.2 1.2 98.5]	# entire row — one battery reading
+print(battery_data[:, 0])       # [3.7 3.2 3.9 2.8] — all voltages	# entire column — one feature across all batteries
+print(battery_data[:2])    		# slice — first 2 rows      
+
+# operations apply to every element automatically
+print(voltage + 1)          # [4.7 4.2 4.9 3.8]
+print(voltage * 2)          # [7.4 6.4 7.8 5.6]
+print(voltage > 3.5)        # [True False True False] — condition check
+```  
 
 Pandas:
 A Python library used to work with data in table format.   Rows = records,  Columns = features
