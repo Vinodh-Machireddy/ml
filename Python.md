@@ -1496,7 +1496,7 @@ def predict():                  # ← you write this function
 
 
 ## Python Libraries for ML  
-**Numpy:**   
+### Numpy: 
 NumPy stands for Numerical Python — it is the foundation of all ML libraries. Pandas, Scikit-learn, XGBoost all use NumPy arrays internally.  
 	- pip install numpy  
 	- import numpy as np  
@@ -1564,7 +1564,16 @@ print(np.ones((3, 4)))      # array of ones
 print(np.random.seed(42))   # reproducibility
 ```  
 
-Pandas:
+### Pandas
+- Pandas stands for Panel Data — it is the most used Python library for data manipulation and analysis. Think of it as Excel but in Python — but much more powerful.  
+- Install & Import:
+  	- pip install pandas
+  	- import pandas as pd      # pd is standard alias — everyone uses this
+
+Pandas has 2 main data structures:
+	1. DataFrame
+	2. Series
+
 A Python library used to work with data in table format.   Rows = records,  Columns = features
 Very useful for data cleaning, loading CSV files, feature engineering.
 pip install pandas
