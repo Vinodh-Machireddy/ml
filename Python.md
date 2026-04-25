@@ -141,8 +141,22 @@ BAT007     | 3.5     | 34.9        | 1.2     | 96.8     | undervoltage
 
 Tabular/structured Multi-class Classification problem
 So yes — each row = one data point ✅
-Your project = Multi-class — one battery reading gets one label from 7 possible classes.
+Your project = Multi-class — one battery reading gets one label from 7 possible classes.  
 
+Problem Type  : Multi-class Classification
+Data Type     : Structured / Tabular
+Features      : voltage, temperature, current, capacity (sensor data)
+Target        : fault_label (5-6 classes)
+Model         : XGBoost Classifier
+Serving       : Real-time prediction via KServe on EKS
+Monitoring    : Prometheus + Grafana
+Tracking      : MLflow  
+
+"I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model." 
+
+"I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model." "I started with baseline models and progressively moved to XGBoost — which gave best F1 of 0.94 on our battery fault dataset."
+
+Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:
 
 | What You See | Correct Term | Example |
 |---|---|---|
@@ -151,6 +165,20 @@ Your project = Multi-class — one battery reading gets one label from 7 possibl
 | `battery_id` | identifier — not a feature | unique battery ID |
 | `fault_label` | target / label / output | what model predicts |
 | All rows together | dataset | entire battery sensor data |
+
+scikit-learn = framework / toolbox
+XGBoost      = algorithm inside that toolbox (actual model that learns patterns)
+
+XGBoost stands for eXtreme Gradient Boosting — it is a machine learning algorithm based on decision trees + boosting technique.  
+
+scikit-learn  =  kitchen 🍳
+XGBoost       =  recipe/technique used in that kitchen 📖
+
+pandas        =  raw ingredients 🥕
+numpy         =  measuring tools 📏
+scikit-learn  =  kitchen equipment 🍳
+XGBoost       =  cooking technique/algorithm 📖
+mlflow        =  food diary — tracks what you cooked 📓
 
 
 ## 1. Variables
