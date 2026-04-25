@@ -92,35 +92,34 @@ print(os.getenv(“apitoken”))
 
 <details> 
 <summary><b>Python Libraries/Packages for Classic ML</b></summary>  
-Tier 1 — Must Master:
-pandas
-numpy
-scikit-learn
-xgboost
-mlflow
-fastapi
-kserve
-joblib
+**Tier 1 — Must Master:**  
+pandas  
+numpy  
+scikit-learn  
+xgboost  
+mlflow  
+fastapi  
+kserve  
+joblib  
 
-Tier 2 — Strong MLOps Signal:
-pytest
-evidently
-boto3
-kfp
-pyyaml
-python-dotenv
-logging
+**Tier 2 — Strong MLOps Signal:** 
+pytest  
+evidently  
+boto3  
+kfp  
+pyyaml  
+python-dotenv  
+logging  
 
-Tier 3 — Basic Usage Enough:
-requests
-prometheus_client
-os
-json
-datetime
-pathlib
-dvc
+**Tier 3 — Basic Usage Enough:**  
+requests  
+prometheus_client  
+os  
+json  
+datetime  
+pathlib  
+dvc  
 </details>	
-
 
 ### Daimler = Tabular/structured Multi-class Classification problem
 ```
@@ -133,11 +132,12 @@ BAT005     | 3.1     | 36.2        | 1.1     | 45.3     | cell_degradation
 BAT006     | 3.6     | 35.8        | 1.3     | 97.1     | internal_short_circuit
 BAT007     | 3.5     | 34.9        | 1.2     | 96.8     | undervoltage
 ```
-> One full row  -> data point / sample / observation
-> `voltage`, `temperature`, `current`, `capacity`  ->  features / input variables
-> `battery_id` -> identifier — not a feature
-> `fault_label` ->  target / label / output
+> One full row  -> data point / sample / observation  
+> `voltage`, `temperature`, `current`, `capacity`  ->  features / input variables  
+> `battery_id` -> identifier — not a feature  
+> `fault_label` ->  target / label / output  
 >  All rows together -> dataset
+
 ```
 Problem Type  : Multi-class Classification
 Data Type     : Structured / Tabular
@@ -146,7 +146,7 @@ Target        : fault_label normal, thermal_fault, overvoltage,  overcharging, u
 Model         : XGBoost Classifier (Algorithm)
 ```
 
-In real MLOps projects you never directly jump to XGBoost. we follow this process:
+**In real MLOps projects you never directly jump to XGBoost. we follow this process:**
 ```
 Step 1 — Baseline model
          Logistic Regression     ← simplest, quick benchmark
@@ -158,15 +158,15 @@ Step 2 — Better models
 Step 3 — Best model
          XGBoost                 ← best performance ✅ — your final model
 ```
-> This is called model selection — you try multiple algorithms and pick the best one.
+> This is called model selection — you try multiple algorithms and pick the best one. 
 
-"I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model."   
-"I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model."  
-Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:  
+> "I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model."   
+> "I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model."  
+> Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:  
 
-scikit-learn = framework / toolbox
-XGBoost      = algorithm inside that toolbox (actual model that learns patterns)
-XGBoost stands for eXtreme Gradient Boosting — it is a machine learning algorithm based on decision trees + boosting technique.  
+- scikit-learn = framework / toolbox
+- XGBoost      = algorithm inside that toolbox (actual model that learns patterns)
+- XGBoost stands for eXtreme Gradient Boosting — it is a machine learning algorithm based on decision trees + boosting technique.  
 
 
 
