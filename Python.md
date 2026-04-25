@@ -1495,14 +1495,13 @@ def predict():                  # ← you write this function
 >**NOTE:** mlflow.autolog() it just enables logging, not attached to any specific function: internally mlflow creats decorator.  
 
 
-## Python Libraries for ML
-
-**Numpy:** 
+## Python Libraries for ML  
+**Numpy:**   
 NumPy stands for Numerical Python — it is the foundation of all ML libraries. Pandas, Scikit-learn, XGBoost all use NumPy arrays internally.  
-	- pip install numpy
-	- import numpy as np
+	- pip install numpy  
+	- import numpy as np  
 
-**array:** In Python, an array is a collection of elements stored in a single variable, typically of the same data type, arranged in an ordered sequence.
+**array:** In Python, an array is a collection of elements stored in a single variable, typically of the same data type, arranged in an ordered sequence.   
 ```
 **List:**											**Array (NumPy):**
 Flexible (can store int, string, etc.)				Fixed data type
@@ -1549,6 +1548,20 @@ print(battery_data[:2])    		# slice — first 2 rows
 print(voltage + 1)          # [4.7 4.2 4.9 3.8]
 print(voltage * 2)          # [7.4 6.4 7.8 5.6]
 print(voltage > 3.5)        # [True False True False] — condition check
+
+# Most Useful NumPy Functions 
+print(np.mean(data))        # 3.42  — average
+print(np.median(data))      # 3.5   — middle value
+print(np.std(data))         # 0.39  — standard deviation
+print(np.min(data))         # 2.8   — minimum
+print(np.max(data))         # 3.9   — maximum
+print(np.sum(data))         # 17.1  — total
+
+# useful array operations
+print(np.unique(data))      # unique values
+print(np.zeros((3, 4)))     # array of zeros
+print(np.ones((3, 4)))      # array of ones
+print(np.random.seed(42))   # reproducibility
 ```  
 
 Pandas:
