@@ -1566,15 +1566,15 @@ print(np.random.seed(42))   # reproducibility
 
 ### Pandas
 - Pandas stands for Panel Data — it is the most used Python library for data manipulation and analysis. Think of it as Excel but in Python — but much more powerful.  
-- Install & Import:
+- Install & Import:  
   	- pip install pandas
   	- import pandas as pd      # pd is standard alias — everyone uses this  
 
-Pandas has 2 main data structures:  
-	1. DataFrame
-	2. Series
+Pandas has 2 main data structures:    
+	1. DataFrame  
+	2. Series  
 ```
-# step 1 — create dictionary
+# create dictionary
 data = {
     "battery_id" : ["BAT001", "BAT002", "BAT003", "BAT004"],
     "voltage"    : [3.7, 3.2, 3.9, 2.8],
@@ -1582,13 +1582,13 @@ data = {
     "current"    : [1.2, 1.8, 0.9, 2.1],
     "fault_label": ["normal", "thermal", "normal", "overvoltage"]
 }
-# step 2 — pass dictionary to pd.DataFrame()
+# pass dictionary to pd.DataFrame()
 df = pd.DataFrame(data)
 print(df)
 ```  
-> **How Dictionary Maps to DataFrame:**  
-  Dictionary Key      →    Column Name
-  Dictionary Value    →    Column Values
+> **How Dictionary Maps to DataFrame:**   
+  Dictionary Key      →    Column Name  
+  Dictionary Value    →    Column Values  
 
 **Reading/Loading Data:**  
 In Real MLOps — You Rarely Create DataFrame Manually. we use # CSV file, s3, excel, JSON.    
@@ -1607,8 +1607,8 @@ print(df.info())        # column names, types, null counts
 print(df.describe())    # statistics — mean, std, min, max
 print(df.columns)       # column names
 print(df.dtypes)        # data types of each column
-```
-**Selecting Data:**
+```  
+**Selecting Data:**  
 ```
 # single column — returns Series
 voltage = df["voltage"]
@@ -1626,7 +1626,56 @@ fault_df = df[df["fault_label"] != "normal"]
 high_temp = df[df["temperature"] > 50]
 low_volt  = df[df["voltage"] < 3.0]
 ```  
+**Handling Missing Values:**  
+```
+# check missing values
+print(df.isnull().sum())
+# voltage        0
+# temperature    3    ← 3 missing!
+# current        0
+# fault_label    1    ← 1 missing!
 
+# drop rows with missing values
+df = df.dropna()
+
+# fill missing values
+df["temperature"] = df["temperature"].fillna(df["temperature"].mean())
+df["fault_label"] = df["fault_label"].fillna("normal")
+
+# check after fixing
+print(df.isnull().sum().sum())      # 0 — no missing values ✅
+```
+**Adding & Removing Columns:**  
+```
+# add new column
+df["voltage_flag"] = (df["voltage"] < 3.0).astype(int)
+
+# add computed column
+df["temp_voltage_ratio"] = df["temperature"] / df["voltage"]
+
+# remove column
+df = df.drop(columns=["battery_id"])        # remove identifier
+df = df.drop(columns=["battery_id", "timestamp"])   # remove multiple
+```
+**Most Useful DataFrame Methods:**  
+```
+df.shape                            # rows and columns
+df.head(n)                          # first n rows
+df.tail(n)                          # last n rows
+df.info()                           # column info
+df.describe()                       # statistics
+df.isnull().sum()                   # missing values
+df.dropna()                         # drop missing rows
+df.fillna(value)                    # fill missing values
+df.drop(columns=["col"])            # remove column
+df[df["col"] > value]               # filter rows
+df.groupby("col").size()            # count per group
+df.value_counts()                   # count unique values
+df.sort_values("col", ascending=False)  # sort
+df.reset_index(drop=True)           # reset index
+df.rename(columns={"old": "new"})   # rename column
+df.copy()                           # safe copy
+```
 
 
 
