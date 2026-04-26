@@ -1623,7 +1623,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 PENDING..........  
 
-**XGBoost:**
+### XGBoost
 XGBoost stands for eXtreme Gradient Boosting — it is the most popular algorithm for tabular/structured data problems. It wins most Kaggle competitions on tabular data and is industry standard for classical ML.  
 
 - pip install xgboost  
@@ -1644,13 +1644,46 @@ model = XGBClassifier(
     n_jobs=-1               # use all CPU cores
 )
 ```
+PENDING..........  
 
+### MLflow
+MLflow is an open source platform for managing the ML lifecycle — experiment tracking, model registry, and model deployment.  
 
+import mlflow           # core mlflow — experiment tracking  
+import mlflow.sklearn   # mlflow's integration with sklearn   
+import mlflow.xgboost   # mlflow's integration with xgboost   
 
+MLflow supports many ML frameworks — each has its own sub-module:  
+```
+mlflow
+├── mlflow.sklearn      # sklearn + pipeline models
+├── mlflow.xgboost      # xgboost models
+├── mlflow.pytorch      # pytorch models
+├── mlflow.tensorflow   # tensorflow models
+├── mlflow.keras        # keras models
+└── mlflow.pyfunc       # any custom python model
+```
+Each sub-module knows how to save and load that specific framework's model correctly.  
 
+### FastAPI
+FastAPI is a modern Python web framework for building APIs quickly. In MLOps you use it to expose your trained model as a REST API — so other applications can send battery sensor data and get fault predictions back.  
 
+pip install fastapi uvicorn  
+from fastapi import FastAPI  
+import uvicorn  
 
-Joblib:
+**HTTP Methods:**
+```
+@app.get("/")       # GET    — retrieve data
+@app.post("/")      # POST   — send data, get response
+@app.put("/")       # PUT    — update data
+@app.delete("/")    # DELETE — delete data
+
+GET  /health    → check if API is running
+GET  /info      → get model info
+POST /predict   → send sensor data, get prediction
+```  
+**Joblib:**
 Joblib is a small Python library used to save and load machine learning models.
 after training a model you must save it so that:
 - You can use it later
@@ -1663,9 +1696,9 @@ joblib.dump(model, ‘vinodh.pkl’) #creates a file called vinodh.pkl
 loaded_model = joblib.load(‘model.pkl') #to load model 
 loaded_model.predict(X_test)  
 
-	NOTE: Why not use pickle?
-pickle can also save models, but: joblib is faster for large numpy arrays, 
-sklearn officially recommends joblib, better compression support. So joblib is preferred in ML workflows.
+> NOTE: Why not use pickle?
+  pickle can also save models, but: joblib is faster for large numpy arrays,   
+  sklearn officially recommends joblib, better compression support. So joblib is preferred in ML workflows.  
 
 
 
@@ -1674,37 +1707,6 @@ sklearn officially recommends joblib, better compression support. So joblib is p
 
 
 
-
-
-
-mlflow:
-MLflow is an open-source MLOps tool used to manage the complete Machine Learning lifecycle, including:
-Experiment tracking
-Model versioning
-Model packaging
-Model deployment
-It works with any ML library (Scikit-Learn, TensorFlow, PyTorch, XGBoost, etc.)
-
-with mlflow.start_run():
-This starts a new MLflow run. A “run” means one experiment attempt. Everything inside this with block will automatically be tracked and saved in MLflow. It creates a folder like: mlruns. 
-So MLflow knows:
-   which parameters you used ✔ which metrics you got ✔ which model you trained
-mlflow.log_param("max_iter", 10000) # Saves a parameter to MLflow.
-mlflow.log_metric("accuracy", acc) # Saves a metric (model perf score).
-mlflow.sklearn.log_model(model, “model") # Saves your trained model into MLflow
-This creates files inside MLflow:  model/model.pkl
-
-MLflow stores these 3 files in mlruns/
-	signature: The input–output schema of the model, describing what kind of data the model expects (shape, column count, data types) and what it produces. Stored in ‘MLmodel’ file
-signature = infer_signature(X_test[:50], model.predict(X_test[:50])) 
-
-	input_example: A small sample of the input data (few rows) that shows the exact format the model expects.
-input_example = X_test[:5]  # input_example.json 
-Model (sk_model): The actual trained machine learning model (LogisticRegression, RandomForest, etc.) that learns patterns from data and makes predictions. MLflow saves it as model.pkl.
-
-XGBOOST:	 					
-XGBoost is a machine learning algorithm that builds many small decision trees, each tree correcting the mistakes of the previous tree.  
-Used for Fast training, Very high accuracy, Works well for CSV, excel(structured  data)  
 
 OPTUNA:	  				
 Optuna is a tool that automatically searches for the best hyperparameters for your ML model. Because choosing good parameters manually is difficult.  
