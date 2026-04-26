@@ -609,17 +609,61 @@ Observability = Doctor → investigates symptoms to find the cause.
 
 
 
-**StatefulSet vs Deployment:**
-Deployment — for stateless applications. If a pod dies, Kubernetes replaces it with a brand new one — no identity, no persistent storage, no specific ordering. It doesn't matter which pod serves the request.  
-
-StatefulSet — for stateful applications. Each pod has a stable identity (name, network address, storage) that persists across restarts. Pods are created and deleted in a specific order. If pod postgres-0 dies, Kubernetes recreates it with the same name and reattaches the same persistent volume — your data survives.  
-```
-Deployments (stateless):          StatefulSets (stateful):
-├── KFP pipeline pods             ├── PostgreSQL (MLflow backend)
-├── KServe inference pods         ├── Prometheus
-├── ArgoCD                        └── Grafana (if using persistent dashboards)
-└── MLflow server (API layer)
-```
-**"What's a PersistentVolumeClaim?":** — It's the storage request that a StatefulSet pod makes. Each pod gets its own PVC, backed by an EBS volume on AWS. Even if the pod is rescheduled to a different node, the PVC follows it.  
 
 
+
+# Learnings
+## Strange
+What are Guardrails?  
+endpoint deployment  
+endpoint prediction  
+online and batch endpoints  
+AutoML  
+hyperparameters  
+pyspark:  
+- PySpark is primarily used for handling and processing large‑scale data in a distributed fashion.  
+parallel processing and fast.  
+
+- Machine Learning Libraries: Strong experience with machine learning libraries and frameworks such as scikit-learn, TensorFlow, PyTorch, Keras, etc.  
+      - For deep learning → TensorFlow, PyTorch, Keras.  
+      -	For traditional ML → Scikit-learn.  
+      - For boosting models → XGBoost, LightGBM, CatBoost.  
+      - For NLP → Hugging Face Transformers.  
+- Experience with RestAPI Frameworks like FastAPIs, Flask  
+
+
+## axtria:  
+	1. diff b/w list and generator  
+	2. Data process related   
+## accellor:
+	1. where you get last 10 history  
+	2. how to set limits for external user  
+	3. draw how to setup the ml pipelines (Excalidraw)  
+	4. what you do to get recommendations?  
+	5. StatefulSet vs Deployment  
+
+## Deloitte:
+	1. Drive in ml
+	2. List of dictionary and get first value, & all keys
+	3. Where you deploy python file
+	4. when we give Google.com in browser, what it  runs internally and how it know to which server to go.
+	5. Why f1 score formula is like that
+	6. what metric Explainer give?
+	7. Mean
+	8. what are the python libraries you used and diff?
+	9. Decoraters
+	10. CDK, ECS diff
+
+## Epam: 
+	1. What output ml pipeline gives
+	2. Where you deploy it 
+	3. Data Points of your current project
+	4. where do you deploy kubeflow
+	5. KFP stages and what cloud services you used
+	6. structured or unstructured data you used
+	7. what models you used
+	8. How do you secure your pipeline?
+	9. what are decision trees?
+	10. what is time-series data looks?
+	
+	
