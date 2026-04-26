@@ -1225,7 +1225,7 @@ from xgboost import XGBClassifier                     # class
 ```
 
 ## 17. Modules 
-In Python, modules are .py files containing Python code (e.g., functions, variables, or classes) that can be imported and reused in other Python programs. Modules are collection of functions. (Modularity Approach).
+In Python, modules are .py files containing Python code (e.g., functions, variables, or classes) that can be imported and reused in other Python programs. Modules are collection of functions. (Modularity Approach).  
  
 **1. Built-in — comes with Python, no install needed:**  
 Examples:
@@ -1249,59 +1249,26 @@ Sometimes:
 flask, pytorch/tensorflow,
 docker sdk, kubernetes client
 ```  
-NOTE: when we call packages indirectly it is a module. Inside module collection of functions.
+> NOTE: when we call packages indirectly it is a module. Inside module collection of functions.  
 
-**3. Your own — files you created yourself:**
-import my_utils
-import train
+**3. Your own — files you created yourself:**  
+import my_utils  
+import train  
 
 ### 4 Ways to Import
 ```
-# 1. import entire module
-import os
+import os						# 1. import entire module
 os.getenv("MODEL_VERSION")      # must use module name prefix
 
-# 2. import specific item — no prefix needed ✅
-from os import getenv
+from os import getenv			# 2. import specific item — no prefix needed ✅
 getenv("MODEL_VERSION")
 
-# 3. import with alias — shortens long names ✅
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-# 4. import everything — avoid this ❌
-from os import *                # pollutes namespace — hard to debug
-```
-### Most Common MLOps Imports
-```
-# data handling
-import pandas as pd
+import pandas as pd				# 3. import with alias — shortens long names ✅
 import numpy as np
 
-# machine learning
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, precision_score, recall_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-from xgboost import XGBClassifier
-
-# experiment tracking
-import mlflow
-import mlflow.sklearn
-
-# environment & file handling
-import os
-import sys
-import json
-
-# date & time
-from datetime import datetime
-
-# warnings
-import warnings
-warnings.filterwarnings("ignore")
+from os import *                # 4. import everything — avoid this ❌   # pollutes namespace — hard to debug
 ```
+
 **full-path:**
 ```
 # short way — package hides module
@@ -1573,7 +1540,7 @@ print(np.random.seed(42))   # reproducibility
 Pandas has 2 main data structures:    
 	1. DataFrame  
 	2. Series  
-```
+```  
 # create dictionary
 data = {
     "battery_id" : ["BAT001", "BAT002", "BAT003", "BAT004"],
@@ -1585,7 +1552,7 @@ data = {
 # pass dictionary to pd.DataFrame()
 df = pd.DataFrame(data)
 print(df)
-```  
+```
 > **How Dictionary Maps to DataFrame:**   
   Dictionary Key      →    Column Name  
   Dictionary Value    →    Column Values  
@@ -1684,7 +1651,7 @@ Scikit-learn is the most used Python library for classical machine learning. It 
 	- import sklearn  
 
 **Scikit-learn Main Components:**
-```
+
 scikit-learn
 ├── Preprocessing      — prepare data before training
 ├── Model Selection    — split data, cross validation
@@ -1692,8 +1659,17 @@ scikit-learn
 ├── Metrics            — f1, precision, recall, accuracy
 ├── Pipeline           — chain steps together
 └── Feature Selection  — select important features
-```
 
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import f1_score, classification_report
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+PENDING  
 
 
 
