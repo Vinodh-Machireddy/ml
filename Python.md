@@ -1677,6 +1677,21 @@ XGBoost stands for eXtreme Gradient Boosting — it is the most popular algorith
 - pip install xgboost  
 - from xgboost import XGBClassifier  
 
+**Key Hyperparameters:**
+```
+from xgboost import XGBClassifier
+
+model = XGBClassifier(
+    n_estimators=100,       # number of trees
+    max_depth=6,            # how deep each tree grows
+    learning_rate=0.05,     # how much each tree contributes
+    subsample=0.8,          # fraction of data per tree
+    colsample_bytree=0.8,   # fraction of features per tree
+    scale_pos_weight=3,     # handles class imbalance
+    random_state=42,        # reproducibility
+    n_jobs=-1               # use all CPU cores
+)
+```
 
 
 
