@@ -1683,17 +1683,18 @@ GET  /health    → check if API is running
 GET  /info      → get model info
 POST /predict   → send sensor data, get prediction
 ```  
-**Joblib:**
-Joblib is a small Python library used to save and load machine learning models.
-after training a model you must save it so that:
-- You can use it later
-- You can deploy it
-- You can share it
-You don’t need to train again every time
+**Joblib:**  
+Joblib is a small Python library used to save and load machine learning models.  
+after training a model you must save it so that:  
+- You can use it later  
+- You can deploy it  
+- You can share it  
+You don’t need to train again every time  
 - pip install joblib
 - import joblib
-joblib.dump(model, ‘vinodh.pkl’) #creates a file called vinodh.pkl
-loaded_model = joblib.load(‘model.pkl') #to load model 
+  
+joblib.dump(model, ‘vinodh.pkl’) 			#creates a file called vinodh.pkl
+loaded_model = joblib.load(‘model.pkl') 	#to load model 
 loaded_model.predict(X_test)  
 
 > NOTE: Why not use pickle?
