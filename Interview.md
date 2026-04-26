@@ -653,6 +653,7 @@ parallel processing and fast.
 	8. what are the python libraries you used and diff?
 	9. Decoraters
 	10. CDK, ECS diff
+	11. username, password in a file how you identify it or if anyone add those how to avoid. and you will know it.
 
 ## Epam: 
 	1. What output ml pipeline gives
