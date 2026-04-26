@@ -1645,13 +1645,13 @@ df.copy()                           # safe copy
 ```
 
 ### scikit-learn(Sklearn)
-Scikit-learn is the most used Python library for classical machine learning. It provides tools for preprocessing, model training, evaluation, and pipeline building.  
-**Install & Import:** 
+Scikit-learn is the most used Python library for classical machine learning. It provides tools for preprocessing, model training, evaluation, and pipeline building.    
+**Install & Import:**  
 	- pip install scikit-learn  
 	- import sklearn  
 
-**Scikit-learn Main Components:**
-
+**Scikit-learn Main Components:**  
+```
 scikit-learn
 ├── Preprocessing      — prepare data before training
 ├── Model Selection    — split data, cross validation
@@ -1659,18 +1659,23 @@ scikit-learn
 ├── Metrics            — f1, precision, recall, accuracy
 ├── Pipeline           — chain steps together
 └── Feature Selection  — select important features
+```  
+from sklearn.model_selection import train_test_split  
+from sklearn.preprocessing import StandardScaler, LabelEncoder  
+from sklearn.pipeline import Pipeline  
+from sklearn.metrics import f1_score, classification_report  
+from sklearn.model_selection import GridSearchCV  
+from sklearn.linear_model import LogisticRegression  
+from sklearn.tree import DecisionTreeClassifier  
+from sklearn.ensemble import RandomForestClassifier  
 
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import f1_score, classification_report
-from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+PENDING..........  
 
-PENDING  
+**XGBoost:**
+XGBoost stands for eXtreme Gradient Boosting — it is the most popular algorithm for tabular/structured data problems. It wins most Kaggle competitions on tabular data and is industry standard for classical ML.  
 
+- pip install xgboost  
+- from xgboost import XGBClassifier  
 
 
 
@@ -1688,12 +1693,22 @@ You don’t need to train again every time
 - pip install joblib
 - import joblib
 joblib.dump(model, ‘vinodh.pkl’) #creates a file called vinodh.pkl
-loaded_model = joblib.load(‘model.pkl') #to load
-loaded_model.predict(X_test)
+loaded_model = joblib.load(‘model.pkl') #to load model 
+loaded_model.predict(X_test)  
 
 	NOTE: Why not use pickle?
 pickle can also save models, but: joblib is faster for large numpy arrays, 
 sklearn officially recommends joblib, better compression support. So joblib is preferred in ML workflows.
+
+
+
+
+
+
+
+
+
+
 
 mlflow:
 MLflow is an open-source MLOps tool used to manage the complete Machine Learning lifecycle, including:
