@@ -1701,6 +1701,63 @@ loaded_model.predict(X_test)
   pickle can also save models, but: joblib is faster for large numpy arrays,   
   sklearn officially recommends joblib, better compression support. So joblib is preferred in ML workflows.  
 
+### Pytest
+pytest is a Python testing library used to check if your code is working correctly. It is like a quality checker, If your code is wrong → pytest catches it before deployment.   
+import pytest  
+
+### Evidently AI
+Evidently is a Python library for monitoring ML models in production — it detects data drift, model performance degradation, and data quality issues.   
+pip install evidently  
+
+from evidently import ColumnMapping  
+from evidently.report import Report  
+from evidently.metric_suite import MetricSuite  
+from evidently.metrics import *  
+
+**Why Evidently in MLOps?:**
+```
+Training data  →  collected in 2023
+Production     →  running in 2024
+
+Problem:
+    battery sensor patterns change over time
+    voltage distributions shift
+    new fault types appear
+    model accuracy drops silently ❌
+
+Evidently detects:
+    data drift        ✅
+    model degradation ✅
+    data quality      ✅
+    sends alerts      ✅
+```
+### Boto3
+Boto3 is the official AWS SDK for Python — it lets you interact with AWS services programmatically. In MLOps you use it mainly for S3 (storage) and ECR (container registry).  
+- pip install boto3
+- import boto3
+
+```
+Why Boto3 in MLOps?
+
+Training data    → stored in S3
+Trained models   → saved to S3
+Docker images    → pushed to ECR
+Logs             → stored in S3
+Reports          → saved to S3
+```
+
+### KFP
+KFP stands for Kubeflow Pipelines — it is a platform for building and running ML workflows on Kubernetes. It lets you define your entire ML pipeline as code — data loading, preprocessing, training, evaluation, and deployment — and run it automatically.   
+
+- pip install kfp
+- import kfp
+- from kfp import dsl
+- from kfp.dsl import component, pipeline  
+
+PyYAML:
+PyYAML is a Python library for reading and writing YAML files. YAML is a human-readable format used for configuration files in MLOps projects.  
+	- pip install pyyaml
+	- import yaml  
 
 
 
@@ -1712,23 +1769,8 @@ loaded_model.predict(X_test)
 OPTUNA:	  				
 Optuna is a tool that automatically searches for the best hyperparameters for your ML model. Because choosing good parameters manually is difficult.  
 
-PYTEST:  				
-pytest is a Python testing library used to check if your code is working correctly. It is like a quality checker, If your code is wrong → pytest catches it before deployment.  
+				
 
-Model prediction code
-✔ Data preprocessing code
-✔ FastAPI endpoints
-✔ Training scripts
-✔ Output shapes & types
-✔ Data validation
-CI/CD checks
-
-It checks Whether ML model gives correct output or not, FastAPI endpoint returns correct response or not,  Your function calculates correct values or not.
-pytest is run every time you: push code,  create PR,  run CI/CD,  deploy a model  
-pip install pytest  
-
-PyYAML:
-							
 
 
 ## Python Interview Questions & Answers
