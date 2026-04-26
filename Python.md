@@ -1754,15 +1754,159 @@ KFP stands for Kubeflow Pipelines — it is a platform for building and running 
 - from kfp import dsl
 - from kfp.dsl import component, pipeline  
 
-PyYAML:
+### PyYAML
 PyYAML is a Python library for reading and writing YAML files. YAML is a human-readable format used for configuration files in MLOps projects.  
 	- pip install pyyaml
 	- import yaml  
 
+### Python-dotenv
+Python-dotenv is a library that loads environment variables from a .env file into your Python application. It keeps sensitive information like passwords, API keys, and credentials out of your code.  
+	- pip install python-dotenv
+	- from dotenv import load_dotenv
 
+**.env File Structure:**
+```
+# .env file — key=value, no spaces, no quotes needed
 
+# AWS credentials
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+AWS_REGION=eu-west-1
 
+# MLflow
+MLFLOW_TRACKING_URI=http://mlflow:5000
+MLFLOW_EXPERIMENT_NAME=battery_fault_classifier
 
+# Model config
+MODEL_VERSION=v1.3
+THRESHOLD=0.5
+N_ESTIMATORS=100
+MAX_DEPTH=6
+LEARNING_RATE=0.05
+
+# Data
+S3_BUCKET=daimler-battery
+TRAIN_DATA_PATH=data/processed/train.csv
+
+# Environment
+ENVIRONMENT=production
+LOG_LEVEL=INFO
+```
+### Logging
+Python's built-in logging module provides a way to track events and record messages from your application — more powerful than print() for production MLOps systems.  
+
+### Requests
+Requests is a Python library for making HTTP calls — sending data to APIs and getting responses back. In MLOps you use it to call model endpoints, health checks, and external services.  
+
+- pip install requests
+- import requests
+
+### Prometheus Client
+Prometheus Client is a Python library for exposing metrics from your ML application — so Prometheus can scrape and monitor them. In MLOps you use it to track prediction counts, latency, drift, and model performance in real time.  
+
+- pip install prometheus-client  
+- from prometheus_client import Counter, Gauge, Histogram, Summary, start_http_server  
+
+	4 Core Metric Types:    
+		- Counter
+		- Gauge
+		- Histogram
+		- summary
+
+ ### OS
+os module lets you interact with the operating system — read environment variables, manage files and directories, build paths.   
+
+Most Used OS Operations:
+```
+import os
+
+# environment variables
+mlflow_uri    = os.getenv("MLFLOW_TRACKING_URI")                # read
+mlflow_uri    = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")  # with default
+os.environ["MODEL_VERSION"] = "v1.3"                            # set
+
+# directories
+os.makedirs("models/xgboost", exist_ok=True)    # create directory
+os.path.exists("models/pipeline.pkl")            # check if exists
+os.listdir("models/")                            # list files
+os.remove("temp/model.pkl")                      # delete file
+os.getcwd()                                      # current directory
+
+# path operations
+os.path.join("models", "v1.3", "pipeline.pkl")  # build path safely
+os.path.basename("models/v1.3/pipeline.pkl")     # pipeline.pkl
+os.path.dirname("models/v1.3/pipeline.pkl")      # models/v1.3
+os.path.getsize("models/pipeline.pkl")           # file size in bytes
+```
+
+### JSON
+json module lets you read and write JSON files — used for config files, API responses, and storing results.  
+```
+import json
+
+# read JSON file
+with open("config.json", "r") as f:
+    config = json.load(f)               # file → dict
+
+# write JSON file
+with open("config.json", "w") as f:
+    json.dump(config, f, indent=4)      # dict → file
+
+# convert string to dict
+json_string = '{"model": "XGBoost", "f1": 0.94}'
+data = json.loads(json_string)          # string → dict
+
+# convert dict to string
+data = {"model": "XGBoost", "f1": 0.94}
+json_string = json.dumps(data)          # dict → string
+json_string = json.dumps(data, indent=4)  # pretty print
+```
+
+### Datetime
+datetime module lets you work with dates and times — create timestamps for experiments, models, and logs.  
+```
+from datetime import datetime
+
+# current timestamp
+now = datetime.now()
+print(now)              # 2024-01-15 14:30:22.123456
+
+# format timestamp
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+print(timestamp)        # 2024-01-15_14-30-22
+
+# format options
+"%Y"    # 2024      — year
+"%m"    # 01        — month
+"%d"    # 15        — day
+"%H"    # 14        — hour
+"%M"    # 30        — minute
+"%S"    # 22        — second
+
+# parse string to datetime
+date = datetime.strptime("2024-01-15", "%Y-%m-%d")
+
+# date arithmetic
+from datetime import timedelta
+yesterday = datetime.now() - timedelta(days=1)
+last_week = datetime.now() - timedelta(weeks=1)
+```
+### Pathlib
+pathlib is a modern way to handle file paths — cleaner than os.path. Uses object-oriented approach.  
+```
+import os
+from pathlib import Path
+
+# os.path — old way
+path = os.path.join("models", "v1.3", "pipeline.pkl")
+exists = os.path.exists(path)
+dirname = os.path.dirname(path)
+
+# pathlib — modern way ✅
+path   = Path("models") / "v1.3" / "pipeline.pkl"
+exists = path.exists()
+parent = path.parent
+```
 
 
 
