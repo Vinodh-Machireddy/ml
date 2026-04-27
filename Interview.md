@@ -658,7 +658,7 @@ parallel processing and fast.
 ## Epam: 
 	1. What output ml pipeline gives
 	2. Where you deploy it 
-	3. Data Points of your current project
+	3. ~~Data Points of your current project~~
 	4. where do you deploy kubeflow
 	5. KFP stages and what cloud services you used
 	6. structured or unstructured data you used
