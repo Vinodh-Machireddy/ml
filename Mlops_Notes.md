@@ -245,14 +245,14 @@ Is Temp > 55°C?
 | **Edges** | Branches: Represent the "Yes" / "No" paths or outcomes of a condition. |
 | **Leaf Nodes** | End nodes: The final prediction or class label; no further splitting occurs here. |
 
-**Overfitting and Underfitting Comparison:**
+**Overfitting and Underfitting Comparison:**  
 | Meaning | Simple Definition | Analogy |
 | :--- | :--- | :--- |
 | **Underfitting** | Model is too simple — fails even on training data | Student didn't study at all; cannot answer any questions. |
 | **Overfitting** | Model memorizes training data — fails on new data | Student memorizes specific answers, but cannot solve new/unseen problems. |
 | **Perfect Fit** | Learns patterns — performs well on new data | Student understood concepts and can solve any related problem. ✅ |  
 
-**Visualized:**
+**Visualized:**  
 ```
 Underfitting          Perfect Fit           Overfitting
 (too simple)          (just right ✅)        (too complex)
@@ -265,15 +265,22 @@ Underfitting          Perfect Fit           Overfitting
 Straight line        Smooth curve         Follows every
 misses everything    fits well            noise point
 ```
-**How to Fix:**
-Underfitting:	Increase max_depth, add more features, use stronger algorithm
-Overfitting:	Decrease max_depth, pruning, add more training data, use Random Forest
+**How to Fix:**  
+Underfitting:	Increase max_depth, add more features, use stronger algorithm  
+Overfitting:	Decrease max_depth, pruning, add more training data, use Random Forest  
 
+**Key Parameters:**  
+```
+max_depth			Depth of each tree
+max_features 		Features considered per split
+min_samples_split 	Minimum samples to split node
+criterion 			Gini or Entropy
+```  
 
-### Random Forest:
+### Random Forest:  
 Random Forest is a supervised machine learning algorithm that builds multiple Decision Trees and combines their predictions through voting to produce a more accurate and stable result.  In one line: `"Instead of trusting one tree — build hundreds of trees and let them vote."`    
 
-Why Random Forest?:
+**Why Random Forest?:**  
 ```
 Decision Tree
 → One tree
@@ -287,15 +294,32 @@ Random Forest
 → All trees vote → majority wins
 → Variance cancels out ✅
 ```
+**Key Parameters:**  
+n_estimators: 	Number of trees  
+(n_estimators, bootstrap, oob_score, n_jobs)	# extra compare to decision tree  
 
-Key Parameters:
-n_estimators	Number of trees
-max_depth		Depth of each tree
-max_features 	Features considered per split
-min_samples_split Minimum samples to split node
+### XGBoost — eXtreme Gradient Boosting:
+XGBoost is a supervised machine learning algorithm that builds Decision Trees sequentially — where each new tree corrects the errors of the previous tree — using a technique called Gradient Boosting.   
+> In one line: "Build trees one after another — each tree fixes what the previous tree got wrong."  
 
+**Why XGBoost?:**  
+```
+Random Forest
+→ Trees built PARALLEL (independently)
+→ Trees don't learn from each other
+→ F1 = 0.91
 
+XGBoost
+→ Trees built SEQUENTIAL (one after another)
+→ Every tree focuses on previous tree's mistakes
+→ F1 = 0.94 ✅
+```
+**Key Parameters:**  
+```
+n_estimators:		Number of trees
+max_depth:			Depth of each tree
+learning_rate:		How much each tree contributes
+subsample:		   % of rows used per tree
+colsample_bytree:	% of features used per tree
+```
 
-
-overfitting and underfitting
-Key Parameters 
