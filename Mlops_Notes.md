@@ -139,35 +139,45 @@ TUP: Tensor processing unit
 QPU: Quantum Processor unit  
 DBU: Data Bricks Units  
 
+
+
+
+
+
 ### Daimler = Tabular/structured Multi-class Classification problem
-```
-battery_id | voltage | temperature | current | capacity | fault_label		# Multi-class — one battery reading gets one label from 7 possible classes. 
-BAT001     | 3.7     | 35.2        | 1.2     | 98.5     | normal			# each row = one data point ✅
-BAT002     | 3.2     | 42.1        | 1.8     | 87.3     | thermal_fault
-BAT003     | 2.8     | 55.6        | 2.1     | 76.2     | overvoltage
-BAT004     | 4.3     | 38.1        | 2.5     | 91.2     | overcharging
-BAT005     | 3.1     | 36.2        | 1.1     | 45.3     | cell_degradation
-BAT006     | 3.6     | 35.8        | 1.3     | 97.1     | internal_short_circuit
-BAT007     | 3.5     | 34.9        | 1.2     | 96.8     | undervoltage
-```
+``` 
+| battery_id | voltage (V) | temperature (°C) | current (A) | capacity (%) | soc (%) | soh (%) | internal_resistance (mΩ) | c_rate (C) | cycle_count | fault_label |
+|---|---|---|---|---|---|---|---|---|---|---|
+| BAT001 | 3.7 | 35.2 | 1.2 | 98.5 | 82 | 98 | 12.1 | 0.3 | 120 | normal |  # Multi-class — one battery reading gets one label from 7 possible classes. 
+| BAT002 | 3.2 | 42.1 | 1.8 | 87.3 | 74 | 87 | 18.4 | 0.6 | 340 | thermal_fault |  # each row = one data point ✅
+| BAT003 | 2.8 | 55.6 | 2.1 | 76.2 | 61 | 76 | 24.7 | 0.8 | 520 | overvoltage |
+| BAT004 | 4.3 | 38.1 | 2.5 | 91.2 | 98 | 91 | 15.2 | 1.2 | 210 | overcharging |
+| BAT005 | 3.1 | 36.2 | 1.1 | 45.3 | 55 | 45 | 38.9 | 0.4 | 890 | cell_degradation |
+| BAT006 | 3.6 | 35.8 | 1.3 | 97.1 | 79 | 97 | 42.3 | 0.5 | 150 | internal_short_circuit |
+| BAT007 | 3.5 | 34.9 | 1.2 | 96.8 | 31 | 96 | 13.1 | 0.3 | 95 | undervoltage |
+```  
+SOC — State of Charge level (%): How much charge is currently remaining right now. 
+SOH — State of Health level (%): Overall long-term health of the battery — how degraded it is over its lifetime.  
+C-Rate (C): How fast the battery is being charged or discharged relative  
+Cycle Count (Integer): Total number of complete charge-discharge cycles the battery has completed in its lifetime  
+
+
 > One full row  -> data point / sample / observation  
 > `voltage`, `temperature`, `current`, `capacity`  ->  features / input variables  
 > `battery_id` -> identifier — not a feature  
 > `fault_label` ->  target / label / output  
 >  All rows together -> dataset
 
-```
+```  
 Problem Type  : Multi-class Classification
 Data Type     : Structured / Tabular
 Features      : voltage, temperature, current, capacity (sensor data)
 Target        : fault_label normal, thermal_fault, overvoltage,  overcharging, undervoltage, cell_degradation, internal_short_circuit, 
 Model         : XGBoost Classifier (Algorithm)
 ```
-
-**In real MLOps projects you never directly jump to XGBoost. we follow this process:**
+**In real MLOps projects you never directly jump to XGBoost.** we follow this process. "I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model."  This is called model selection — you try multiple algorithms and pick the best one.  
 ```
-Step 1 — Baseline model
-         Logistic Regression     ← simplest, quick benchmark
+Step 1 — Baseline model:     Logistic Regression     ← simplest, quick benchmark
 
 Step 2 — Better models
          Decision Tree           ← simple, explainable
@@ -176,15 +186,12 @@ Step 2 — Better models
 Step 3 — Best model
          XGBoost                 ← best performance ✅ — your final model
 ```
-> This is called model selection — you try multiple algorithms and pick the best one. 
+- we used scikit-learn Library and XGBoost algorithm(actual model that learns patterns) in Daimler Project  
+- XGBoost stands for eXtreme Gradient Boosting — it is a machine learning algorithm based on decision trees + boosting technique.   
+> "I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model."     
+> Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:   
 
-> "I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model."   
-> "I evaluated multiple algorithms — Logistic Regression, Decision Tree, Random Forest, and XGBoost. XGBoost gave the best F1 score of 0.94 so I selected it as my final model."  
-> Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:  
 
-- scikit-learn = framework / toolbox
-- XGBoost      = algorithm inside that toolbox (actual model that learns patterns)
-- XGBoost stands for eXtreme Gradient Boosting — it is a machine learning algorithm based on decision trees + boosting technique.  
 
 
 
