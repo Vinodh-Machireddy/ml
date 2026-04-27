@@ -1,31 +1,27 @@
-MACHINE LEARNING:  
+# MACHINE LEARNING:
 Machine Learning (ML) is a process / technique of teaching a computers using data, instead of writing rules manually like old programs. A computer learns patterns from past data and uses that learning to make predictions or decisions on new data. 
 
+**Old (Traditional) way:**
+You write rules, Computer follows rules   
+	Example: IF marks > 35 THEN pass  
 
-Old (Traditional) way
-You write rules
-Computer follows rules
-Example:
-IF marks > 35 THEN pass
-Machine Learning way
-You give data + answers
-Computer learns rules by itself
-Example:
-Past student marks + pass/fail result
-Model learns what marks usually mean pass or fail
+**Machine Learning way:**
+You give data + answers. Computer learns rules by itself  
+	Example: Past student marks + pass/fail result  
+			 Model learns what marks usually mean pass or fail  
 
-## Types of Machine Learning
+## Types of Machine Learning approachs  
+### 1. Supervised Learning:
+The model learns from labeled data. examples (you tell it the “right answer”). our feed in input data (features) and the correct output (label). The algorithm discovers the mapping from input → output.  
 
-1. Supervised Learning:
-The model learns from labeled examples (you tell it the “right answer”). our feed in input data (features) and the correct output (label). The algorithm discovers the mapping from input → output.
-
-if output column data is categorical(yes/no) data then we go for Classification algorithm family.
-supervised classification algorithms examples:
-1. Decision Tree
-2. Random Forest
+if output column data is categorical(yes/no), true/false, multi-class data then we go for Classification algorithm family.  
+**supervised classification algorithms examples:** 
+1. Decision Tree Classifier
+2. Random Forest Classifier
 3. Logistic Regression
+4. XGBoost
 
-if output column/target data is numerical labels than we go for Regression Algorithm under supervised technics.
+if output column/target data is numerical labels than we go for Regression Algorithm under supervised technics.  
 supervised regression algorithms examples: 
 1. Simple Linear Regression
 2. Ridge Regression
@@ -38,10 +34,10 @@ mean_absolute_error
 r2_score
 
 
-2. UnSupervised Learning:
-The model learns from unlabelled data (you don’t provide “right answers”). Only inputs are given; no labels. The algorithm searches for patterns, groupings, or structure in the data.
+### 2. UnSupervised Learning:
+Unsupervised Learning is a machine learning approach where a model is trained on unlabeled data — meaning there are no correct output labels provided. The model must find hidden patterns, structure, or groupings in the data on its own.  
 
-When to use: Clustering (e.g., grouping customers by behaviour, features)
+When to use: Clustering (e.g., grouping customers by behaviour, features)  
 
 eg:-
 K‑Means Clustering
@@ -49,12 +45,12 @@ Hierarchical Clustering
 Principal Component Analysis (PCA)
 DBSCAN
 
-
-3. Reinforcement Learning
-Learns by trial and error using rewards.
-Example: games, robots
-NOTE: Structured / Unstructured is about DATA FORMAT
-	Supervised / Unsupervised / RL is about LEARNING METHOD
+### 3. Reinforcement Learning(RL)
+Learn by trial and error — get rewarded for good actions, penalized for bad ones.
+Algorithm: Q-Learning
+Example: games, robots...etc
+> **NOTE:** Structured / Unstructured is about DATA FORMAT  
+	        Supervised / Unsupervised / RL is about LEARNING APPROACHS  
 
 Structured data :
 Data organised in a fixed format – rows and columns
