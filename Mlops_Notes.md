@@ -156,10 +156,10 @@ DBU: Data Bricks Units
 | BAT006 | 3.6 | 35.8 | 1.3 | 97.1 | 79 | 97 | 42.3 | 0.5 | 150 | internal_short_circuit |
 | BAT007 | 3.5 | 34.9 | 1.2 | 96.8 | 31 | 96 | 13.1 | 0.3 | 95 | undervoltage |
 ```  
-SOC — State of Charge level (%): How much charge is currently remaining right now. 
-SOH — State of Health level (%): Overall long-term health of the battery — how degraded it is over its lifetime.  
-C-Rate (C): How fast the battery is being charged or discharged relative  
-Cycle Count (Integer): Total number of complete charge-discharge cycles the battery has completed in its lifetime  
+SOC — State of Charge level (%): How much charge is currently remaining right now.  
+SOH — State of Health level (%): Overall long-term health of the battery — how degraded it is over its lifetime.    
+C-Rate (C): How fast the battery is being charged or discharged relative   
+Cycle Count (Integer): Total number of complete charge-discharge cycles the battery has completed in its lifetime   
 
 
 > One full row  -> data point / sample / observation  
@@ -191,6 +191,26 @@ Step 3 — Best model
 > "I used scikit-learn Python library for preprocessing, metrics, and pipeline — and XGBoost Classifier as my algorithm for the model."     
 > Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:   
 
+## Decision Tree
+A Decision Tree is a supervised machine learning algorithm that splits data into branches based on feature conditions — like a flowchart — until it reaches a final prediction at the leaf node.  
+```
+Is Temp > 55°C?
+                   /               \
+                YES                 NO
+                 |                   |
+        Is Voltage < 3.3V?      Is SOC > 95%?
+           /        \              /       \
+         YES         NO          YES        NO
+          |           |           |          |
+   Thermal_Runaway  Healthy   Overcharge   Healthy
+```
+
+| Part Name | Meaning |
+| :--- | :--- |
+| **Root Node** | Top node: The first split and most important feature in the dataset. |
+| **Internal Nodes** | Middle nodes: Represent feature conditions where the data is further split. |
+| **Edges** | Branches: Represent the "Yes" / "No" paths or outcomes of a condition. |
+| **Leaf Nodes** | End nodes: The final prediction or class label; no further splitting occurs here. |
 
 
 
