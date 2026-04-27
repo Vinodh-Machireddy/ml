@@ -68,6 +68,12 @@ Structured data is data that is organized in a fixed, predefined format — typi
 Data without fixed rows & columns. Data that does NOT fit into a table. Requires specialized models — CNNs for images, RNNs/Transformers for text/audio   
 **Examples:** Text (emails, chat, PDFs), Images, Audio, Video, documents, Logs (semi-structured)   
 
+**DATASETS:**
+Kaggle Datasets:  https://www.kaggle.com/datasets  
+GitHub Repositories  
+Plotly : opensource datasets to train ml models  
+uci machine learning repository:  https://archive.ics.uci.edu  
+
 ### Algorithm:
 An algorithm is just a step-by-step set of instructions to solve a problem or perform a task. It’s like a recipe a computer follows to get the desired result.  
 Input → Algorithm → Output   
@@ -101,65 +107,31 @@ In DevOps we  focuses on automating the lifecycle of traditional software/Applic
 4. Banking Apps: Loan approval, Credit risk models  
 5. Swiggy/Zomato: Traditional software: Food delivery ML models used: Restaurant recommendation, Delivery time prediction
 
+### Machine Learning Life Cycle:
+Business problem  
+Data collection  
+Data validation  
+Feature engineering  
+Model training  
+Experiment tracking  
+Model evaluation  
+Model registry  
+Deployment  
+Monitoring  
+Retraining  
 
-Machine Learning Life Cycle:
-Problem definition
-Data collection
-Data clean
-Feature Engineering
-Model selection (Algo)
-Model Training
-Model Evaluation(test)
-Hyperparameter
-Deploying
-Monitoring maintenance
-ML Workflow:
-ML workflow represents the automated and operational execution of those stages in production.
+## MODEL-HUB
+models that were already trained on large datasets by big companies or research labs, and made available for others to reuse or fine-tune instead of training from scratch.   
 
-Comprehensive/Standalone/End2End MLOps Platforms
-Kubeflow, MLFlow, SageMaker, Azure ML, Vertex AI
-Data → Training → Pipeline → Model Registry → Deployment → Monitoring (all inside one ecosystem)
+- Hugging Face, TensorFlow Hub, PyTorch Hub  
+- AWS SageMaker JumpStart → ready-to-use pre-trained models for NLP, vision, tabular  
+- Azure ML Model Registry → curated pre-trained models  
+- Google Cloud Vertex AI Model Garden → Google & open-source models  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## DATASETS
-Kaggle Datasets:  https://www.kaggle.com/datasets  
-GitHub Repositories  
-Plotly : opensource datasets to train ml models  
-uci machine learning repository:  https://archive.ics.uci.edu  
-
-**built‑in datasets in python for pratice:**
-1. scikit‑learn (sklearn.datasets)
-2. seaborn (seaborn.load_dataset())
-3. statsmodels (statsmodels.datasets)
-
-**MODEL-HUB:**
-models that were already trained on large datasets by big companies or research labs, and made available for others to reuse or fine-tune instead of training from scratch.  
-
-Hugging Face, TensorFlow Hub, PyTorch Hub  
-AWS SageMaker JumpStart → ready-to-use pre-trained models for NLP, vision, tabular  
-Azure ML Model Registry → curated pre-trained models  
-Google Cloud Vertex AI Model Garden → Google & open-source models  
-
-**Terminology:**  
-Row : --->	Sample / Instance / Observation / Record  
-Column : ---->	Feature / Attribute / Variable  
-output column : -----> is a special type of column:  target column/target variable/label/answer  
+## Terminology
+Row : --->	Sample / Instance / Observation / Record / Data Point
+Column : ---->	Feature / Attribute / Variable / Predictor / Input / Input Feature
+Label/Class : -----> Target Variable / Target Column / Output / Response / Answer / Ground Truth / Target Label
 
 CPU: Central processing unit  
 GPU: Graphical processing unit  
