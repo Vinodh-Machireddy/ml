@@ -270,8 +270,10 @@ def battery_fault_pipeline(
     #     dataset = validate_task.outputs["validated_dataset"]
     # )
 ```
+> @componentwraps function as Docker container — runs on Kubernetes pod  
+> @dsl.pipelinewraps function as KFP pipeline — connects all components
 
-**How Kubernetes Runs This:**
+**How Kubernetes Runs This:**   
 ```
 GitHub Actions triggers pipeline
         ↓
@@ -295,11 +297,51 @@ KFP creates Pod 3 — preprocess
 ```
 > KFP uses Kubernetes Persistent Volume (PV) / S3
 
+**Feature Store:**  
+A Feature Store is a centralized repository that stores, manages, and serves features for ML models — both for training and real-time serving.
+```
+Raw Data (BMS Sensors)
+        ↓
+Feature Engineering
+        ↓
+┌───────────────────────────────────┐
+│           FEATURE STORE           │
+│                                   │
+│  Offline Store    Online Store    │
+│  (S3 / Hive)      (Redis / DDB)  │
+│  historical data  real-time data  │
+│  training         serving         │
+└───────────────────────────────────┘
+        ↓               ↓
+  Training           Serving
+  Pipeline           Pipeline
+```
+
+> Feast    ->    opensource    ->  most common in MLOps
+> AWS SageMaker Feature Store -> aws managed
+
+**Example:**   
+Data Scientist computes in training,  MLOps Engineer computes in serving:, different code — different result!   
+With Feature Store — Solution  
+```
+Step 1 — Define feature ONCE in Feature Store:
+
+    feature name : voltage_rolling_mean
+    definition   : average voltage of last 5 readings
+    computed by  : pandas rolling(5).mean()
+    updated every: 5 seconds
+
+Step 2 — Training fetches from Feature Store:
+    voltage_rolling_mean = 3.48  ← from Feature Store ✅
+
+Step 3 — Serving fetches from Feature Store:
+    voltage_rolling_mean = 3.48  ← SAME value from Feature Store ✅
+
+# SAME value everywhere → no confusion ✅
+```
 
 
-feature store
-finaly result of ml pipeline
-@dsl.pipeline() / @component is  decorator
+
 
 
 
