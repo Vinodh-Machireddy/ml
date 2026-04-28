@@ -17,7 +17,7 @@ Phase 4: CM (Continuous Monitoring)     → Monitor → Detect drift → Retrain
 6. Cloud : AWS S3, ECR, EKS, IAM, SageMaker, Cost optimization, Security (AWS Secrets Manager)  
 
 ### Production Ready Tech Stack: 
-```Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python, Linux.```  
+```Kubeflow Pipelines(KFP), Mlflow, ArgoCD, Kserve, Prometheus & Grafana, GitHub Actions, AWS, Git, GitHub, DVC, Docker, Kubernetes, Python(Libraries:- NumPy, Pandas, Scikit-learn, XGBoost), SQL(PostgreSQL), Linux.```  
 </details>
 
 <details>
