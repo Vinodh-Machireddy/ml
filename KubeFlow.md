@@ -320,7 +320,7 @@ KFP creates Pod 2 — validate_data
 KFP creates Pod 3 — preprocess
     ... and so on
 ```
-
+> KFP uses Kubernetes Persistent Volume (PV) or MinIO / S3
 
 
 
