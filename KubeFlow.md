@@ -338,5 +338,23 @@ Finally, I compiled the Python DSL into YAML and deployed it through CI/CD into 
 
 
 
+## DSL — Domain Specific Language  
+DSL stands for Domain Specific Language — a language or syntax designed for one specific purpose rather than general programming.  
+```
+from kfp import dsl
+
+@dsl.pipeline(
+    name        = "Battery Fault Pipeline",
+    description = "EV Battery Fault Classification"
+)
+def battery_fault_pipeline():
+    pass
+```
+Here dsl means — KFP provides its own special syntax specifically for defining ML pipelines.  
+kfp.dsl is not general Python — it is a mini language on top of Python designed only for:  
+- defining pipeline steps  
+- connecting components  
+- passing artifacts between steps  
+> kfp.dsl = Python + special pipeline syntax = DSL for ML pipelines.
 
 
