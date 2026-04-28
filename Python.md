@@ -1621,6 +1621,32 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier  
 from sklearn.ensemble import RandomForestClassifier  
 
+**LabelEncoder:**
+LabelEncoder converts text labels into numbers — because ML models understand numbers, not text.  
+from sklearn.preprocessing import LabelEncoder
+``` 
+le = LabelEncoder()
+
+# your fault labels
+labels = [
+    "normal",
+    "thermal_fault",
+]
+
+encoded = le.fit_transform(labels)
+print(encoded)
+# [2 3 2 1 0 3]
+
+# convert back to labels
+labels = le.inverse_transform(y_pred)
+print(labels)
+# ['normal' 'cell_degradation' 'overvoltage' 'normal' 'thermal_fault']
+```
+
+**StandardScaler:**
+StandardScaler scales/normalizes feature values so all features are on the same scale — because ML models get confused when features have very different ranges.  
+
+
 PENDING..........  
 
 ### XGBoost
