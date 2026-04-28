@@ -235,33 +235,6 @@ def validate_data(
 	# error handling                 # what MLOps adds ✅
 ```  
 
-
-**How Components Connect:**
-```
-load_data()
-    packages_to_install: pandas, boto3
-    base_image: python:3.9
-    INPUT  : bucket, data_path (strings)
-    OUTPUT : dataset (CSV file)
-        ↓
-validate_data()
-    packages_to_install: pandas
-    base_image: python:3.9
-    INPUT  : dataset (from load_data)
-    OUTPUT : validated_dataset (CSV file)
-        ↓
-preprocess()
-    packages_to_install: pandas, scikit-learn
-    base_image: python:3.9
-    INPUT  : validated_dataset (from validate_data)
-    OUTPUT : train_dataset, test_dataset (CSV files)
-        ↓
-train()
-        ↓
-evaluate()
-        ↓
-register()
-```  
 # PIPELINE DEFINITION
 ```
 # pipeline/pipeline.py
@@ -306,25 +279,24 @@ KFP creates Pod 1 — load_data
     pulls python:3.9 image
     pip install pandas boto3
     runs load_data()
-    saves CSV to shared storage
+    saves load_data.CSV to shared storage
     pod shuts down
         ↓
 KFP creates Pod 2 — validate_data
     pulls python:3.9 image
     pip install pandas
-    reads CSV from shared storage
+    reads load_data.CSV from shared storage
     runs validate_data()
-    saves validated CSV to shared storage
+    saves validated_data.CSV to shared storage
     pod shuts down
         ↓
 KFP creates Pod 3 — preprocess
     ... and so on
 ```
-> KFP uses Kubernetes Persistent Volume (PV) or MinIO / S3
+> KFP uses Kubernetes Persistent Volume (PV) / S3
 
 
 
-shared storage
 feature store
 finaly result of ml pipeline
 @dsl.pipeline() / @component is  decorator
