@@ -667,4 +667,12 @@ parallel processing and fast.
 	9. what are decision trees?
 	10. what is time-series data looks?
 	
-	
+## Capgemini:
+	1. where you retrain the model in dev or prod environment?
+	2. docker image layers
+	3. size of your dataset
+	4. if docker images are heavy what you do?
+	5. Docker file
+	6. have you worked in multi layer in docker
+	7. what are the endpoints you worked on?
+	8. 
