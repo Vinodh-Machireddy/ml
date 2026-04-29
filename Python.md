@@ -1961,6 +1961,32 @@ print(count)
 
 
 
+1. arr = [2,4,3,6,7,1,9,8,5]
+# Print square of even nos using list comprehension
+
+2.  Common elements between 2 lists Input... by N, Radhika
+N, Radhika
+12:49 pm
+
+2.  Common elements between 2 lists
+Input:
+list_a = [1, 2, 3, 4, 5, 9]
+list_b = [4, 5, 6, 7, 8, 9]
+Output:[4,5,9]
+
+3. Write a docker file 1. python base as ba... by N, Radhika
+N, Radhika
+12:54 pm
+
+3. Write a docker file
+1. python base as base image
+3. install libraries from requirements.txt.
+2. Copy code from local directory app
+4. Run flask app as default executable
+
+ 
+
+
 
      
 
