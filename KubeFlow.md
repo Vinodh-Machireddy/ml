@@ -22,7 +22,7 @@ Each step runs in its own container, but all steps are connected using inputs an
 Automation – no manual steps  
 Reproducibility – same pipeline, same result  
 
-## 1. Component (@dsl.component) 
+## 1. Component (@component) 
 A component is one single step in your pipeline. Each component is like one small independent worker that does one job.  
 **Key points:**  
 - Each component runs inside its own Docker container  
