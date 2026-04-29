@@ -8,9 +8,6 @@ Kubeflow is used to make Machine Learning production-ready models, the same disc
 ## Kubeflow Components:  
 <img width="273" height="149" alt="image" src="https://github.com/user-attachments/assets/c7feb8cf-2211-4364-9cca-825e2751db32" />   
 
-DSL:  
-Kubeflow uses a Python-based DSL to declaratively define ML pipelines, which are later compiled into Kubernetes-executable YAML workflows.  
-
 ## Kubeflow Pipeline:
 Kubeflow Pipelines (KFP) is a platform for building and running ML workflows as automated pipelines on Kubernetes.
 
@@ -103,7 +100,41 @@ After writing the pipeline in Python, you compile it into a YAML file. This YAML
 
 
 
+# What the Data Scientists hand over to MLOps
+**Data ingestion from Vehical to s3**
+The raw telemetry data lands in S3 via the ingestion pipeline from Data engineering teams. Now the data science team pull this raw data from s3, did their EDA, cleaned it, and future engineering steps and pushes the processed training dataset back into S3 as **Parquet files. i.e train.parquet**.
+> so, s3 contains raw data, processed data, model artifacts, etc...
 
+**Data scientists:** own everything related to model development — choosing the architecture, deciding whether to fine-tune a pre-trained model or train from scratch, selecting hyperparameters, running experiments in Jupyter notebooks, and evaluating which approach gives the best metrics. Fine-tuning is a modeling decision, so it falls squarely in their domain.  
+
+**as a Senior MLOps Engineer.** My responsibility starts from the point where we need to productionize that model. That means — how do we take this model from a Jupyter notebook, build a proper training pipeline around it, package it, deploy it to production, serve it in real time, monitor it, and retrain it.   
+
+### Fine-Tuning:
+Fine-tuning means taking a pre-trained model (Transformer-based time-series pre-trained model like PatchTST) that already learned general patterns. You remove/freeze the last layer and replace it with a new layer for ev battery classes. Then we fine-tune on our dataset.  
+
+**Types:**
+Fixed Feature Extraction → Freeze the pre-trained backbone, train only the  head i.e last layer(Classification Layer).  
+                 Small dataset + similar task → Fixed Feature Extractor.  
+You stop updating their weights during training.  
+Full Fine-Tuning → Unfreeze more layers, retrain them on your dataset.  
+                 Bigger dataset + different task → Full Fine-Tuning.  
+Many teams start with fixed extractor, and if results are not good, they move to progressive/full fine-tuning.  
+
+**What is Classification Layer/Head:**  
+At the end of every model, there is a final layer that gives predictions. Its job is to take all the features the earlier layers have extracted and map them to output classes. 
+
+**Hyperparameter tuning:** — you're adjusting knobs like learning rate, max depth, number of estimators, etc. to get the best performance. The architecture and data stay the same
+
+### I received three essentially things from Data Scientists 
+- A monolithic Jupyter notebook — with the full training code, preprocessing logic, feature engineering, model training, and evaluation.  (the original experiment)
+- A requirements file — Python dependencies (xgboost, pandas, etc.)  
+- The training dataset in S3 — versioned with DVC.    # DVC pointer file (NOT actual data)
+  > When the data scientist saves train.parquet to S3, they also run: dvc add `data/train.parquet` which does two things: 
+    > 1. It **uploads** the actual large file to S3
+    > 2. It creates a **tiny pointer file** called `train.parquet.dvc` in git
+    > 3. Now you will not lost the link between code and data, for reproduce old Model versions (v1, v2, v3,v4...).
+
+My work starts from S3 onwards. My KFP pipeline picks up data from this processed S3 path as its input. we take this notebook and turn it into a production-grade, automated, repeatable, auditable training pipeline.  
 
 
 ## DSL — Domain Specific Language  
