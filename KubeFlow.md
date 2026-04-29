@@ -172,7 +172,7 @@ Problems:
 ❌ imports outside function
 ❌ no docstring
 ```
-we need to convert into a KFP components i.e @dsl.component()  
+we need to convert into a KFP components i.e @component()  
 
 1. we create Separate Python files for each component and Create Project Structure in github. (load_data.py, validate_data.py, preprocess.py, train.py, evaluate.py, register.py)   
 
