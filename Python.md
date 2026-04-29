@@ -1972,32 +1972,30 @@ Optuna is a tool that automatically searches for the best hyperparameters for yo
 **Whenever you want to COUNT something → use Dictionary:**
 ```
 numbers = [3,4,4,5,6,7,8,9,2,2,9,9]
-
 count = {}   # empty dictionary
-
 for n in numbers:
     if n in count:
         count[n] += 1    # already exists → add 1
     else:
         count[n] = 1     # first time seen → set to 1
-
 print(count)
 ```
 
-
-
 1. arr = [2,4,3,6,7,1,9,8,5]
 # Print square of even nos using list comprehension
-
-2.  Common elements between 2 lists Input... by N, Radhika
+Ans: Squre = [s**2 for s in arr if s % 2 == 0]
+print(Squre)
 
 2.  Common elements between 2 lists
 Input:
 list_a = [1, 2, 3, 4, 5, 9]
 list_b = [4, 5, 6, 7, 8, 9]
 Output:[4,5,9]
+Ans: common = [x for x in list_a if x in list_b]
+print(common)
 
-3. Write a docker file 1. python base as ba... by N, Radhika
+
+4. Write a docker file 1. python base as ba... by N, Radhika
 N, Radhika
 12:54 pm
 
