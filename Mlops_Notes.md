@@ -192,16 +192,13 @@ Step 3 — Best model
 > Random Forest, Logistic Regression, Decision Tree  , Yes — all work for multi-class tabular classification:   
 
 
-
-
-
-Logistic Regression → can't capture non-linear patterns
+Logistic Regression → can't capture non-linear patterns  
         ↓ fix ↓
-Decision Tree → captures non-linear but overfits badly
+Decision Tree → captures non-linear but overfits badly  
         ↓ fix ↓
-Random Forest → fixes overfitting using many trees + voting
+Random Forest → fixes overfitting using many trees + voting  
         ↓ fix ↓
-XGBoost → fixes remaining errors using boosting → best performance ✅
+XGBoost → fixes remaining errors using boosting → best performance ✅  
 
 
 ### Logistic Regression:
@@ -227,7 +224,7 @@ XGBoost is powerful but complex — harder to explain, harder to debug, heavier 
 ### Decision Tree
 A Decision Tree is a supervised machine learning algorithm that splits data into branches based on feature conditions — like a flowchart — until it reaches a final prediction at the leaf node.  
 ```
-Is Temp > 55°C?
+					Is Temp > 55°C?
                    /               \
                 YES                 NO
                  |                   |
