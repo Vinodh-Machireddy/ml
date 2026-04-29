@@ -500,9 +500,10 @@ features = ["voltage", "temperature", "current", "capacity"]
 
 print(features[0])      # voltage   — first item
 print(features[-1])     # capacity  — last item
-print(features[1:3])    # ['temperature', 'current'] — index 1 to 2
-print(features[:2])     # ['voltage', 'temperature'] — first two
-print(features[2:])     # ['current', 'capacity']    — from index 2
+print(features[1:3])    # ['temperature', 'current']     — index 1 to 2 	# [ start : end] start index is included, end index is always excluded
+print(features[:2])     # ['voltage', 'temperature']     — first two		# [: end] Start is not given → defaults to 0
+print(features[1:])     # ['temp', 'current', 'capac']   - 1 to End         # Start is 2 → included.  End is not given → goes till end of list
+print(features[-2:])    # ['current', 'capacity']        - from 2 to end 	# -2 → start from second-last element ("current").    : → go till the end
 ```
 **Most Useful List Methods:**
 ```
@@ -1965,8 +1966,6 @@ print(count)
 # Print square of even nos using list comprehension
 
 2.  Common elements between 2 lists Input... by N, Radhika
-N, Radhika
-12:49 pm
 
 2.  Common elements between 2 lists
 Input:
