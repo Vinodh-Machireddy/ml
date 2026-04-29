@@ -504,13 +504,13 @@ print(features[1:3])    # ['temperature', 'current']     — index 1 to 2 	# [ s
 print(features[:2])     # ['voltage', 'temperature']     — first two		# [: end] Start is not given → defaults to 0
 print(features[1:])     # ['temp', 'current', 'capac']   - 1 to End         # Start is 2 → included.  End is not given → goes till end of list
 print(features[-2:])    # ['current', 'capacity']        - from 2 to end 	# -2 → start from second-last element ("current").    : → go till the end
-```
+```  
 **Most Useful List Methods:**
 ```
 features = ["voltage", "temperature", "current"]
 
 # Add
-features.append("capacity")            # adds to end
+features.append("capacity")            # Default adds to end
 features.insert(1, "resistance")       # adds at index 1
 
 # Remove
@@ -525,12 +525,36 @@ print(features.index("current"))       # returns index of value
 print(features.count("voltage"))       # counts occurrences
 
 # Order
-features.sort()                        # sorts in place A-Z
-features.reverse()                     # reverses in place
-sorted_list = sorted(features)         # returns new sorted list
+features.sort()                       # sorts in place A-Z
+Option 1: Sort original list
+	features.sort()
+	print(features)
 
-# Copy
-features_copy = features.copy()        # safe copy — not reference
+Option 2: Keep original, get sorted copy(return new list)
+	sort_list = sorted(features)
+	print(sort_list)
+
+
+features.reverse()                     # reverses in place
+Option 1: Reverse original list
+	features.reverse()
+	print(features)
+
+Option 2: Keep original, get reversed copy
+	rev = features[::-1]
+	print(rev)
+> Methods like .sort(), .reverse() → modify list → return None
+
+
+# Copy								 # safe copy — not reference
+features_copy = features.copy()       
+features = ["voltage", "temperature", "current"]
+
+features_copy = features.copy()   # new copy
+features_copy.append("capacity")  # modify copy
+
+print("Original:", features)
+print("Copy    :", features_copy)
 ```
 **List of Lists — 2D:**
 ```
