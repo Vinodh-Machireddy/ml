@@ -675,7 +675,8 @@ parallel processing and fast.
 	5. Docker file
 	6. have you worked in multi layer in docker
 	7. what are the endpoints you worked on?
-	8. you use CPUS's or GPU's
-	9. data size
-	10. how your data stores in time-series or temperary 
 	
+## Chryselys:
+	1. you use CPUS's or GPU's
+	2. data size
+	3. how your data stores in time-series or temperary 
