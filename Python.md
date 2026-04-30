@@ -1959,8 +1959,6 @@ exists = path.exists()
 parent = path.parent
 ```
 
-
-
 OPTUNA:	  				
 Optuna is a tool that automatically searches for the best hyperparameters for your ML model. Because choosing good parameters manually is difficult.  
 
@@ -1969,7 +1967,7 @@ Optuna is a tool that automatically searches for the best hyperparameters for yo
 
 
 ## Python Interview Questions & Answers  
-1. **Whenever you want to COUNT something → use Dictionary:**  
+**1. Whenever you want to COUNT something → use Dictionary:**  
 ```
 numbers = [3,4,4,5,6,7,8,9,2,2,9,9]
 count = {}   # empty dictionary
@@ -1979,7 +1977,7 @@ for n in numbers:
     else:
         count[n] = 1     # first time seen → set to 1
 print(count)
-```
+```  
 
 **2. Print square of even nos using list comprehension:**
 ```
@@ -1997,15 +1995,13 @@ Ans: common = [x for x in list_a if x in list_b]
 print(common)
 ``` 
 
-4. Write a docker file 1. python base as ba... by N, Radhika
-N, Radhika
-12:54 pm
 
-3. Write a docker file
-1. python base as base image
-3. install libraries from requirements.txt.
-2. Copy code from local directory app
-4. Run flask app as default executable
+
+**4. Write a docker file:**
+ python base as base image  
+install libraries from requirements.txt.  
+Copy code from local directory app  
+Run flask app as default executable  
 
  
 
