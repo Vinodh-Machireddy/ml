@@ -129,19 +129,16 @@ models that were already trained on large datasets by big companies or research 
 - Google Cloud Vertex AI Model Garden → Google & open-source models  
 
 ## Terminology
-Row : --->	Sample / Instance / Observation / Record / Data Point
-Column : ---->	Feature / Attribute / Variable / Predictor / Input / Input Feature
-Label/Class : -----> Target Variable / Target Column / Output / Response / Answer / Ground Truth / Target Label
+`Row : --->	Sample / Instance / Observation / Record / Data Point` 
+`Column : ---->	Feature / Attribute / Variable / Predictor / Input / Input Feature`  
+`Label/Class : -----> Target Variable / Target Column / Output / Response / Answer / Ground Truth / Target Label`  
+Hypercare: Hypercare refers to the intensive support and monitoring period immediately after a major system launch, go-live.
 
 CPU: Central processing unit  
 GPU: Graphical processing unit  
 TUP: Tensor processing unit  
 QPU: Quantum Processor unit  
 DBU: Data Bricks Units  
-
-
-
-
 
 
 ### Daimler = Tabular/structured Multi-class Classification problem
