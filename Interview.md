@@ -677,4 +677,5 @@ parallel processing and fast.
 	7. what are the endpoints you worked on?
 	8. you use CPUS's or GPU's
 	9. data size
+	10. how your data stores in time-series or temperary 
 	
