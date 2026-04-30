@@ -679,4 +679,6 @@ parallel processing and fast.
 ## Chryselys:
 	1. you use CPUS's or GPU's
 	2. data size
-	3. how your data stores in time-series or temperary 
+	3. how your data stores in time-series or temperary
+	4. how often you retrain the model?
+	5. 
