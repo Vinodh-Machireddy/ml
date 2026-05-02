@@ -1260,6 +1260,7 @@ from sklearn.metrics._classification import f1_score
 
 
 ## 18. List Comprehensions  
+Syntax: [ EXPRESSION  for VAR in ITERABLE  (if CONDITION) ]
 - List comprehension is a shortcut to create a new list in one line.  
 ```  
 scores = [0.91, 0.74, 0.88, 0.65, 0.95]
