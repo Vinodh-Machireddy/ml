@@ -1996,18 +1996,43 @@ Ans: common = [x for x in list_a if x in list_b]
 print(common)
 ``` 
 
-
-
 **4. Write a docker file:**
  python base as base image  
 install libraries from requirements.txt.  
 Copy code from local directory app  
 Run flask app as default executable  
 
+
+
  
+## Extra Knowledge Points:
+1. Falsy values (treated as False), Anything not falsy is considered truthy. 
+[x for x in [0, None, '', 3, False] if x]  Answer: 3
+```
+False
+None
+0          # int
+0.0        # float
+0j         # complex
+''         # empty string
+[]         # empty list
+{}         # empty dict
+()         # empty tuple
+set()      # empty set
+```  
 
+2. The first for is the outer loop, the second for is the inner loop — inner loop runs completely for every single step of the outer loop:
+```
+ [  (i, j)  for i in range(2)  for j in range(2)  ]
+               ↑ outer loop       ↑ inner loop
 
+ Output: [(0, 0), (0, 1), (1, 0), (1, 1)]
+ ```  
+3. [x for x in range(10) if x % 2 if x % 3]  
+There's no == here — both conditions rely on truthiness:
 
-     
+x % 2 → remainder when divided by 2 → 0 (falsy) if even, 1 (truthy) if odd
+x % 3 → remainder when divided by 3 → 0 (falsy) if divisible by 3, non-zero (truthy) otherwise
 
+So this keeps numbers that are odd AND not divisible by 3.
 
