@@ -462,8 +462,8 @@ while epoch < 5:
 # Training epoch 3
 # Training epoch 4
 ```
-> break — Exit Early
-> continue — Skip Current Iteration
+> break — Exit Early  
+> continue — Skip Current Iteration  
 
 ## 9. Lists
 An ordered, mutable collection that stores multiple values in a single variable.  
