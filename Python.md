@@ -288,7 +288,7 @@ score -= 0.01       # same as score = score - 0.01  → 0.92
 score *= 2          # same as score = score * 2     → 1.84
 score /= 2          # same as score = score / 2     → 0.92
 ```
-**Membership Operators:**
+**Membership Operators:**  
 Check if a value exists inside a collection.  (in & not in)
 ```
 supported_models = ["XGBoost", "RandomForest", "LightGBM"]
@@ -304,7 +304,7 @@ required_features = ["voltage", "temperature", "current"]
 if "voltage" not in df.columns:
     raise ValueError("Missing required feature: voltage")
 ```
-**Identity Operators:**
+**Identity Operators:**  
 Check if two variables point to same object in memory — not just equal value.  
 ```
 # is / is not
@@ -318,12 +318,6 @@ if model is None:
 if model is not None:
     print("Model ready")
 ```
-> ### Python follows math order: ** → * / // % → + -
-result = 2 + 3 * 4      # 14, not 20 — multiplication first
-result = (2 + 3) * 4    # 20 — brackets first  
-> ### MLOps example
-accuracy = correct / total * 100    # division first, then multiply
-
 ## 5. Strings
 Any text data wrapped in quotes — single 'battery_fault_classifier' or double "XGBoost", both work the same.  
 
@@ -2006,8 +2000,8 @@ Run flask app as default executable
 
  
 ## Extra Knowledge Points:
-1. Falsy values (treated as False), Anything not falsy is considered truthy. 
-[x for x in [0, None, '', 3, False] if x]  Answer: 3
+### 1. Falsy values (treated as False), Anything not falsy is considered truthy.   
+`[x for x in [0, None, '', 3, False] if x]  Answer: 3` 
 ```
 False
 None
@@ -2021,18 +2015,47 @@ None
 set()      # empty set
 ```  
 
-2. The first for is the outer loop, the second for is the inner loop — inner loop runs completely for every single step of the outer loop:
+### 2. The first for is the outer loop, the second for is the inner loop — inner loop runs completely for every single step of the outer loop:  
 ```
  [  (i, j)  for i in range(2)  for j in range(2)  ]
                ↑ outer loop       ↑ inner loop
 
  Output: [(0, 0), (0, 1), (1, 0), (1, 1)]
  ```  
-3. [x for x in range(10) if x % 2 if x % 3]  
-There's no == here — both conditions rely on truthiness:
+### 3. [x for x in range(10) if x % 2 if x % 3]  
+There's no == here — both conditions rely on truthiness:  
 
-x % 2 → remainder when divided by 2 → 0 (falsy) if even, 1 (truthy) if odd
-x % 3 → remainder when divided by 3 → 0 (falsy) if divisible by 3, non-zero (truthy) otherwise
+x % 2 → remainder when divided by 2 → 0 (falsy) if even, 1 (truthy) if odd  
+x % 3 → remainder when divided by 3 → 0 (falsy) if divisible by 3, non-zero (truthy) otherwise  
+> So this keeps numbers that are odd AND not divisible by 3.  
 
-So this keeps numbers that are odd AND not divisible by 3.
+### 4. Python follows math order: **  →  * / // %  →  + -  
+```
+  1️⃣ Highest			**			      Exponentiation 
+  2️⃣ Mid			* / // %              Multiply, Divide, Floor divide, Modulo
+  3️⃣ Lowest		+ -					  Add, Subtract  
+```  
+#### Example:
+```
+3 + 2 ** 3 * 4 - 1
+#     ↑ first:  8
+#           ↑ second: 8 * 4 = 32
+# 3 + 32 - 1 = 34
+```
+#### Same-level operators go left to right:
+```
+10 - 3 + 2   # → 7 + 2 = 9  (left to right)
+10 / 2 * 3   # → 5 * 3 = 15  (left to right)
+```
+#### Exception: ** goes right to left:
+`2 ** 3 ** 2   # → 2 ** 9 = 512  (NOT 8 ** 2 = 64)`
+
+> Parentheses () let you override the default operator precedence and force Python to evaluate parts of an expression first.  
+  Parentheses = your instructions to Python  
+  Python will always evaluate inside () first  
+```
+result = 2 + 3 * 4      # 14, not 20 — multiplication first  
+result = (2 + 3) * 4    # 20 — brackets first    
+```
+
 
