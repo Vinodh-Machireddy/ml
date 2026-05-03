@@ -2029,11 +2029,11 @@ x % 2 → remainder when divided by 2 → 0 (falsy) if even, 1 (truthy) if odd
 x % 3 → remainder when divided by 3 → 0 (falsy) if divisible by 3, non-zero (truthy) otherwise  
 > So this keeps numbers that are odd AND not divisible by 3.  
 
-### 4. Python follows math order: **  →  * / // %  →  + -  
+### 4. Python follows math order:
 ```
-  1️⃣ Highest			**			      Exponentiation 
+  1️⃣ Highest		**			          Exponentiation 
   2️⃣ Mid			* / // %              Multiply, Divide, Floor divide, Modulo
-  3️⃣ Lowest		+ -					  Add, Subtract  
+  3️⃣ Lowest		    + -					  Add, Subtract  
 ```  
 #### Example:
 ```
