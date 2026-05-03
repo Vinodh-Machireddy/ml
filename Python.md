@@ -582,11 +582,11 @@ features = ("voltage", "temperature", "current", "capacity")
 model_info = ("XGBoost", "v1.3", 0.94)
 empty = ()
 single = ("voltage",)
+```
 >  ⚠️ single item needs trailing comma!  Otherwise treated as just a string in parentheses — NOT a tuple
 > a = (42,)    # ✅ tuple
   b = (42)     # ❌ just the integer 42
 
-```
 **List vs Tuple**
 # Python — List vs Tuple Comparison
 
