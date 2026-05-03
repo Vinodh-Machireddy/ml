@@ -427,20 +427,6 @@ else:
 
 # Output: Model is good — ready for deployment
 ```
-**Multiple Conditions — and / or:**
-```
-f1_score = 0.94
-drift_detected = False
-
-# both must be True
-if f1_score >= 0.90 and not drift_detected:
-    print("Safe to deploy")
-
-# at least one must be True
-if f1_score < 0.75 or drift_detected:
-    print("Trigger retraining")
-```
-> we can use `in / not in` ,  `is / is not` also.
 
 ## 7. for loop
 Repeats a block of code for each item in a collection — list, tuple, dictionary, range, or any iterable.  
