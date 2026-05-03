@@ -876,8 +876,10 @@ print("-" * 50)													# print("Training Complete") # ---------------------
 > not support: int, float, bool, None  ❌ TypeError  
 
 **3.range(start, stop, step):**  
-range(0, 100, 10)   # 0, 10, 20, 30, 40, 50, 60, 70, 80, 90  
-> print(list(range(5)))   # [0, 1, 2, 3, 4] — convert if you need a list   
+range(0, 100, 10)   
+Output:  0, 10, 20, 30, 40, 50, 60, 70, 80, 90   # Step: jump by 10 each time
+
+list(range(10, 0, -2))  # step = -2 → move backwards  
 
 **4.enumerate():**    
 - Loops over a collection and gives you both the index and the value at the same time — so you don't have to manually track position.   
