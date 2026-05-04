@@ -405,7 +405,7 @@ Week 2-3:   Module 3 (CI/CD) starts IN PARALLEL
 
 
 
-## HR Round:
+## HR Round: 
 **1. What are your strengths? and weaknesses?**
 My strength and weakness are actually two sides of the same coin. 
 - When I encounter something new, I take a little more time, because I don't like surface-level understanding. That initial slowness is my weakness, once I grasp a concept fully, I take **complete end-to-end ownership** of it.
@@ -429,7 +429,11 @@ If negotiable:
 **are you currently interviewing elsewhere?**
 I have a few conversations in progress, but Infosys is my priority given the role and scale.  
 
-
+Why Axtria?
+	- the maturity of the MLOps practice here. I came across Axtria's case study where your team accelerated model-to-production timelines by 40% using feature stores, versioning, orchestration, and automated deployment pipelines. That's almost exactly the stack I've been building on   
+	- the growth trajectory. A $240M investment, recognition at Cypher 2025 as a leading AI service provider, and working with 16 of the top 20 life sciences companies globally 
+	- model development from scratch 
+	- the domain depth
 
 
 
