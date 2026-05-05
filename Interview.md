@@ -430,6 +430,8 @@ If negotiable:
 I have a few conversations in progress, but Infosys is my priority given the role and scale.  
 
 Why Axtria?
+AI-powered data analytics and cloud software for the life sciences (pharma, biotech, medical devices) industry — helping companies turn data into commercial insights to get the right therapies to the right patients.  
+
 	- the maturity of the MLOps practice here. I came across Axtria's case study where your team accelerated model-to-production timelines by 40% using feature stores, versioning, orchestration, and automated deployment pipelines. That's almost exactly the stack I've been building on   
 	- the growth trajectory. A $240M investment, recognition at Cypher 2025 as a leading AI service provider, and working with 16 of the top 20 life sciences companies globally 
 	- model development from scratch 
