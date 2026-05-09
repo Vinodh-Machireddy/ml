@@ -820,7 +820,7 @@ train_model(
     learning_rate=0.05      
 )
 ```
-**4.args and kwargs:**
+**4.args and kwargs:**  
  *args - When you don't know how many values will be passed:  
 ```
 def log_metrics(*args):
@@ -830,13 +830,14 @@ def log_metrics(*args):
 log_metrics(0.94)                       # one metric
 log_metrics(0.94, 0.92, 0.96)          # three metrics — all work ✅
 ```
- **kwargs — parameter is NOT predefined
+ **kwargs — parameter is NOT predefined  
+```  
 def greet(**kwargs):
     print(kwargs)            # everything lands in ONE dictionary
     print(kwargs["name"])    # access like a dict
 
 greet(name="Vinodh", age=30) 
-
+```  
 **kwargs — about defining a function that accepts any number of keyword arguments:  
 When to use:  When you genuinely don't know in advance what will be passed:  
 ```
