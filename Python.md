@@ -804,8 +804,8 @@ def train_model(model_name, learning_rate=0.05):
 #         no = sign           has = sign
 #         positional          default parameter
 ```
-> Rule — default parameters must always come after positional:
-> Simple rule — if it has =, it's a default parameter. If it doesn't, it's positional.
+> Rule — default parameters must always come after positional:  
+> Simple rule — if it has =, it's a default parameter. If it doesn't, it's positional.  
 > Python reads left to right — required arguments first, optional ones at the end.  
 
 **3. Keyword Arguments — pass by name, order doesn't matter:**
