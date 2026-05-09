@@ -815,9 +815,9 @@ def train_model(model_name, learning_rate, n_estimators):
 
 # keyword — very readable ✅
 train_model(
-    model_name="XGBoost",
+    model_name="XGBoost",	# Pass value by name	# order doesn't matter here
     n_estimators=100,
-    learning_rate=0.05      # order doesn't matter here
+    learning_rate=0.05      
 )
 ```
 **4.args and kwargs:**
@@ -830,9 +830,17 @@ def log_metrics(*args):
 log_metrics(0.94)                       # one metric
 log_metrics(0.94, 0.92, 0.96)          # three metrics — all work ✅
 ```
-**kwargs — variable number of keyword arguments:
+ **kwargs — parameter is NOT predefined
+def greet(**kwargs):
+    print(kwargs)            # everything lands in ONE dictionary
+    print(kwargs["name"])    # access like a dict
+
+greet(name="Vinodh", age=30) 
+
+**kwargs — about defining a function that accepts any number of keyword arguments:  
+When to use:  When you genuinely don't know in advance what will be passed:  
 ```
-def log_metrics(**kwargs):
+def log_metrics(**kwargs):				# pass as many as you want 
     for name, value in kwargs.items():  # kwargs is a dict
         print(f"{name} = {value}")
 
