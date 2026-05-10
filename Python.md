@@ -1042,15 +1042,15 @@ print(max(models))      # XGBoost      — last alphabetically
 print(min(models))      # LightGBM     — first alphabetically
 ```
 **10.sum():**  
-Returns the total of all values in a collection — works on numbers only.  
+Returns the total of all values in a collection — works on numbers only. 
+Syntax:  sum(iterable, start=0)  # start — optional, start as an initial balance before adding everything.
 ```
-scores = [0.91, 0.87, 0.95, 0.93]
+numbers = [1, 2, 3, 4, 5]
 
-# start=0 is default
-print(sum(scores, 0))       # 3.66
+print(sum(numbers))        # 15  → 0 + 1+2+3+4+5 
+print(sum(numbers, 10))    # 25  → 10 + 1+2+3+4+5
+print(sum(numbers, 100))   # 115 → 100 + 1+2+3+4+5
 
-# start=1 — adds 1 to total
-print(sum(scores, 1))       # 4.66
 ```
 Calculate Average  
 ```
@@ -1093,7 +1093,7 @@ print(abs(0.15))        # 0.15
 print(abs(-0.15))       # 0.15
 print(abs(0))           # 0
 ```
-**any() and all():**  
+**13.any() and all():**  
 - any() — returns True if at least one item is True  
 - all() — returns True if all items are True   
 
