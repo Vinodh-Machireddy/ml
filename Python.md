@@ -851,6 +851,13 @@ Output:
 # precision = 0.92
 # recall = 0.96
 ```
+> FUNCTION RULES:  
+> Rule 1 if function NEEDS data from outside → pass as parameter. If function creates its own data → no parameter needed.
+> Rule 2 Always Return Something Meaningful
+> Rule 3 — Never Use Mutable Default Argument
+> Rule 4 — One Function — One Job
+> Rule 7 — Return Early — Avoid Deep Nesting
+
 ## 14. Lambda Functions  
 - A small, one-line anonymous function — no def, no name, no return statement needed.  
 ```
