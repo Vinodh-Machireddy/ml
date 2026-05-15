@@ -23,4 +23,12 @@ ORDER BY value DESC, Temperature AS temp ASC, Voltage AS Vol DESC;  # select row
 LIMIT 5;    # Row filter  
 
 
+SELECT fault_label,
+       COUNT(*)            AS total_batteries,    # count all rows in each group — no matter what values they have.
+       MAX(temperature)    AS max_temp,
+       MIN(temperature)    AS min_temp,
+       AVG(temperature)    AS avg_temp
+FROM battery_readings
+GROUP BY fault_label;   # GROUP BY looks at the fault_label column and groups all rows that have the same value together.   
+
 
