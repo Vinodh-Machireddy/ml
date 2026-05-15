@@ -62,18 +62,61 @@ FROM runs
 WHERE start_time BETWEEN '2024-01-01' AND '2024-12-31';
 WHERE cycle_count BETWEEN 300 AND 600;
 
-
-
-
-
-
-
-
-
-
-
+### JOIN
+JOIN combines two tables into one result based on a common column.  
 ```
--- Step 1: Create the table
+SELECT br.battery_id,
+       br.fault_label,
+       br.temperature,
+       bm.manufacturer,
+       bm.location
+FROM battery_readings br
+JOIN battery_metadata bm ON br.battery_id = bm.battery_id;
+```
+#### JOIN Types
+#### 1. INNER JOIN — only matching rows
+```
+SELECT br.battery_id, br.fault_label, bm.manufacturer
+FROM battery_readings br
+INNER JOIN battery_metadata bm ON br.battery_id = bm.battery_id;
+```
+> BAT099 and BAT100 will NOT appear — no match found.
+> JOIN alone always means INNER JOIN by default.   
+
+#### 2. LEFT JOIN — all rows from left table
+LEFT JOIN — "Give me ALL rows from LEFT table (battery_readings), even if no match in RIGHT"
+```
+battery_readings (LEFT)    battery_metadata (RIGHT)
+───────────────────────────────────────────────────
+BAT001  ←────match───────→  BAT001   ✅ both appear
+BAT099  ←────NO match        ❌       ✅ BAT099 still appears, manufacturer = NULL
+                BAT100       ❌       ❌ BAT100 disappears — it's on RIGHT side
+```
+#### 3. RIGHT JOIN — all rows from right table
+RIGHT JOIN — "Give me ALL rows from RIGHT table (battery_metadata), even if no match in LEFT"  
+```
+battery_readings (LEFT)    battery_metadata (RIGHT)
+───────────────────────────────────────────────────
+BAT001  ←────match───────→  BAT001   ✅ both appear
+BAT099     ❌               ❌       ❌ BAT099 disappears — it's on LEFT side
+           ❌  NO match──→  BAT100   ✅ BAT100 still appears, fault_label = NULL
+```
+#### 4. FULL JOIN — all rows from both tables  
+```
+SELECT br.battery_id, br.fault_label, bm.manufacturer
+FROM battery_readings br
+FULL JOIN battery_metadata bm ON br.battery_id = bm.battery_id;
+```
+
+
+
+
+
+
+
+
+### Table-1
+```
 CREATE TABLE battery_readings (
     battery_id              VARCHAR(10),
     voltage                 DECIMAL(5,2),
@@ -88,7 +131,6 @@ CREATE TABLE battery_readings (
     fault_label             VARCHAR(50)
 );
 
--- Step 2: Insert your data
 INSERT INTO battery_readings VALUES
 ('BAT001', 3.7, 35.2, 1.2, 98.5, 82, 98, 12.1, 0.3, 120,  'normal'),
 ('BAT002', 3.2, 42.1, 1.8, 87.3, 74, 87, 18.4, 0.6, 340,  'thermal_fault'),
@@ -104,8 +146,35 @@ INSERT INTO battery_readings VALUES
 ('BAT010', 2.9, 56.0, 2.2, 75.0, 60, 75, 25.0, 0.8, 530, 'overvoltage'),
 ('BAT011', 3.6, 35.5, 1.2, 97.0, 80, 97, 12.5, 0.3, 110, 'normal'),
 ('BAT012', 3.7, 34.9, 1.1, 98.0, 83, 98, 12.0, 0.3, 100, 'normal');
+```
+### Table-2
 ```  
+CREATE TABLE battery_metadata (
+    battery_id      VARCHAR(10),
+    manufacturer    VARCHAR(50),
+    model           VARCHAR(50),
+    install_date    DATE,
+    location        VARCHAR(50)
+);
 
+INSERT INTO battery_metadata VALUES
+('BAT001', 'Panasonic', 'NCR18650', '2022-01-15', 'Plant-A'),
+('BAT002', 'LG Chem',   'INR21700', '2021-06-20', 'Plant-B'),
+('BAT003', 'Samsung',   'INR18650', '2020-03-10', 'Plant-A'),
+('BAT004', 'Panasonic', 'NCR21700', '2022-08-05', 'Plant-C'),
+('BAT005', 'LG Chem',   'INR18650', '2019-11-30', 'Plant-B'),
+('BAT006', 'Samsung',   'INR21700', '2021-04-18', 'Plant-A'),
+('BAT007', 'Panasonic', 'NCR18650', '2023-02-22', 'Plant-C');
+```
+```
+-- Battery with no metadata
+INSERT INTO battery_readings VALUES
+('BAT099', 3.5, 36.0, 1.2, 95.0, 78, 95, 13.0, 0.3, 100, 'normal');
+
+-- Metadata with no reading
+INSERT INTO battery_metadata VALUES
+('BAT100', 'Sony', 'VTC6', '2023-05-10', 'Plant-D');
+``` 
 
 ## Metrics Table in PostGresSQL
 | run_id | key        | value | step | timestamp   |
@@ -117,3 +186,4 @@ INSERT INTO battery_readings VALUES
 | abc123 | auc        | 0.95  | 1    | 1704067200  |
 | xyz456 | f1_score   | 0.85  | 1    | 1704067200  |
 | xyz456 | precision  | 0.82  | 1    | 1704067200  |
+
