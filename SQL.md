@@ -55,7 +55,12 @@ SELECT * FROM battery_readings
 WHERE fault_label LIKE 'battery_fault%';       # '%' Any number of characters
 WHERE battery_id LIKE 'BAT00_';                # '_' Exactly one character
 ``` 
-
+### BETWEEN
+-- 🔵 MLflow example — runs between two dates
+SELECT run_id, status, start_time
+FROM runs
+WHERE start_time BETWEEN '2024-01-01' AND '2024-12-31';
+WHERE cycle_count BETWEEN 300 AND 600;
 
 
 
