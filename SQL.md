@@ -11,18 +11,22 @@ Your PostgreSQL Database (mlflow_db)
 ├── registered_models ← table
 └── model_versions    ← table
 ```
+### SELECT and WHERE
 ```
 SELECT * FROM battery_readings
 WHERE fault_label = 'thermal_fault'
-AND temperature > 40;  
-
+AND temperature > 40;
+```   
+### ORDER BY, DESC/ASC, LIMIT
+```
 -- 🔵 MLflow example
 SELECT run_id, key, value    # Column filter
 FROM metrics
 WHERE key = 'f1_score'
 ORDER BY value DESC, Temperature AS temp ASC, Voltage AS Vol DESC;  # select rows of value column in metrics table.
 LIMIT 5;    # Row filter  
-```  
+```
+### GROUP BY
 ```
 SELECT fault_label,
        COUNT(*)            AS total_batteries,    # count all rows in each group — no matter what values they have.
@@ -31,7 +35,38 @@ SELECT fault_label,
        AVG(temperature)    AS avg_temp
 FROM battery_readings
 GROUP BY fault_label;   # GROUP BY looks at the fault_label column and groups all rows that have the same value together.   
-```  
+```
+#### HAVING is the WHERE for GROUP BY.  
+```
+WHERE         Individual rows              Before GROUP BY
+HAVING       Groups after aggregation       After GROUP BY
+```
+```
+-- 🔵 Experiments that have more than 5 failed runs
+SELECT experiment_id, COUNT(*) AS failed_runs
+FROM runs
+WHERE status = 'FAILED'
+GROUP BY experiment_id
+HAVING COUNT(*) > 5;
+```
+### LIKE
+```
+SELECT * FROM battery_readings
+WHERE fault_label LIKE 'battery_fault%';       # '%' Any number of characters
+WHERE battery_id LIKE 'BAT00_';                # '_' Exactly one character
+``` 
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 -- Step 1: Create the table
 CREATE TABLE battery_readings (
