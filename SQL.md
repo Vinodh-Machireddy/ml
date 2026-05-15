@@ -32,7 +32,7 @@ SELECT fault_label,
 FROM battery_readings
 GROUP BY fault_label;   # GROUP BY looks at the fault_label column and groups all rows that have the same value together.   
 ```  
-
+```
 -- Step 1: Create the table
 CREATE TABLE battery_readings (
     battery_id              VARCHAR(10),
@@ -64,7 +64,7 @@ INSERT INTO battery_readings VALUES
 ('BAT010', 2.9, 56.0, 2.2, 75.0, 60, 75, 25.0, 0.8, 530, 'overvoltage'),
 ('BAT011', 3.6, 35.5, 1.2, 97.0, 80, 97, 12.5, 0.3, 110, 'normal'),
 ('BAT012', 3.7, 34.9, 1.1, 98.0, 83, 98, 12.0, 0.3, 100, 'normal');
-
+```  
 
 
 ## Metrics Table in PostGresSQL
