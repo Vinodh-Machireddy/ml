@@ -16,9 +16,11 @@ WHERE fault_label = 'thermal_fault'
 AND temperature > 40;  
 
 -- 🔵 MLflow example
-SELECT run_id, key, value 
+SELECT run_id, key, value    # Column filter
 FROM metrics
 WHERE key = 'f1_score'
-ORDER BY value DESC, Temperature AS temp ASC, Voltage AS Vol DESC;
-LIMIT 5;
+ORDER BY value DESC, Temperature AS temp ASC, Voltage AS Vol DESC;  # select rows of value column in metrics table.
+LIMIT 5;    # Row filter  
+
+
 
