@@ -109,6 +109,44 @@ FULL JOIN battery_metadata bm ON br.battery_id = bm.battery_id;
 ```
 
 
+### Window Functions
+The problem with GROUP BY:  
+```
+-- GROUP BY collapses all rows into one row per group
+SELECT fault_label, MAX(temperature) AS max_temp
+FROM battery_readings
+GROUP BY fault_label;
+```
+> You get max temperature — but you lose the battery_id. You can't see WHICH battery had that max temperature.  
+
+**1. Only ORDER BY — rank ALL batteries together**
+```
+SELECT battery_id, fault_label, temperature,
+       RANK() OVER (ORDER BY temperature DESC) AS rank    # OVER() It tells SQL: "Don't collapse rows like GROUP BY — instead calculate across a window of rows"
+FROM battery_readings;
+```
+**2. Only PARTITION BY — no ranking, just grouping**
+```
+SELECT battery_id, fault_label, temperature,
+       COUNT(*) OVER (PARTITION BY fault_label) AS total_in_group  # PARTITION BY fault_label means: "Start ranking from 1 again for each fault type"
+FROM battery_readings;
+```
+> No ranking — just shows how many batteries exist in each fault group. All rows kept.  
+
+**3. Both PARTITION BY + ORDER BY — rank WITHIN each group**
+```
+SELECT battery_id, fault_label, temperature,
+       RANK() OVER (PARTITION BY fault_label ORDER BY temperature DESC) AS rank
+FROM battery_readings;
+```
+
+When to use which:  
+Just need the total count per group      ->        GROUP BY
+Need total count AND individual row details together    ->   PARTITION BY
+
+
+
+
 
 
 
