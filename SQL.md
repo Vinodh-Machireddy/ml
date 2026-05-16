@@ -110,6 +110,7 @@ FULL JOIN battery_metadata bm ON br.battery_id = bm.battery_id;
 
 
 ### Window Functions
+#### RANK()
 The problem with GROUP BY:  
 ```
 -- GROUP BY collapses all rows into one row per group
@@ -144,9 +145,38 @@ When to use which:
 Just need the total count per group      ->        GROUP BY
 Need total count AND individual row details together    ->   PARTITION BY
 
+#### ROW_NUMBER()
+ROW_NUMBER vs RANK  
+```
+-- Two batteries have same temperature 35.2
+-- RANK gives same rank to both
+RANK()      → 1, 2, 2, 4   -- skips 3
+ROW_NUMBER() → 1, 2, 3, 4  -- always unique, no skipping
+```
+```
+-- 🔵 MLflow example
+SELECT *
+FROM (
+    SELECT model_name, version, stage, creation_timestamp,
+           ROW_NUMBER() OVER (PARTITION BY model_name ORDER BY creation_timestamp DESC) AS rn
+    FROM model_versions
+) latest
+WHERE rn = 1;
+```
+> "Give me only the latest version of each model"
+   This is something you'd run at Daimler before every deployment.
 
-
-
+#### LAG() — Compare Current vs Previous Row  
+```
+SELECT battery_id,
+       cycle_count,
+       temperature,
+       LAG(temperature) OVER (ORDER BY cycle_count) AS prev_temp,
+       temperature - LAG(temperature) OVER (ORDER BY cycle_count) AS temp_change
+FROM battery_readings
+ORDER BY cycle_count;
+```
+> temp_change tells you how much temperature increased from previous battery.  
 
 
 
