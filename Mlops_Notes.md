@@ -318,3 +318,154 @@ subsample:		   % of rows used per tree
 colsample_bytree:	% of features used per tree
 ```
 
+# Latency
+
+1. Measure end-to-end vs component latency  
+Break the request pipeline into segments:  
+Pre-processing (feature engineering, data transformation)  
+Model inference (actual prediction time)  
+Post-processing (decoding outputs, formatting response)  
+Network/I/O (data transfer, DB lookups)  
+
+Use tools like Prometheus histograms or tracing (OpenTelemetry) to measure each segment separately.  
+2. Key metrics to track  
+p50, p95, p99 latency — don't just look at average; tail latency matters most in production  
+Throughput (requests/sec) vs latency tradeoff  
+Cold start latency — especially on KServe, when pods scale from zero  
+
+3. Profiling tools  
+cProfile / line_profiler for Python-level bottlenecks  
+torch.profiler or onnxruntime profiler for model internals  
+Grafana dashboards for real-time latency trends
+
+
+5. 🥶 Cold Start Latency
+
+When KServe scales from zero pods, the first request waits for the pod to spin up, model to load from MLflow/S3
+This is outside your 4 segments but adds huge latency
+Fix → keep minimum replicas warm
+
+6. ⚔️ Resource Contention
+
+When multiple requests hit simultaneously, CPU/memory is shared
+One request slows down others — called thread contention
+Fix → proper batching + horizontal scaling
+
+1. Pre-Processing Latency: 
+Feature Engineering — The Biggest Culprit
+Move Heavy Work Offline (Pre-computation)
+Latency risk — These calculations require historical data lookup + computation on every single request. This is the #1 killer in your battery project
+
+Run an offline pipeline every 10 seconds on S3
+It computes rolling voltage averages, temp rate of change, etc.
+Stores final feature vectors in Redis per vehicle ID
+KServe just does a Redis lookup — done in 1ms
+
+> Impact — Pre-processing drops from 280ms → 15ms
+
+## 10 Second Latency 
+### Step 1 — 🔍 IDENTIFY Where the 10 Seconds is Going    
+mainly latency occers in 4 segments. so, first i measure each segment.  
+```
+import time
+
+# Measure each segment separately
+t0 = time.time()
+features = preprocess(raw_input)
+t1 = time.time()
+
+prediction = model.predict(features)
+t2 = time.time()
+
+response = postprocess(prediction)
+t3 = time.time()
+
+print(f"Pre-processing  : {(t1-t0)*1000:.1f}ms")
+print(f"Model Inference : {(t2-t1)*1000:.1f}ms")
+print(f"Post-processing : {(t3-t2)*1000:.1f}ms")
+```
+OutPut:
+```
+Pre-processing  : 342.5ms   ← too slow! feature engineering issue
+Model Inference : 28.3ms    ← acceptable
+Post-processing : 156.7ms   ← too slow! sync logging issue
+
+Total           : 527.5ms
+```  
+
+Also check Grafana dashboards and Prometheus histograms:
+
+p50, p95, p99 latency per segment
+Is it 10 seconds always or only sometimes?  
+
+### Step 2 — 🎯 Find the Real Culprit
+Ask these diagnostic questions:
+```
+Is it 10 sec always?
+        ↓ YES
+Is it first request only?
+        ↓ YES → Cold Start problem (pod spinning up)
+        ↓ NO  → Consistent bottleneck
+
+Is it under high load only?
+        ↓ YES → Resource contention / no batching
+        ↓ NO  → Code level issue
+
+Which segment is slowest?
+        ↓
+Pre-processing? → Feature engineering offline
+Model Inference? → ONNX / reduce trees
+Post-processing? → Async logging
+Network/IO? → Redis cache / connection pool
+```
+### Step 3 — 🔧 Fix Based on What You Found
+#### Most Common Reasons for 10 Second Latency  
+**Scenario 1 — Cold Start (Most Common Reason)**
+10 seconds only on first request, then fast after that    
+```
+First request → KServe pod spins up from zero
+             → Downloads model from S3/MLflow
+             → Loads into memory
+             → Then predicts
+             
+All of this = 8-10 seconds easily
+```
+Fix:
+```
+# Keep minimum pods always warm
+spec:
+  predictor:
+    minReplicas: 1      # ← never scale to zero
+    maxReplicas: 10
+```
+**Scenario 2 — Model Loading on Every Request**
+```
+# Someone wrote this 😱
+def predict(data):
+    model = mlflow.load_model("s3://bucket/model")  # 8 seconds!
+    return model.predict(data)                       # 0.5 seconds
+
+Fix:
+class BatteryModel:
+    def __init__(self):
+        self.model = mlflow.load_model("s3://bucket/model")  # Once!
+
+    def predict(self, data):
+        return self.model.predict(data)   # instant reuse
+```
+**Scenario 3 — Synchronous Heavy I/O Chain**
+```
+# Sequential chain of slow calls
+def predict(vehicle_id):
+    history = fetch_30_days_from_s3(vehicle_id)      # 3 sec
+    metadata = fetch_from_database(vehicle_id)        # 2 sec
+    features = compute_rolling_features(history)      # 3 sec
+    prediction = model.predict(features)              # 0.5 sec
+    log_to_s3(prediction)                             # 1.5 sec
+    return prediction
+    # Total = 10 seconds 😰
+```
+Run parallely  
+
+
+
