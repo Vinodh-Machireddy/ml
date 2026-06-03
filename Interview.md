@@ -688,3 +688,6 @@ parallel processing and fast.
 	3. how your data stores in time-series or temperary
 	4. how often you retrain the model?
 	5. 
+
+## ML Terminology
+	Listner code
