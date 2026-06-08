@@ -83,3 +83,4 @@ client → KFP API server → stores metadata (MySQL + MLMD)
                         → status streams back to client
 ```
 
+
