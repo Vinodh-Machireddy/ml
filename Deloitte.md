@@ -1,20 +1,20 @@
-## Q1: When defining a pipeline, what libraries from the SDK do you use?
-### The core is the kfp package. The main imports:
-from kfp import dsl
-from kfp import compiler
-from kfp import Client
-from kfp import dsl
-from kfp.dsl import Input, Output, Dataset, Model
+## Q1: When defining a pipeline, what libraries from the SDK do you use?  
+### The core is the kfp package. The main imports:  
+from kfp import dsl  
+from kfp import compiler  
+from kfp import Client  
+from kfp import dsl  
+from kfp.dsl import Input, Output, Dataset, Model  
 
-kfp.dsl — the domain-specific language for authoring. This is where the key decorators and constructs live:
+kfp.dsl — the domain-specific language for authoring. This is where the key decorators and constructs live:  
 
-@dsl.component — turns a Python function into a pipeline component
-@dsl.pipeline — defines the pipeline itself
-dsl.Condition / dsl.If — conditional execution
-dsl.ParallelFor — fan-out loops
-dsl.Input, dsl.Output, and artifact types (Dataset, Model, Metrics, Artifact) for typed data passing between steps  
+@dsl.component — turns a Python function into a pipeline component  
+@dsl.pipeline — defines the pipeline itself  
+dsl.Condition / dsl.If — conditional execution  
+dsl.ParallelFor — fan-out loops  
+dsl.Input, dsl.Output, and artifact types (Dataset, Model, Metrics, Artifact) for typed data passing between steps   
 
-kfp.compiler.Compiler — compiles the pipeline into IR YAML (in KFP v2) for submission.  
+kfp.compiler.Compiler — compiles the pipeline into IR YAML (in KFP v2) for submission.   
 kfp.Client — connects to the KFP API server to upload, run, and manage pipelines and experiments programmatically.  
 
 ## Q2: What is the use of NumPy?
